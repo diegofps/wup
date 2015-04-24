@@ -1,0 +1,19 @@
+===== Description =====
+
+This repository contains a serie of reusable modules regarding weightless neural networks and some other utilities.
+
+===== Dependencies =====
+
+doxygen
+
+===== Installing =====
+
+This is a template library and in order to use it you must add the library path to your CPLUS_INCLUDE_PATH.
+This can be accomplished by inserting the following line to your ~/.bashrc 
+
+export CPLUS_INCLUDE_PATH="$CPLUS_INCLUDE_PATH:$HOME/PATH_TO_THIS_LIB>/include"
+
+===== Documentation =====
+
+type "make doc" to generate the documentation
+
