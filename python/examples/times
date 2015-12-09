@@ -1,0 +1,9 @@
+With classification:
+    22.82user 0.02system 0:22.85elapsed 99%CPU (0avgtext+0avgdata 17556maxresident)k
+    0inputs+0outputs (0major+16428minor)pagefaults 0swaps
+
+Without classification:
+    17.29user 0.00system 0:17.30elapsed 99%CPU (0avgtext+0avgdata 9876maxresident)k
+    0inputs+0outputs (0major+1088minor)pagefaults 0swaps
+
+
