@@ -1,0 +1,13 @@
+Para compilar a biblioteca:
+    
+    1. Acesse c/src e digite make. É preciso ter 
+
+Para compilar um programa:
+
+    1. Tenha certeza de que o diretório cpp/include está na variável de ambiente
+        CPLUS_INCLUDE_PATH. Adicione a seguinte linha no seu ~/.bashrc:
+        
+        export CPLUS_INCLUDE_PATH="$CPLUS_INCLUDE_PATH:<PATH_TO_WUP>/cpp/include"
+    
+    2. Acesse pelo terminal a pasta cpp/tests/src e digite make, os binários 
+        serão criados em cpp/tests/bin
