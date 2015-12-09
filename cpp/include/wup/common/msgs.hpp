@@ -95,7 +95,18 @@ void error(const Args&... args)
     throw FatalException();
 }
 
-}; /* wup */
+#ifdef QT_VERSION_STR
+
+inline std::ostream &
+operator<<(std::ostream & o, const QString & str)
+{
+    o << str.toUtf8().constData();
+    return o;
+}
+
+#endif
+
+} /* wup */
 
 #endif /* __WUP__MSGS */
 

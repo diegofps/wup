@@ -270,7 +270,7 @@ double arrayMean(const A * const array, const int length)
 }
 
 inline vector<int>
-load_array(const string filename, int * const ptr)
+load_array(const string filename)
 {
     FILE *f = fopen(filename.c_str(), "r");
     if (!f) throw FatalException(
@@ -334,7 +334,7 @@ parse_int(const std::string &str)
 		return n;
 }
 
-}; /* wup */
+} /* wup */
 
 #endif /* __WUP__GENERIC */
 
