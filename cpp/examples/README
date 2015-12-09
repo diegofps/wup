@@ -1,0 +1,9 @@
+Para compilar:
+
+    1. Tenha certeza de que o diretório cpp/include está na variável de ambiente
+        CPLUS_INCLUDE_PATH. Adicione a seguinte linha no seu ~/.bashrc:
+        
+        export CPLUS_INCLUDE_PATH="$CPLUS_INCLUDE_PATH:<PATH_TO_WUP>/cpp/include"
+    
+    2. Acesse pelo terminal a pasta cpp/examples e digite make, os binários 
+        serão criados no mesmo local
