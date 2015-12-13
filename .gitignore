@@ -1,1 +1,5 @@
 /html*
+/cpp/html
+/android/AndWUP/bin
+/android/AndWUP/libs
+/android/AndWUP/obj

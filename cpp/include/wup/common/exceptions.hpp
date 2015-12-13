@@ -6,26 +6,59 @@
 namespace wup
 {
 
-using namespace std;
-
-class FatalException : public exception {
+class FatalException : public std::exception {
 public:
-    FatalException() : _msg("Unspecified") { }
-	FatalException(const string m) : _msg(m) { }
-	~FatalException() throw() { }
-	const char * what() const throw() { return _msg.c_str(); }
+    FatalException() : _msg("Unspecified") 
+    { }
+    
+	FatalException(const std::string m) : _msg(m) 
+	{ }
+	
+	~FatalException() throw() 
+	{ }
+	
+	const char * what() const throw() 
+	{ return _msg.c_str(); }
+	
 private:
-	string _msg;
+	std::string _msg;
 };
 
-class ParsersException : public exception {
+class ParsersException : public std::exception {
 public:
-	ParsersException(const char * const m) : _msg(m) { }
-	ParsersException(const string &m) : _msg(m) { }
-	~ParsersException() throw() { }
-	const char * what() const throw() { return _msg.c_str(); }
+	ParsersException(const char * const m) : _msg(m) 
+	{ }
+	
+	ParsersException(const std::string &m) : _msg(m) 
+	{ }
+	
+	~ParsersException() throw() 
+	{ }
+	
+	const char * what() const throw() 
+	{ return _msg.c_str(); }
+	
 private:
-	string _msg;
+	std::string _msg;
+};
+
+class WUPException : public std::exception {
+public:
+    WUPException() : _msg("")
+    { }
+    
+    WUPException(const std::string &msg) : _msg(msg)
+    { }
+    
+	~WUPException() throw()
+	{ }
+	
+    const char * what() const throw() 
+    { return _msg.c_str(); }
+
+private:
+    std::string _msg;
+    
 };
 
 }; /* wup */

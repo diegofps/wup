@@ -1,5 +1,5 @@
-#ifndef SBIO_HPP
-#define SBIO_HPP
+#ifndef INCLUDE_WUP_SBIO_HPP
+#define INCLUDE_WUP_SBIO_HPP
 
 #include <iostream>
 #include <fstream>
@@ -9,8 +9,6 @@
 using std::ofstream;
 using std::ifstream;
 
-//class SBIOException { };
-
 namespace wup {
 
 template <typename T>
@@ -18,9 +16,7 @@ class sbwriter {
 public:
     
     sbwriter(const std::string &filename) : sbwriter(filename, 10240)
-    {
-    
-    }
+    { }
     
     sbwriter(const std::string &filename, const int capacity) :
         _stream(filename.c_str(), std::ios::binary | std::ios::trunc)
@@ -52,20 +48,13 @@ public:
     }
     
     bool good()
-    {
-        return _stream.good();
-    }
+    { return _stream.good(); }
     
 private:
-    
     ofstream _stream;
-    
     T * _buffer;
-    
     int _capacity;
-    
     int _current;
-    
 };
 
 template <typename T>
@@ -73,9 +62,7 @@ class sbreader {
 public:
     
     sbreader(const std::string &filename) : sbreader(filename, 10240)
-    {
-        
-    }
+    { }
     
     sbreader(const std::string &filename, const int capacity) :
         _stream(filename.c_str(), std::ios::binary | std::ios::in)
@@ -107,25 +94,17 @@ public:
     }
     
     bool good()
-    {
-        return _stream.good();
-    }
+    { return _stream.good(); }
     
 private:
-    
     ifstream _stream;
-    
     T * _buffer;
-    
     int _capacity;
-    
     int _current;
-    
     int _content;
-    
 };
 
 } /* wup */
 
-#endif /* SBIO_HPP */
+#endif /* INCLUDE_WUP_SBIO_HPP */
 

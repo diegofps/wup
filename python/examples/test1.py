@@ -23,7 +23,10 @@ def noisify(src, dst, noise):
     return dst
 
 def test(noise):
-    patterns = [[round(random()) for __ in xrange(LENGTH)] for _ in xrange(CLASSES)]
+    patterns = [
+        [round(random()) for __ in xrange(LENGTH)]
+            for _ in xrange(CLASSES)]
+            
     tmp = [0] * LENGTH
     misses = 0
     hits = 0
@@ -50,7 +53,7 @@ def test(noise):
             else:
                 misses += 1
     
-    print "Noise = %d, Accuracy = %f" % (int(noise*100), hits/float(hits+misses))
+    print "Noise=%d, Accuracy=%f" % (int(noise*100), hits/float(hits+misses))
 
 for noise in xrange(0, 101, 5):
     test( noise / 100.0 )

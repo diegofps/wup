@@ -5,7 +5,7 @@ using namespace wup;
 
 const int TRAIN_ITERS = 1000;
 const int TEST_ITERS = 1000;
-const int LENGTH = 128;
+const int LENGTH = 1024;
 
 const int RAM_BITS = 16;
 const int CLASSES = 10;
@@ -58,8 +58,10 @@ test(const double noise)
     
     // Perform import, testing
     {
+        importTime.start();
         sbreader<int> reader(FILENAME);
         Wisard w2(reader);
+        importTime.stop();
         
         testTime.start();
         for (int i=0;i<CLASSES;++i) {
@@ -97,8 +99,12 @@ main(int argc, char **argv)
 {
     srand(time(NULL));
     
+    Clock total;
     for (auto noise : xrange(0, 101, 5))
         test( noise / 100.0 );
+    total.stop();
+    
+    print("Tempo total:", total.ellapsed_seconds(), "s");   
     
     return 0;
 }

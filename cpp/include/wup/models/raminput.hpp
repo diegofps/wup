@@ -2,6 +2,22 @@
 #define __WUP_RAMINPUT_HPP
 
 #include "pattern.hpp"
+#include <stdint.h>   // for uint32_t
+#include <limits.h>   // for CHAR_BIT
+
+inline uint32_t rotl32 (uint32_t n, unsigned int c)
+{
+  const unsigned int mask = (CHAR_BIT*sizeof(n)-1);
+  c &= mask;  // avoid undef behaviour with NDEBUG.  0 overhead for most types / compilers
+  return (n<<c) | (n>>( (-c)&mask ));
+}
+
+inline uint32_t rotr32 (uint32_t n, unsigned int c)
+{
+  const unsigned int mask = (CHAR_BIT*sizeof(n)-1);
+  c &= mask;  // avoid undef behaviour with NDEBUG.  0 overhead for most types / compilers
+  return (n>>c) | (n<<( (-c)&mask ));
+}
 
 namespace wup {
 
@@ -99,9 +115,13 @@ private:
     void
     _updateHash()
     {
-        _hash = 2;
+        /*_hash = 2;
         for (int i=0;i<_size;++i)
-            _hash = 3 * _hash + (_pattern[i] ? 7 : 11);
+            _hash = 13 * _hash + (_pattern[i] ? 7 : 11);*/
+        
+        _hash = 0;
+        for (int i=0;i<_size;++i)
+            _hash = rotl32(_hash,3) ^ (_pattern[i]?2:3);
         
         /*_hash = 1;
         for (int i=0;i<_size;++i)

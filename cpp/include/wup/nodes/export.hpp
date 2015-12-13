@@ -1,7 +1,6 @@
 #ifndef __WUP__NODE__EXPORT_HPP
 #define __WUP__NODE__EXPORT_HPP
 
-
 namespace wup {
 
 namespace node {
@@ -9,13 +8,11 @@ namespace node {
 class Export : public Node {
 public:
     
-    Export(const Node * const parent, const char * const prefix) : 
-        Node(parent, parent->outputLength()),
+    Export(Node * const parent, const char * const prefix) :
+        Node(parent),
         _prefix(prefix),
         _counter(0)
-    {
-        
-    }
+    { }
     
     virtual void onDigest(Feature &src)
     {

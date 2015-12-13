@@ -2,7 +2,6 @@
 #define __WUP__NODE__NODE_HPP
 
 #include <vector>
-#include <wup/feature.hpp>
 
 namespace wup {
 
@@ -11,95 +10,83 @@ namespace node {
 class Node {
 public:
 
-    Node(wup::node::Node * const parent, const int size) :
+    Node(Node * const parent) :
+        Node(parent, parent->outputLength())
+    { }
+    
+    Node(Node * const parent, const int size) :
         _parent(parent),
-        _feature(size)
-    {
-        if (parent != NULL)
-            parent->addChild(this);
-        
-        if (size != 0)
-            _buffer = new double[size];
-    }
+        _buffer(size==0?NULL:new double[size]),
+        _feature(_buffer, size)
+    { if (parent != NULL) parent->addChild(this); }
     
     virtual ~Node()
-    {
-        if (_buffer != NULL)
-            delete [] _buffer;
-    }
+    { if (_buffer != NULL) delete [] _buffer; }
     
-    double *
-    output()
-    {
-        return _buffer;
-    }
+    double * output()
+    { return _buffer; }
     
-    int
-    outputLength() const
-    {
-        return _size;
-    }
+    int outputLength() const
+    { return _feature.size(); }
     
-    Node *
-    parent()
-    {
-        return _parent;
-    }
+    Node * parent()
+    { return _parent; }
     
-    void
-    addChild(wup::node::Node * node)
-    {
-        _children.push_back(node);
-    }
+    Feature & feature()
+    { return _feature; }
     
-    void
-    start()
+    void addChild(wup::node::Node * node)
+    { _children.push_back(node); }
+    
+    std::vector<Node*> & children()
+    { return _children; }
+    
+    void start()
     {
         onStart();
-        for (auto & node : _children)
+        for (Node * node : _children)
             node->start();
     }
     
-    void
-    finish()
+    void finish()
     {
         onFinish();
-        for (auto & node : _children)
+        for (Node * node : _children)
             node->finish();
     }
     
     void
-    yield(const double * buffer)
+    digest(Feature &feature)
+    { onDigest(feature); }
+    
+    void yield(const Feature & feature)
     {
-        for (auto & node : _children)
-            node->onDigest(buffer);
+        for (Node * node : _children)
+            node->onDigest(feature);
     }
     
-    virtual void onStart() { }
     
-    virtual void onFinish() { }
+    virtual void onStart()
+    { }
     
-    virtual void onDigest(Feature &src)
-    {
-        throw wup::WUPException(
-                "This node does not implement this functionality");
-    }
+    virtual void onFinish()
+    { }
+    
+    virtual void onDigest(const Feature & input)
+    { yield(input); }
+    
     
     virtual void binaryOutput(int * dst)
-    {
-        throw wup::WUPException(
-                "This node does not implement this functionality");
-    }
+    { }
     
     virtual int binaryOutputLength()
-    {
-        throw wup::WUPException(
-                "This node does not implement this functionality");
-    }
+    { return 0; }
     
 private:
     
     wup::node::Node * _parent;
+    
+    double * _buffer;
     
     Feature _feature;
     

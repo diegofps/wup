@@ -2,7 +2,6 @@
 #define __WUP__NODE__ROOT_HPP
 
 #include <vector>
-#include "node.hpp"
 
 namespace wup {
 
@@ -12,10 +11,13 @@ class Root : public Node {
 public:
     
     Root(const int size) : 
-            Node(NULL, size), 
-            _binaryBuffer_size(0), 
-            _binaryOutput(NULL)
-    { }
+		Node(NULL, size),
+		_binaryOutputLength(0),
+		_binaryOutput(NULL)
+    {
+    	if (size <= 0)
+    		throw WUPException("Number of columns must be bigger or equal to one");
+    }
     
     ~Root()
     {
@@ -27,26 +29,21 @@ public:
     digest(Sample &sample)
     {
         this->start();
-        for (auto &feature : sample)
-            for (auto &node : children())
-                node->digest(feature.data());
+        for (auto &feature : sample) {
+            std::vector<Node*> &cs = children();
+            for (auto &node : cs)
+                node->digest(feature);
+        }
         this->finish();
         
-        return buildBinaryPattern();
-    }
-    
-    void
-    digest(Feature &feature)
-    {
-        for (auto &node : children())
-            node->digest(feature.data());
+        return binaryOutput();
     }
     
     void
     addEmitter(wup::node::Node * node)
     {
         _terminals.push_back(node);
-        _binaryBufferSize += node->binaryOutputLength();
+        _binaryOutputLength += node->binaryOutputLength();
         
         if (_binaryOutput != NULL) {
             delete [] _binaryOutput;
@@ -54,11 +51,22 @@ public:
         }
     }
 
-    int *
-    buildBinaryPattern()
+
+    virtual void binaryOutput(int * dst)
     {
-        if (_binaryOutputt == NULL)
-            _binaryOutput = new int[_binaryBufferSize];
+    	memcpy(dst, binaryOutput(),
+    			sizeof(double) * _binaryOutputLength);
+    }
+
+    virtual int binaryOutputLength()
+    {
+    	return _binaryOutputLength;
+    }
+
+    int * binaryOutput()
+    {
+        if (_binaryOutput == NULL)
+            _binaryOutput = new int[_binaryOutputLength];
         
         int current = 0;
         for (auto & node : _terminals) {
@@ -70,13 +78,9 @@ public:
     }
 
 private:
-    
     std::vector<Node*> _terminals;
-    
-    int _binaryBufferSize;
-    
+    int _binaryOutputLength;
     int * _binaryOutput;
-    
 };
 
 } /* node */

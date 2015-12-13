@@ -4,13 +4,12 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <fstream>
 
 #include <wup/common/exceptions.hpp>
 
 namespace wup
 {
-
-using namespace std;
 
 const char * const BLUE   = "\033[94m";
 const char * const GREEN  = "\033[92m";
@@ -19,23 +18,23 @@ const char * const RED    = "\033[91m";
 const char * const NORMAL = "\033[0m";
 
 template <typename P1>
-stringstream & _cat(stringstream &ss, const P1 &p1)
+std::stringstream & _cat(std::stringstream &ss, const P1 &p1)
 {
     ss << p1;
     return ss;
 }
 
 template <typename P1, typename... Args>
-stringstream & _cat(stringstream &ss, const P1 &p1, const Args&... args)
+std::stringstream & _cat(std::stringstream &ss, const P1 &p1, const Args&... args)
 {
     ss << p1;
     return _cat(ss, args...);
 }
 
 template <typename... Args>
-string cat(const Args&... args)
+std::string cat(const Args&... args)
 {
-    stringstream ss;
+	std::stringstream ss;
     return _cat(ss, args...).str();
 }
 

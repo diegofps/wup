@@ -2,7 +2,6 @@
 #define __WUP__GENERIC
 
 #include <cstdlib>
-#include <fstream>
 #include <cstring>
 #include <vector>
 #include <cmath>
@@ -12,12 +11,25 @@
 
 namespace wup {
 
-using namespace std;
-
 typedef struct {
 	double w;
 	int id;
 } BOX;
+
+inline double
+sdistance(const double * const v1, const double * const v2, const int cols)
+{
+	double ssum = 0.0;
+	for (int i=0;i<cols;++i) {
+		const double v = v1[i] - v2[i];
+		ssum += v * v;
+	}
+	return ssum;
+}
+
+inline double
+distance(const double * const v1, const double * const v2, const int cols)
+{ return sqrt( sdistance(v1, v2, cols) ); }
 
 int *
 randomPattern(const int length, const int n=2)
@@ -269,14 +281,14 @@ double arrayMean(const A * const array, const int length)
 	return tmp / double(length);
 }
 
-inline vector<int>
-load_array(const string filename)
+inline std::vector<int>
+load_array(const std::string filename)
 {
     FILE *f = fopen(filename.c_str(), "r");
     if (!f) throw FatalException(
         cat( "Could not open file \'", filename, "\'" ) );
 
-    vector<int> result;
+    std::vector<int> result;
     int tmp;
 
     while(fscanf(f, "%d", &tmp) == 1)
@@ -286,7 +298,7 @@ load_array(const string filename)
 }
 
 template<typename T>
-void save_array(const string filename, const T * const array, const int length)
+void save_array(const std::string filename, const T * const array, const int length)
 {
     std::ofstream file_out( filename.c_str() );
     for ( int i=0;i<length;++i )
@@ -294,7 +306,7 @@ void save_array(const string filename, const T * const array, const int length)
 }
 
 template<typename T>
-T load_value(const string filename)
+T load_value(const std::string filename)
 {
     std::ifstream file_in( filename.c_str() );
     if (!file_in.good()) throw FatalException(
@@ -306,16 +318,16 @@ T load_value(const string filename)
 }
 
 inline double 
-parse_double(const string &str)
+parse_double(const std::string &str)
 {
-	stringstream ss(str);
+	std::stringstream ss(str);
 	double n;
 	ss >> n;
 	
-	if (ss.rdstate() & std::ifstream::failbit 
-			|| ss.rdstate() & std::ifstream::badbit) {
+	if ((ss.rdstate() & std::ifstream::failbit)
+			|| (ss.rdstate() & std::ifstream::badbit)) {
 		std::cout << str << std::endl;
-		throw ParsersException(string("Error while parsing double"));
+		throw ParsersException(std::string("Error while parsing double"));
 	} else 
 		return n;
 }
@@ -323,13 +335,13 @@ parse_double(const string &str)
 inline int 
 parse_int(const std::string &str)
 {
-	stringstream ss(str);
+	std::stringstream ss(str);
 	int n;
 	ss >> n;
 	
-	if (ss.rdstate() & std::ifstream::failbit 
-			|| ss.rdstate() & std::ifstream::badbit)
-		throw ParsersException(string("Error while parsing int"));
+	if ((ss.rdstate() & std::ifstream::failbit)
+			|| (ss.rdstate() & std::ifstream::badbit))
+		throw ParsersException(std::string("Error while parsing int"));
 	else
 		return n;
 }

@@ -4,9 +4,9 @@
 #include <unordered_map>
 #include <map>
 
+#include "../common/sbio.hpp"
 #include "raminput.hpp"
 #include "pattern.hpp"
-#include "sbio.hpp"
 
 namespace wup {
 
@@ -306,9 +306,7 @@ public:
     
     int 
     readBleaching(const Pattern &pattern)
-    {
-        return readBleaching(pattern, 1, 0.1);
-    }
+    { return readBleaching(pattern, 1, 0.1); }
     
     int 
     readBleaching(const Pattern &pattern, const int step, 
