@@ -230,9 +230,11 @@ public:
         return _inputBits;
     }
     
-    void 
-    learn(const Pattern & pattern, const int target) 
+    int
+    learn(const Pattern & pattern, int target)
     {
+    	target = getInnerTarget(target);
+
         // Prepara as chaves de hash
         for (int i=0;i<_numRams;++i)
             _ramInputs[i].read(pattern);
@@ -260,6 +262,32 @@ public:
 			        _maxBleaching = imap[target];
 	        }
 		}
+
+		return target;
+    }
+
+    void
+	forget(const int target)
+    {
+    	auto it = _outterToInner.find(target);
+    	if (it == _outterToInner.end())
+    		return;
+
+    	const int realTarget = it->second;
+
+    	for (int r=0;r<_numRams;++r) {
+    		outtermap &omap = _memory[r];
+    		for (auto &pair : omap) {
+    			innermap &imap = pair.second;
+    			auto it2 = imap.find(realTarget);
+    			if (it2 != imap.end())
+    				imap.erase(it2);
+    		}
+    	}
+
+    	_innerToOutter.erase(it->second);
+    	_outterToInner.erase(it);
+    	_thrash.push_back(realTarget);
     }
 
 	int 
@@ -290,7 +318,7 @@ public:
 		}
 
 		// Retorna o discriminador mais ativado, calculando a confiança
-		return indexOfMax(_activations, _numDiscriminators);
+		return getOutterTarget(indexOfMax(_activations, _numDiscriminators));
 	}
 
     int 
@@ -301,7 +329,7 @@ public:
             _ramInputs[i].read(pattern);
         
         // Equivalente ao bleaching com threshold fixo e igual a 1
-        return readThreshold(1);
+        return getOutterTarget(readThreshold(1));
     }
     
     int 
@@ -326,7 +354,7 @@ public:
 			
 			// Se atingiu a confiança mínima retorne a resposta
 			if (confidence > minConfidence)  {
-				return predicted;
+				return getOutterTarget(predicted);
 			}
 			
 			// Se for a de maior confiança até agora guarde-a
@@ -340,9 +368,9 @@ public:
 		// retorne o melhor encontrado
 	    //LOGI("Predicted %d", bestPredicted);
 	    if (bestPredicted == -1) 
-	        return 0;
+	        return _innerToOutter.empty()?0:_innerToOutter.begin()->second;
         else
-    		return bestPredicted;
+    		return getOutterTarget(bestPredicted);
     }
 
     int 
@@ -376,7 +404,7 @@ public:
             weightCurrent = _activations[readThreshold(current)];
         }
         
-        return getFirstBestPrediction();
+        return getOutterTarget(getFirstBestPrediction());
     }
     
     float 
@@ -478,6 +506,34 @@ private:
 		return _k1;
 	}
     
+    int
+	getInnerTarget(const int outter)
+    {
+    	auto it = _outterToInner.find(outter);
+    	if (it == _outterToInner.end()) {
+    		if (_thrash.empty()) {
+    			const int result = _outterToInner.size();
+    			_outterToInner[outter] = result;
+    			_innerToOutter[result] = outter;
+    			return result;
+    		} else {
+    			const int result = _thrash.back();
+    			_thrash.pop_back();
+    			_outterToInner[outter] = result;
+    			_innerToOutter[result] = outter;
+    			return result;
+    		}
+    	} else {
+    		return it->second;
+    	}
+    }
+
+    int
+	getOutterTarget(const int inner)
+    {
+    	return _innerToOutter[inner];
+    }
+
 private:
 
     float _confidence;
@@ -506,6 +562,12 @@ private:
     
     int _ramBits;
     
+    std::vector<int> _thrash;
+
+    std::map<int, int> _innerToOutter;
+
+    std::map<int, int> _outterToInner;
+
 };
 
 } /* wup */
