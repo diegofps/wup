@@ -3,12 +3,12 @@
 
 using namespace wup;
 
-const int TRAIN_ITERS = 1000;
-const int TEST_ITERS = 1000;
-const int LENGTH = 1024;
+const int TRAIN_ITERS = 20;
+const int TEST_ITERS = 10;
+const int LENGTH = 512;
 
 const int RAM_BITS = 16;
-const int CLASSES = 10;
+const int CLASSES = 500;
 
 const char * FILENAME = "wisard.bin";
 

@@ -1,7 +1,7 @@
 #ifndef __WUP__IO_HPP
 #define __WUP__IO_HPP
 
-#include <boost/algorithm/string.hpp>
+//#include <boost/algorithm/string.hpp>
 
 namespace wup {
 
@@ -167,7 +167,7 @@ public:
     Bundle(const int columns) : _columns(columns)
     { }
 
-    Bundle(const std::string filename, const std::string &delimiter="\t",
+    Bundle(const std::string filename, const char delimiter='\t',
             int ignoreRows=0) : _columns(0)
     {
 	    // Abre o arquivo para leitura
@@ -188,7 +188,7 @@ public:
 		    if (rows <= ignoreRows) continue;
 		    
 		    // Quebra a linha em celulas
-		    split(cells, line, boost::is_any_of(delimiter));
+		    split(cells, line, delimiter);
 		
 		    // Guarda o numero de colunas
 		    if (_columns == 0)

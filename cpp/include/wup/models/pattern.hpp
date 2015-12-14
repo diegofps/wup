@@ -9,7 +9,7 @@ namespace wup {
 	    Pattern(int * array) : _env(NULL), _array(NULL), _intArray(array)
 	        { }
 
-        Pattern(JNIEnv * env, jintArray & array) : _env(env), _array(array)
+        Pattern(JNIEnv * env, jintArray & array) : _env(env), _array(&array)
             { _intArray = env->GetIntArrayElements(array, NULL); }
         
         ~Pattern()

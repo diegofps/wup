@@ -75,6 +75,24 @@ public:
         reader.get(_ramBits);
         reader.get(_numRams);
         
+        int thrashSize;
+        int thrashItem;
+        reader.get(thrashSize);
+        for (int i=0;i<thrashSize;++i) {
+            reader.get(thrashItem);
+            _thrash.push_back(thrashItem);
+        }
+        
+        int targetSize;
+        int inner, outter;
+        reader.get(targetSize);
+        for (int i=0;i<targetSize;++i) {
+            reader.get(inner);
+            reader.get(outter);
+            _innerToOutter[inner] = outter;
+            _outterToInner[outter] = inner;
+        }
+        
         try {
         
             // Aloca os vetores internos
@@ -171,6 +189,19 @@ public:
         writer.put(_ramBits);
         writer.put(_numRams);
         
+        if (_innerToOutter.size() != _outterToInner.size())
+            throw WUPException("Internal error");
+        
+        writer.put(_thrash.size());
+        for (auto &n : _thrash)
+            writer.put(n);
+        
+        writer.put(_innerToOutter.size());
+        for (auto &pair : _innerToOutter) {
+            writer.put(pair.first);
+            writer.put(pair.second);
+        }
+        
         for (int i=0;i<_inputBits;++i)
             writer.put(_shuffling[i]);
         
@@ -208,27 +239,19 @@ public:
     
     const int *
     activations() const
-    {
-        return _activations;
-    }
+    { return _activations; }
     
     int 
     classes() const
-    {
-        return _numDiscriminators;
-    }
+    { return _numDiscriminators; }
     
     int 
     ramBits() const
-    {
-        return _ramBits;
-    }
+    { return _ramBits; }
     
     int
     inputBits() const
-    {
-        return _inputBits;
-    }
+    { return _inputBits; }
     
     int
     learn(const Pattern & pattern, int target)
@@ -340,6 +363,11 @@ public:
     readBleaching(const Pattern &pattern, const int step, 
         const float minConfidence) 
     {
+        if (step <= 0)
+            throw WUPException("step must be larger than 0");
+        if (minConfidence < 0.0 || minConfidence > 1.0)
+            throw WUPException("minConfidence must be between 0.0 and 1.0");
+        
         // Prepara as chaves de hash
         for (int i=0;i<_numRams;++i)
             _ramInputs[i].read(pattern);
@@ -381,7 +409,7 @@ public:
             _ramInputs[i].read(pattern);
         
         if (_maxBleaching == 1)
-            return readThreshold(1);
+            return getOutterTarget(readThreshold(1));
         
         int begin = 1;
         int end = _maxBleaching;
@@ -409,36 +437,29 @@ public:
     
     float 
     getConfidence() const
-    {
-        return _confidence;
-    }
+    { return _confidence; }
     
     float 
     getExcitation(const int target) const
     {
-        if (target >= _numDiscriminators)
-            return 0;
-        else
-            return _activations[target] / float(_numRams);
+        auto it = _outterToInner.find(target);
+        if (it == _outterToInner.end())
+            throw WUPException("Unknown target");
+        
+        return _activations[it->second] / float(_numRams);
     }
     
     int 
     getFirstBestPrediction() const
-    {
-        return _k1;
-    }
+    { return getOutterTarget(_k1); }
     
     int 
     getSecondBestPrediction() const
-    {
-        return _k2;
-    }
+    { return getOutterTarget(_k2); }
     
     int 
     getThirdBestPrediction() const
-    {
-        return _k3;
-    }
+    { return getOutterTarget(_k3); }
     
 private:
     
@@ -528,10 +549,23 @@ private:
     	}
     }
 
-    int
-	getOutterTarget(const int inner)
+    int getInnerTarget(const int outter) const
     {
-    	return _innerToOutter[inner];
+        const auto it = _outterToInner.find(outter);
+        if (it != _outterToInner.end())
+            return it->second;
+        else
+            throw WUPException("Unknown target");
+    }
+
+    int
+	getOutterTarget(const int inner) const
+    {
+        const auto it = _innerToOutter.find(inner);
+        if (it != _innerToOutter.end())
+            return it->second;
+        else
+            throw WUPException("Internal error");
     }
 
 private:

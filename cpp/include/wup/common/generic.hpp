@@ -5,6 +5,7 @@
 #include <cstring>
 #include <vector>
 #include <cmath>
+#include <sstream>
 
 #include <wup/common/exceptions.hpp>
 #include <wup/common/msgs.hpp>
@@ -15,6 +16,11 @@ typedef struct {
 	double w;
 	int id;
 } BOX;
+
+#ifdef __ANDROID_API__
+inline double log2(const double value)
+{ return log(value) / log(2.); }
+#endif
 
 inline double
 sdistance(const double * const v1, const double * const v2, const int cols)
@@ -315,6 +321,18 @@ T load_value(const std::string filename)
     T tmp;
     file_in >> tmp;
     return tmp;
+}
+
+std::vector<std::string> & split(std::vector<std::string> &elems,
+        const std::string &s, char delim)
+{
+    std::stringstream ss(s);
+    std::string item;
+    
+    while (std::getline(ss, item, delim))
+        elems.push_back(item);
+    
+    return elems;
 }
 
 inline double 

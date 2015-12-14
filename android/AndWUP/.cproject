@@ -27,6 +27,9 @@
 								</outputEntries>
 							</builder>
 							<tool id="com.android.gcc.compiler.989258286" name="Android GCC Compiler" superClass="com.android.gcc.compiler">
+								<option id="com.android.gcc.option.includePath.626526303" superClass="com.android.gcc.option.includePath" valueType="includePath">
+									<listOptionValue builtIn="false" value="/home/diegofps/Sources/android-ndk-r10d/platforms/android-21/arch-x86_64/usr/include"/>
+								</option>
 								<inputType id="com.android.gcc.inputType.1222584565" superClass="com.android.gcc.inputType"/>
 							</tool>
 						</toolChain>
@@ -48,5 +51,10 @@
 		<scannerConfigBuildInfo instanceId="com.android.toolchain.gcc.1966043200;com.android.toolchain.gcc.1966043200.1206441881;com.android.gcc.compiler.989258286;com.android.gcc.inputType.1222584565">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="com.android.AndroidPerProjectProfile"/>
 		</scannerConfigBuildInfo>
+	</storageModule>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Default">
+			<resource resourceType="PROJECT" workspacePath="/AndWUP"/>
+		</configuration>
 	</storageModule>
 </cproject>

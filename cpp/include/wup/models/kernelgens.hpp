@@ -8,6 +8,8 @@
 #ifndef INCLUDE_WUP_MODELS_KERNELGENS_HPP
 #define INCLUDE_WUP_MODELS_KERNELGENS_HPP
 
+#include <cmath>
+
 namespace wup {
 
 namespace kernelgens {
