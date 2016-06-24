@@ -36,6 +36,9 @@ public:
 
     virtual void onDigest(const Feature & input)
     {
+    	if (input.size() < 2)
+    		throw new WUPException("Feature is too short, need at least two columns");
+
 		Feature & output = feature();
 
     	if (_isFirst) {

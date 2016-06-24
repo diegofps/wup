@@ -17,7 +17,12 @@ namespace node {
 class KernelCanvas : public Node {
 public:
 
-	KernelCanvas(Node * const parent, const int kernels,
+    KernelCanvas(Node * const parent, wup::sbreader<double> &reader) :
+            Node(parent),
+            _kc(reader)
+    { }
+
+    KernelCanvas(Node * const parent, const int kernels,
 			const double activation, const int bits) :
 		Node(parent),
 		_kc(parent->outputLength(), kernels, activation, bits, NULL)
@@ -41,6 +46,14 @@ public:
 
     virtual int binaryOutputLength()
     { return _kc.binary_outputs(); }
+
+    virtual void exportTo(wup::sbwriter<double> &writer) {
+        _kc.exportTo(writer);
+    }
+
+ 	bool operator ==(node::KernelCanvas const& other) const {
+ 		return _kc == other._kc;
+ 	}
 
 private:
 

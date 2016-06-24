@@ -81,21 +81,32 @@ public:
     
     void get(T &t)
     {
-        if (_current == _content) {
-            _stream.read((char*) _buffer, sizeof(T) * _capacity);
-            _content = _stream.gcount() / sizeof(T);
-            _current = 0;
-            
-            if (_current == _content) 
-                throw wup::WUPException();
-        }
-        
+        if (_current == _content) readMore();
         t = _buffer[_current++];
     }
-    
+
+    const T & get()
+    {
+        if (_current == _content) readMore();
+        return _buffer[_current++];
+    }
+
     bool good()
     { return _stream.good(); }
-    
+
+private:
+
+    void readMore() {
+        _stream.read((char*) _buffer, sizeof(T) * _capacity);
+        int chars = _stream.gcount();
+        _content = _stream.gcount() / sizeof(T);
+        _current = 0;
+//        print("Read ", chars, " characters, giving ", _content, " entities");
+
+        if (_current == _content)
+            throw wup::WUPException();
+    }
+
 private:
     ifstream _stream;
     T * _buffer;

@@ -7,9 +7,12 @@
 #include <wup/common/datasets.hpp>
 #include <wup/common/ranges.hpp>
 #include <wup/common/clock.hpp>
+#include <wup/common/params.hpp>
+#include <wup/common/topk.hpp>
 
 #include <wup/models/wisard.hpp>
 #include <wup/models/kernelcanvas.hpp>
+#include <wup/models/markovlocalization.hpp>
 
 #include <wup/nodes/node.hpp>
 #include <wup/nodes/root.hpp>
@@ -21,6 +24,9 @@
 #include <wup/nodes/kernelcanvas.hpp>
 #include <wup/nodes/tanh.hpp>
 #include <wup/nodes/rotate.hpp>
-//#include <wup/nodes/export.hpp>
+#include <wup/nodes/export.hpp>
+#include <wup/nodes/unary.hpp>
+#include <wup/nodes/box2d.hpp>
+#include <wup/nodes/steps.hpp>
 
 #endif /* INCLUDE_WUP_HPP */

@@ -13,11 +13,14 @@ class Replicate : public Node {
 public:
     
     Replicate(Node * const parent, const int times) :
-            Node(parent, parent->outputLength() * times),
-            _times(times),
-			_mem(new double[parent->outputLength() * times]),
-			_current(0)
-    { }
+		Node(parent, parent->outputLength() * times),
+		_times(times),
+		_mem(new double[parent->outputLength()]),
+		_current(0)
+    {
+    	if (times < 1)
+    		throw new WUPException(cat("Can't replicate ", times, " times"));
+    }
 
     Replicate(const Replicate & other) :
 		Node(other),
@@ -25,24 +28,15 @@ public:
 		_mem(new double[other.outputLength()]),
 		_current(other._current)
     { memcpy(_mem, other._mem, sizeof(double) * other.outputLength()); }
-    
-    ~Replicate()
-    { delete [] _mem; }
+
+    virtual ~Replicate()
+    {
+		delete [] _mem;
+    }
 
     virtual void onStart()
     { feature() = 0.0; }
-    /*
 
-			1
-			2
-			3
-
-			0,0,0
-			1,0,0
-			2,1,0
-			3,2,1
-
-	*/
     virtual void onDigest(const Feature & input)
     {
     	Feature & output = feature();
@@ -61,6 +55,15 @@ public:
 
         yield(output);
     }
+
+    virtual void binaryOutput(int * dst)
+    {
+    	for (int i=0;i<feature().size();++i)
+    		dst[i] = feature()[i] >= 0.5 ? 1 : 0;
+    }
+
+    virtual int binaryOutputLength()
+    { return feature().size(); }
     
 private:
 

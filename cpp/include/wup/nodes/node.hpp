@@ -18,10 +18,20 @@ public:
         _parent(parent),
         _buffer(size==0?NULL:new double[size]),
         _feature(_buffer, size)
-    { if (parent != NULL) parent->addChild(this); }
+    {
+        if (parent != NULL) parent->addChild(this);
+    }
     
     virtual ~Node()
-    { if (_buffer != NULL) delete [] _buffer; }
+    {
+    	for (auto child : _children)
+    		delete child;
+
+    	if (_buffer != NULL) {
+    		delete [] _buffer;
+    		_buffer = NULL;
+    	}
+	}
     
     double * output()
     { return _buffer; }
@@ -56,7 +66,7 @@ public:
     }
     
     void
-    digest(Feature &feature)
+    digest(const Feature &feature)
     { onDigest(feature); }
     
     void yield(const Feature & feature)
@@ -64,14 +74,7 @@ public:
         for (Node * node : _children)
             node->onDigest(feature);
     }
-    
-    
-    virtual void onStart()
-    { }
-    
-    virtual void onFinish()
-    { }
-    
+
     virtual void onDigest(const Feature & input)
     { yield(input); }
     
@@ -81,7 +84,21 @@ public:
     
     virtual int binaryOutputLength()
     { return 0; }
-    
+
+//    virtual void exportTo(wup::writer<double> &writer) {
+//        for (auto child : _children) {
+//            child->exportTo(writer);
+//        }
+//    }
+
+protected:
+
+    virtual void onStart()
+    { }
+
+    virtual void onFinish()
+    { }
+
 private:
     
     wup::node::Node * _parent;

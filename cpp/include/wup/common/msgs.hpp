@@ -17,6 +17,12 @@ const char * const YELLOW = "\033[93m";
 const char * const RED    = "\033[91m";
 const char * const NORMAL = "\033[0m";
 
+template <typename A, typename B>
+std::ostream & operator<<(std::ostream &o, const std::pair<A,B> &pair)
+{
+	return o << pair.first << "," << pair.second;
+}
+
 template <typename P1>
 std::stringstream & _cat(std::stringstream &ss, const P1 &p1)
 {

@@ -66,11 +66,17 @@ cloneArray(const T * const src, const int length)
 
 template<typename T>
 void
-printArray(const T * const src, const int length)
+printArray(const T * const src, const int length, bool indexes=false)
 {
-	for (int i=0;i<length;++i)
-		printn(src[i], " ");
-	print();
+	if (indexes) {
+		for (int i=0;i<length;++i)
+			printn("<", i, ":", src[i], "> ");
+		print();
+	} else {
+		for (int i=0;i<length;++i)
+			printn(src[i], " ");
+		print();
+	}
 }
 
 inline void
@@ -329,6 +335,7 @@ std::vector<std::string> & split(std::vector<std::string> &elems,
     std::stringstream ss(s);
     std::string item;
     
+    elems.clear();
     while (std::getline(ss, item, delim))
         elems.push_back(item);
     
@@ -362,6 +369,24 @@ parse_int(const std::string &str)
 		throw ParsersException(std::string("Error while parsing int"));
 	else
 		return n;
+}
+
+inline int
+parse_int(const char * const str)
+{ return parse_int(std::string(str)); }
+
+inline double
+parse_double(const char * const str)
+{ return parse_double(std::string(str)); }
+
+template <typename T> inline void
+export_vector(std::string filename,
+		const std::vector<T> & path)
+{
+	std::ofstream fout;
+	fout.open(filename.c_str(), std::ios::out);
+	for (auto point : path)
+		fout << point << "\n";
 }
 
 } /* wup */

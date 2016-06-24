@@ -1,5 +1,5 @@
-#ifndef __WUP__IO_HPP
-#define __WUP__IO_HPP
+#ifndef WUP__IO_HPP_
+#define WUP__IO_HPP_
 
 //#include <boost/algorithm/string.hpp>
 
@@ -161,6 +161,7 @@ private:
 template <typename T>
 class Bundle {
 public:
+
     Bundle() : _columns(1)
 	{ }
 
@@ -173,7 +174,7 @@ public:
 	    // Abre o arquivo para leitura
 	    std::ifstream file_in(filename);
 	    if (!file_in.good())
-	        throw WUPException("Could not open file");
+	        throw WUPException(cat("Could not open file: ", filename));
 	
 	    // Carrega linha a linha
 	    int rows = 0;
@@ -244,10 +245,53 @@ public:
     		_data.push_back(array[i]);
     }
 
+    void push_back(const T & t)
+    { _data.push_back(t); }
+
+    typename std::vector<T>::const_iterator begin() const
+    { return _data.begin(); }
+
+    typename std::vector<T>::const_iterator end() const
+    { return _data.end(); }
+
+    typename std::vector<T>::iterator begin()
+    { return _data.begin(); }
+
+    typename std::vector<T>::iterator end()
+    { return _data.end(); }
+
+	void exportTo(const std::string filename) const
+	{
+		std::ofstream fout;
+		fout.open(filename.c_str(), std::ios::out);
+		fout << *this;
+	}
+
+	std::vector<T> & data()
+	{ return _data; }
+
+	const std::vector<T> & data() const
+	{ return _data; }
+
+	int size() const
+	{ return _data.size(); }
+
 private:
     int _columns;
     std::vector<T> _data;
 };
+
+template <typename T>
+std::ostream & operator<<(std::ostream &o, const wup::Bundle<T> &bundle)
+{
+	for (int i=0;i<bundle.numRows();++i) {
+		o << bundle(i, 0);
+		for (int j=1;j<bundle.numCols();++j)
+			o << "," << bundle(i, j);
+		o << "\n";
+	}
+	return o;
+}
 
 class Feature {
 public:
@@ -310,6 +354,17 @@ private:
     double * _mem;
 };
 
+std::ostream & operator<<(std::ostream &o, const wup::Feature &feature)
+{
+    if (feature.size() == 0)
+        return o;
+
+	o << feature[0];
+	for (int i=1;i<feature.size();++i)
+		o << "," << feature[i];
+	return o;
+}
+
 class Sample {
 public:
     Sample(const int id, const int target, const int subtarget, const int group, 
@@ -365,6 +420,13 @@ public:
             throw wup::WUPException("Out of range");
         return *_features[index];
     }
+
+    const wup::Feature & operator[](const int index) const
+    {
+        if (index < 0 || index >= size())
+            throw wup::WUPException("Out of range");
+        return *_features[index];
+    }
     
     const_iterator<Feature> begin() const
     { return const_iterator<Feature>(_features.data(), 0); }
@@ -378,6 +440,14 @@ public:
     iterator<Feature> end()
     { return iterator<Feature>(NULL, _features.size()); }
 
+    void exportTo( const std::string &filename) const
+    {
+    	std::ofstream fout;
+    	fout.open(filename.c_str(), std::ios::out);
+    	for (auto point : *this)
+    		fout << point << "\n";
+    }
+
 private:
     std::vector<Feature*> _features;
     int _id;
@@ -386,9 +456,29 @@ private:
     int _group;
 };
 
+std::ostream & operator<<(std::ostream &o, const wup::Sample &sample)
+{
+	for (const wup::Feature &feature : sample)
+		o << feature << "\n";
+	return o;
+}
+
 class Dataset {
 public:
     
+	/*
+	 * Accepted dataset format:
+	 *
+	 * Data file: tab separated csv with L lines and C columns
+	 * Attr file: tab separated csv where each row corresponds to a sample. Attributes:
+	 *
+	 *     Target (Mandatory)                  : A number indicating its class
+	 *     Length (Optional, default=1)        : Length of the time series
+	 *     Group  (Optional, default 0)        : Defines a subgroup in case you have a predefined division
+	 *     Subtarget (Otional, default=target) : A more specific target, e.g., to differentiate lowercase vs uppercase
+	 *
+	 * */
+
     Dataset(const std::string prefix) :
         _data(prefix + "_data"),
         _attr(prefix + "_attr")
@@ -430,12 +520,20 @@ public:
         for (auto &sample : _samples)
             delete sample;
     }
-    
+
     Sample & operator[](const int index)
     {
         if (index < 0 || index >= _samples.size())
             throw WUPException("Out of range");
         
+        return *_samples[index];
+    }
+
+    const Sample & operator[](const int index) const
+    {
+        if (index < 0 || index >= _samples.size())
+            throw WUPException("Out of range");
+
         return *_samples[index];
     }
     
@@ -473,6 +571,12 @@ private:
     int _classes;
 };
 
+std::ostream & operator<<(std::ostream &o, const wup::Dataset &dataset)
+{
+	for (auto &sample : dataset) o << sample;
+	return o;
+}
+
 inline double sdistance(const wup::Feature & f1, const wup::Feature & f2)
 {
     if (f1.size() != f2.size()) throw wup::WUPException("Features size differ");
@@ -482,29 +586,17 @@ inline double sdistance(const wup::Feature & f1, const wup::Feature & f2)
 inline double distance(const wup::Feature & f1, const wup::Feature & f2)
 { return sqrt(sdistance(f1, f2)); }
 
-std::ostream & operator<<(std::ostream & o, const wup::Feature & f)
-{
-    if (f.size() == 0)
-        return o;
-    
-    o << f[0];
-    for (int i=1;i<f.size();++i)
-        o << " " << f[i];
-    
-    return o;
-}
-
-template <typename T>
-std::ostream & operator<<(std::ostream & o, const Bundle<T> &b)
-{
-	for (int i=0;i<b.numRows();++i) {
-		printn(i," : ", b(i,0));
-		for (int j=1;j<b.numCols();++j)
-			printn(", ", b(i,j));
-		print();
-	}
-	return o;
-}
+//template <typename T>
+//std::ostream & operator<<(std::ostream & o, const Bundle<T> &b)
+//{
+//	for (int i=0;i<b.numRows();++i) {
+//		printn(i," : ", b(i,0));
+//		for (int j=1;j<b.numCols();++j)
+//			printn(", ", b(i,j));
+//		print();
+//	}
+//	return o;
+//}
 
 } /* wup */
 

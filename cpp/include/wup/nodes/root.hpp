@@ -19,14 +19,14 @@ public:
     		throw WUPException("Number of columns must be bigger or equal to one");
     }
     
-    ~Root()
+    virtual ~Root()
     {
         if (_binaryOutput != NULL)
             delete [] _binaryOutput;
     }
     
-    int * 
-    digest(Sample &sample)
+    int *
+    digest(const Sample &sample)
     {
         this->start();
         for (auto &feature : sample) {
@@ -36,6 +36,14 @@ public:
         }
         this->finish();
         
+        return binaryOutput();
+    }
+
+    int *
+    digest(const Feature &feature)
+    {
+		for (auto &node : children())
+			node->digest(feature);
         return binaryOutput();
     }
     

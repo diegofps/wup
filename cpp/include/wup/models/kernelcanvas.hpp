@@ -16,11 +16,33 @@ namespace wup {
 class EuclidianKernels {
 public:
 
+    EuclidianKernels (wup::sbreader<double> &reader) :
+            _numKernels(0),
+            _dims(0),
+            _tmp(NULL),
+            _kernels(NULL),
+            _selections(NULL),
+            _boxes(NULL)
+    {
+    	if (reader.get() != -1)
+    		throw new WUPException("Invalid file");
+
+        kernelgens::importKernels(reader, _dims, _numKernels, _kernels);
+        _k = (int) reader.get();
+
+        if (reader.get() != -1)
+			throw new WUPException("Invalid file");
+
+        _tmp = new double[_dims];
+        _boxes = new BOX[_numKernels];
+        _selections = new int[_k];
+    }
+
     EuclidianKernels (const int numKernels, const int dims,
     		const double act, double ** kernels) :
         _numKernels(numKernels),
 		_dims(dims),
-		_tmp(new double[dims]),
+		_tmp(NULL),
 		_kernels(kernels),
 		_selections(NULL),
 		_boxes(NULL)
@@ -29,6 +51,8 @@ public:
 	        kernelgens::createRandomKernels(_dims, _numKernels, _kernels);
 
     	_k = int(ceil(_numKernels * act));
+
+        _tmp = new double[dims];
     	_boxes = new BOX[_numKernels];
     	_selections = new int[_k];
     }
@@ -70,9 +94,38 @@ public:
     int numKernels() const
     { return _numKernels; }
 
+    void exportTo(wup::sbwriter<double> &writer) {
+    	writer.put(-1.0);
+        kernelgens::exportKernels(writer, _dims, _numKernels, _kernels);
+        writer.put((double)_k);
+        writer.put(-1.0);
+    }
+
+    bool operator !=(EuclidianKernels const& other) const {
+    	return !(*this == other);
+    }
+
+ 	bool operator ==(EuclidianKernels const& other) const {
+ 		if (_numKernels != other._numKernels) return false;
+ 		if (_dims != other._dims) return false;
+ 		if (_k != other._k) return false;
+
+ 		for (int i=0;i<_numKernels;++i) {
+ 			auto v1 = _kernels[i];
+ 			auto v2 = other._kernels[i];
+			for (int j=0;j<_dims;++j) {
+				if (v1[j] != v2[j]) {
+					return false;
+				}
+			}
+ 		}
+
+ 		return true;
+ 	}
+
 private:
     int _numKernels;
-    const int _dims;
+    int _dims;
     double * _tmp;
     double ** _kernels;
     int * _selections;
@@ -83,6 +136,16 @@ private:
 template <typename KernelSpace=EuclidianKernels>
 class KernelCanvas {
 public:
+
+    KernelCanvas(wup::sbreader<double> &reader) :
+            _term_bits(reader.get()),
+            _kernelSpace(reader),
+            _outputFreq(new int[_kernelSpace.numKernels()]),
+            _outputBits(new int[_kernelSpace.numKernels() * _term_bits])
+    {
+        if (reader.get() != -1.0)
+            throw new WUPException("Could not import kernelcanvas");
+    }
 
     KernelCanvas(const int inputs, const int numKernels, const double act,
             const int term_bits, double ** kernels) :
@@ -132,6 +195,18 @@ public:
 
     int real_outputs() const
     { return _kernelSpace.numKernels(); }
+
+    void exportTo(wup::sbwriter<double> &writer) {
+        writer.put((double)_term_bits);
+        _kernelSpace.exportTo(writer);
+        writer.put(-1.0);
+    }
+
+ 	bool operator ==(wup::KernelCanvas<KernelSpace> const& other) const {
+ 		if (_term_bits != other._term_bits) return false;
+ 		if (_kernelSpace != other._kernelSpace) return false;
+ 		return true;
+ 	}
 
 private:
     int _term_bits;

@@ -5,17 +5,19 @@
 #include <map>
 
 #include "../common/sbio.hpp"
-#include "raminput.hpp"
+#include "binaryinput.hpp"
+#include "factorialinput.hpp"
 #include "pattern.hpp"
 
 namespace wup {
 
-typedef std::map<int, int> innermap;
-typedef std::unordered_map<RamInput, innermap> outtermap;
-
+template <typename RamInput=BinaryInput>
 class Wisard {
 public:
     
+    typedef std::map<int, int> innermap;
+    typedef std::unordered_map<RamInput, innermap> outtermap;
+
     Wisard(const int inputBits, const int ramBits) : 
             Wisard(inputBits, ramBits, 2)
         { }
@@ -25,14 +27,14 @@ public:
             _memory(NULL), 
             _maxBleaching(1), 
             _activations(NULL), 
-            _numDiscriminators(classes),
-            _k1(0),
-            _k2(0),
-            _k3(0),
-            _numRams((int) ceil(inputBits / float(ramBits))),
-            _shuffling(NULL),
-            _ramInputs(NULL),
-            _inputBits(inputBits),
+            _numDiscriminators(classes), 
+            _k1(0), 
+            _k2(0), 
+            _k3(0), 
+            _numRams((int) ceil(inputBits / float(ramBits))), 
+            _shuffling(NULL), 
+            _ramInputs(NULL), 
+            _inputBits(inputBits), 
             _ramBits(ramBits)
     {
         _memory = new outtermap[_numRams]();
@@ -100,7 +102,7 @@ public:
             _memory = new outtermap[_numRams]();
             _shuffling = new int[_inputBits];
             _ramInputs = new RamInput[_numRams];
-            bool * tmp = new bool[_ramBits];
+            int * tmp = new int[_ramBits];
             
             // carrega o shuffling e cria os RamInputs
             for (int i=0;i<_inputBits;++i)
@@ -109,7 +111,7 @@ public:
             for (int i=0;i<_numRams;++i)
                 _ramInputs[i] = RamInput(&_shuffling[i*_ramBits], _ramBits);
             
-            int bit, length, target, hits;
+            int length, target, hits;
             RamInput key(NULL, _ramBits);
             
             // Para cada ram
@@ -122,10 +124,8 @@ public:
                 // Para cada chave nesta ram
                 for (int k=0;k<keys;++k) {
                 
-                    for (int i=0;i<_ramBits;++i) {
-                        reader.get(bit);
-                        tmp[i] = bit==1;
-                    }
+                    for (int i=0;i<_ramBits;++i)
+                        reader.get(tmp[i]);
                     
                     key.setInput(tmp);
                     reader.get(length);
@@ -214,7 +214,7 @@ public:
             //LOGE("E: Ram %d has %d", r, _memory[r].size());
             
             // Para cada posição nela endereçada
-            outtermap::const_iterator it;
+            typename outtermap::const_iterator it;
             for (it=omap.begin(); it!=omap.end();++it) {
                 const innermap &imap = it->second;
                 
@@ -249,6 +249,10 @@ public:
     ramBits() const
     { return _ramBits; }
     
+    int
+	numRams() const
+    { return _numRams; }
+
     int
     inputBits() const
     { return _inputBits; }
@@ -361,7 +365,7 @@ public:
     
     int 
     readBleaching(const Pattern &pattern, const int step, 
-        const float minConfidence) 
+        const float minConfidence)
     {
         if (step <= 0)
             throw WUPException("step must be larger than 0");
@@ -402,7 +406,7 @@ public:
     }
 
     int 
-    readBinaryBleaching(const Pattern &pattern) 
+    readBinaryBleaching(const Pattern &pattern)
     {
         // Prepara as chaves de hash
         for (int i=0;i<_numRams;++i)
@@ -439,15 +443,17 @@ public:
     getConfidence() const
     { return _confidence; }
     
-    float 
+    int
     getExcitation(const int target) const
     {
         auto it = _outterToInner.find(target);
         if (it == _outterToInner.end())
-            throw WUPException("Unknown target");
+        	return 0;
+            //throw WUPException("Unknown target");
         
-        return _activations[it->second] / float(_numRams);
-    }
+        //return _activations[it->second] / float(_numRams);
+        return _activations[it->second];
+	}
     
     int 
     getFirstBestPrediction() const
@@ -457,14 +463,36 @@ public:
     getSecondBestPrediction() const
     { return getOutterTarget(_k2); }
     
-    int 
+    int
     getThirdBestPrediction() const
     { return getOutterTarget(_k3); }
-    
+
+    bool operator !=(Wisard const& other) const {
+    	return !(*this == other);
+    }
+
+ 	bool operator ==(Wisard const& other) const {
+ 		if (_memory->size() != other._memory->size()) return false;
+ 		if (_maxBleaching != other._maxBleaching) return false;
+ 		if (_numDiscriminators != other._numDiscriminators) return false;
+ 		if (_numRams != other._numRams) return false;
+ 		if (_inputBits != other._inputBits) return false;
+ 		if (_ramBits != other._ramBits) return false;
+ 		if (_thrash.size() != other._thrash.size()) return false;
+ 		if (_innerToOutter.size() != other._innerToOutter.size()) return false;
+ 		if (_outterToInner.size() != other._outterToInner.size()) return false;
+
+ 		for (int i=0;i<_inputBits;++i)
+ 			if (_shuffling[i] != other._shuffling[i])
+ 				return false;
+
+ 		return true;
+ 	}
+
 private:
     
-    int 
-    _nextBinaryStep(const int begin, const int end) const 
+    int
+    _nextBinaryStep(const int begin, const int end) const
     {
         const int r = (int) round(sqrt((float) (begin * end)));
         if (r == begin) return begin + 1;
@@ -472,8 +500,8 @@ private:
         return r;
     }
     
-    int 
-    readThreshold(const int threshold) 
+    int
+    readThreshold(const int threshold)
     {
 		// Limpa o vetor de ativações
 		for (int i=0;i<_numDiscriminators;++i)
@@ -485,7 +513,7 @@ private:
             const RamInput & rIn = _ramInputs[r];
 			
 			// Se não contém o endereço mapeado continua
-			if (omap.find(rIn) == omap.end()) 
+			if (omap.find(rIn) == omap.end())
 			    continue;
 		    
 		    // Do contrario incrementa as ativações

@@ -28,7 +28,7 @@ public:
             _firstFeature = false;
             feature() = input;
             yield(input);
-        } 
+        }
         
         else if (sdistance(input, feature()) > _minDistance) {
             feature() = input;
