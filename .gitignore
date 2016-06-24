@@ -5,6 +5,5 @@
 /android/AndWUP/libs
 /android/AndWUP/obj
 /android/AndWUPExamples/bin
-*.pyx
 *.o
 *.bin
