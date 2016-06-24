@@ -443,7 +443,7 @@ static const char *__pyx_f[] = {
 /*--- Type declarations ---*/
 struct __pyx_obj_3wup_Wisard;
 
-/* "wup.pyx":35
+/* "wup.pyx":40
  *     void wisard_exportTo(const CWisard * const self, const char * const filename)
  * 
  * cdef class Wisard:             # <<<<<<<<<<<<<<
@@ -616,6 +616,7 @@ int __pyx_module_is_main_wup = 0;
 static PyObject *__pyx_builtin_MemoryError;
 static PyObject *__pyx_builtin_IndexError;
 static PyObject *__pyx_builtin_enumerate;
+static PyObject *__pyx_pf_3wup___cinit__(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
 static int __pyx_pf_3wup_6Wisard___cinit__(struct __pyx_obj_3wup_Wisard *__pyx_v_self, PyObject *__pyx_v_inputs, PyObject *__pyx_v_bits, PyObject *__pyx_v_classes); /* proto */
 static void __pyx_pf_3wup_6Wisard_2__dealloc__(struct __pyx_obj_3wup_Wisard *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_3wup_6Wisard_4learn(struct __pyx_obj_3wup_Wisard *__pyx_v_self, PyObject *__pyx_v_pattern, PyObject *__pyx_v_target); /* proto */
@@ -631,9 +632,12 @@ static PyObject *__pyx_pf_3wup_6Wisard_22_validate_pattern(struct __pyx_obj_3wup
 static PyObject *__pyx_pf_3wup_6Wisard_24_validate_target(CYTHON_UNUSED struct __pyx_obj_3wup_Wisard *__pyx_v_self, PyObject *__pyx_v_target); /* proto */
 static PyObject *__pyx_pf_3wup_6Wisard_26_copy_pattern(struct __pyx_obj_3wup_Wisard *__pyx_v_self, PyObject *__pyx_v_pattern); /* proto */
 static PyObject *__pyx_tp_new_3wup_Wisard(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
+static char __pyx_k_1_0[] = "1.0";
+static char __pyx_k_wup[] = "wup";
 static char __pyx_k_bits[] = "bits";
 static char __pyx_k_main[] = "__main__";
 static char __pyx_k_test[] = "__test__";
+static char __pyx_k_cinit[] = "__cinit__";
 static char __pyx_k_inputs[] = "inputs";
 static char __pyx_k_target[] = "target";
 static char __pyx_k_classes[] = "classes";
@@ -641,19 +645,25 @@ static char __pyx_k_pattern[] = "pattern";
 static char __pyx_k_enumerate[] = "enumerate";
 static char __pyx_k_IndexError[] = "IndexError";
 static char __pyx_k_MemoryError[] = "MemoryError";
+static char __pyx_k_WUP_VERSION[] = "__WUP_VERSION";
 static char __pyx_k_copy_pattern[] = "_copy_pattern";
 static char __pyx_k_validate_target[] = "_validate_target";
 static char __pyx_k_validate_pattern[] = "_validate_pattern";
 static char __pyx_k_Target_may_not_be_negative[] = "Target may not be negative";
 static char __pyx_k_Invalid_length_on_input_pattern[] = "Invalid length on input pattern";
+static char __pyx_k_home_diegofps_Sources_WUP_pytho[] = "/home/diegofps/Sources/WUP/python/src/wup.pyx";
+static PyObject *__pyx_kp_s_1_0;
 static PyObject *__pyx_n_s_IndexError;
 static PyObject *__pyx_kp_s_Invalid_length_on_input_pattern;
 static PyObject *__pyx_n_s_MemoryError;
 static PyObject *__pyx_kp_s_Target_may_not_be_negative;
+static PyObject *__pyx_n_s_WUP_VERSION;
 static PyObject *__pyx_n_s_bits;
+static PyObject *__pyx_n_s_cinit;
 static PyObject *__pyx_n_s_classes;
 static PyObject *__pyx_n_s_copy_pattern;
 static PyObject *__pyx_n_s_enumerate;
+static PyObject *__pyx_kp_s_home_diegofps_Sources_WUP_pytho;
 static PyObject *__pyx_n_s_inputs;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_pattern;
@@ -661,14 +671,50 @@ static PyObject *__pyx_n_s_target;
 static PyObject *__pyx_n_s_test;
 static PyObject *__pyx_n_s_validate_pattern;
 static PyObject *__pyx_n_s_validate_target;
+static PyObject *__pyx_n_s_wup;
 static PyObject *__pyx_int_0;
 static PyObject *__pyx_int_1;
 static PyObject *__pyx_int_2;
 static PyObject *__pyx_int_8;
 static PyObject *__pyx_tuple_;
 static PyObject *__pyx_tuple__2;
+static PyObject *__pyx_codeobj__3;
 
-/* "wup.pyx":43
+/* "wup.pyx":5
+ * __WUP_VERSION = "1.0"
+ * 
+ * def __cinit__():             # <<<<<<<<<<<<<<
+ *     pass
+ * 
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_3wup_1__cinit__(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyMethodDef __pyx_mdef_3wup_1__cinit__ = {"__cinit__", (PyCFunction)__pyx_pw_3wup_1__cinit__, METH_NOARGS, 0};
+static PyObject *__pyx_pw_3wup_1__cinit__(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__cinit__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_3wup___cinit__(__pyx_self);
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_3wup___cinit__(CYTHON_UNUSED PyObject *__pyx_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__cinit__", 0);
+
+  /* function exit code */
+  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "wup.pyx":48
  *     cdef CWisard _wisard
  * 
  *     def __cinit__(self, inputs, bits=8, classes=2):             # <<<<<<<<<<<<<<
@@ -720,7 +766,7 @@ static int __pyx_pw_3wup_6Wisard_1__cinit__(PyObject *__pyx_v_self, PyObject *__
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 43; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 48; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -737,7 +783,7 @@ static int __pyx_pw_3wup_6Wisard_1__cinit__(PyObject *__pyx_v_self, PyObject *__
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__cinit__", 0, 1, 3, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 43; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("__cinit__", 0, 1, 3, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 48; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("wup.Wisard.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -764,7 +810,7 @@ static int __pyx_pf_3wup_6Wisard___cinit__(struct __pyx_obj_3wup_Wisard *__pyx_v
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
-  /* "wup.pyx":44
+  /* "wup.pyx":49
  * 
  *     def __cinit__(self, inputs, bits=8, classes=2):
  *         if isinstance(inputs, str):             # <<<<<<<<<<<<<<
@@ -775,17 +821,17 @@ static int __pyx_pf_3wup_6Wisard___cinit__(struct __pyx_obj_3wup_Wisard *__pyx_v
   __pyx_t_2 = (__pyx_t_1 != 0);
   if (__pyx_t_2) {
 
-    /* "wup.pyx":45
+    /* "wup.pyx":50
  *     def __cinit__(self, inputs, bits=8, classes=2):
  *         if isinstance(inputs, str):
  *             wisard_importFrom(&self._wisard, inputs)             # <<<<<<<<<<<<<<
  *             self._inputBits = wisard_inputBits(&self._wisard)
  *         else:
  */
-    __pyx_t_3 = __Pyx_PyObject_AsString(__pyx_v_inputs); if (unlikely((!__pyx_t_3) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 45; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_AsString(__pyx_v_inputs); if (unlikely((!__pyx_t_3) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 50; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     wisard_importFrom((&__pyx_v_self->_wisard), __pyx_t_3);
 
-    /* "wup.pyx":46
+    /* "wup.pyx":51
  *         if isinstance(inputs, str):
  *             wisard_importFrom(&self._wisard, inputs)
  *             self._inputBits = wisard_inputBits(&self._wisard)             # <<<<<<<<<<<<<<
@@ -797,31 +843,31 @@ static int __pyx_pf_3wup_6Wisard___cinit__(struct __pyx_obj_3wup_Wisard *__pyx_v
   }
   /*else*/ {
 
-    /* "wup.pyx":48
+    /* "wup.pyx":53
  *             self._inputBits = wisard_inputBits(&self._wisard)
  *         else:
  *             wisard_create(&self._wisard, inputs, bits, classes)             # <<<<<<<<<<<<<<
  *             self._inputBits = inputs
  * 
  */
-    __pyx_t_4 = __Pyx_PyInt_As_int(__pyx_v_inputs); if (unlikely((__pyx_t_4 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 48; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __pyx_t_5 = __Pyx_PyInt_As_int(__pyx_v_bits); if (unlikely((__pyx_t_5 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 48; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_v_classes); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 48; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_PyInt_As_int(__pyx_v_inputs); if (unlikely((__pyx_t_4 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 53; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = __Pyx_PyInt_As_int(__pyx_v_bits); if (unlikely((__pyx_t_5 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 53; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_v_classes); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 53; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     wisard_create((&__pyx_v_self->_wisard), __pyx_t_4, __pyx_t_5, __pyx_t_6);
 
-    /* "wup.pyx":49
+    /* "wup.pyx":54
  *         else:
  *             wisard_create(&self._wisard, inputs, bits, classes)
  *             self._inputBits = inputs             # <<<<<<<<<<<<<<
  * 
  *         self._array = <int*> malloc(sizeof(int) * self._inputBits)
  */
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_v_inputs); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 49; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_v_inputs); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 54; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __pyx_v_self->_inputBits = __pyx_t_6;
   }
   __pyx_L3:;
 
-  /* "wup.pyx":51
+  /* "wup.pyx":56
  *             self._inputBits = inputs
  * 
  *         self._array = <int*> malloc(sizeof(int) * self._inputBits)             # <<<<<<<<<<<<<<
@@ -830,7 +876,7 @@ static int __pyx_pf_3wup_6Wisard___cinit__(struct __pyx_obj_3wup_Wisard *__pyx_v
  */
   __pyx_v_self->_array = ((int *)malloc(((sizeof(int)) * __pyx_v_self->_inputBits)));
 
-  /* "wup.pyx":52
+  /* "wup.pyx":57
  * 
  *         self._array = <int*> malloc(sizeof(int) * self._inputBits)
  *         if not self._array:             # <<<<<<<<<<<<<<
@@ -840,17 +886,17 @@ static int __pyx_pf_3wup_6Wisard___cinit__(struct __pyx_obj_3wup_Wisard *__pyx_v
   __pyx_t_2 = ((!(__pyx_v_self->_array != 0)) != 0);
   if (__pyx_t_2) {
 
-    /* "wup.pyx":53
+    /* "wup.pyx":58
  *         self._array = <int*> malloc(sizeof(int) * self._inputBits)
  *         if not self._array:
  *             raise MemoryError()             # <<<<<<<<<<<<<<
  * 
  *     def __dealloc__(self):
  */
-    PyErr_NoMemory(); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 53; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    PyErr_NoMemory(); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 58; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
 
-  /* "wup.pyx":43
+  /* "wup.pyx":48
  *     cdef CWisard _wisard
  * 
  *     def __cinit__(self, inputs, bits=8, classes=2):             # <<<<<<<<<<<<<<
@@ -869,7 +915,7 @@ static int __pyx_pf_3wup_6Wisard___cinit__(struct __pyx_obj_3wup_Wisard *__pyx_v
   return __pyx_r;
 }
 
-/* "wup.pyx":55
+/* "wup.pyx":60
  *             raise MemoryError()
  * 
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -892,7 +938,7 @@ static void __pyx_pf_3wup_6Wisard_2__dealloc__(struct __pyx_obj_3wup_Wisard *__p
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__dealloc__", 0);
 
-  /* "wup.pyx":56
+  /* "wup.pyx":61
  * 
  *     def __dealloc__(self):
  *         free(self._array)             # <<<<<<<<<<<<<<
@@ -901,7 +947,7 @@ static void __pyx_pf_3wup_6Wisard_2__dealloc__(struct __pyx_obj_3wup_Wisard *__p
  */
   free(__pyx_v_self->_array);
 
-  /* "wup.pyx":57
+  /* "wup.pyx":62
  *     def __dealloc__(self):
  *         free(self._array)
  *         wisard_destroy(&self._wisard)             # <<<<<<<<<<<<<<
@@ -910,7 +956,7 @@ static void __pyx_pf_3wup_6Wisard_2__dealloc__(struct __pyx_obj_3wup_Wisard *__p
  */
   wisard_destroy((&__pyx_v_self->_wisard));
 
-  /* "wup.pyx":55
+  /* "wup.pyx":60
  *             raise MemoryError()
  * 
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -922,7 +968,7 @@ static void __pyx_pf_3wup_6Wisard_2__dealloc__(struct __pyx_obj_3wup_Wisard *__p
   __Pyx_RefNannyFinishContext();
 }
 
-/* "wup.pyx":59
+/* "wup.pyx":64
  *         wisard_destroy(&self._wisard)
  * 
  *     def learn(self, pattern, target):             # <<<<<<<<<<<<<<
@@ -961,11 +1007,11 @@ static PyObject *__pyx_pw_3wup_6Wisard_5learn(PyObject *__pyx_v_self, PyObject *
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_target)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("learn", 1, 2, 2, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 59; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("learn", 1, 2, 2, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 64; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "learn") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 59; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "learn") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 64; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -978,7 +1024,7 @@ static PyObject *__pyx_pw_3wup_6Wisard_5learn(PyObject *__pyx_v_self, PyObject *
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("learn", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 59; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("learn", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 64; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("wup.Wisard.learn", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -1004,14 +1050,14 @@ static PyObject *__pyx_pf_3wup_6Wisard_4learn(struct __pyx_obj_3wup_Wisard *__py
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("learn", 0);
 
-  /* "wup.pyx":60
+  /* "wup.pyx":65
  * 
  *     def learn(self, pattern, target):
  *         self._validate_pattern(pattern)             # <<<<<<<<<<<<<<
  *         self._validate_target(target)
  *         self._copy_pattern(pattern)
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_validate_pattern); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 60; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_validate_pattern); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 65; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -1024,30 +1070,30 @@ static PyObject *__pyx_pf_3wup_6Wisard_4learn(struct __pyx_obj_3wup_Wisard *__py
     }
   }
   if (!__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_pattern); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 60; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_pattern); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 65; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
   } else {
-    __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 60; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 65; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_3); __Pyx_GIVEREF(__pyx_t_3); __pyx_t_3 = NULL;
     __Pyx_INCREF(__pyx_v_pattern);
     PyTuple_SET_ITEM(__pyx_t_4, 0+1, __pyx_v_pattern);
     __Pyx_GIVEREF(__pyx_v_pattern);
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 60; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 65; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "wup.pyx":61
+  /* "wup.pyx":66
  *     def learn(self, pattern, target):
  *         self._validate_pattern(pattern)
  *         self._validate_target(target)             # <<<<<<<<<<<<<<
  *         self._copy_pattern(pattern)
  *         wisard_learn(&self._wisard, self._array, target)
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_validate_target); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 61; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_validate_target); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 66; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_4 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -1060,30 +1106,30 @@ static PyObject *__pyx_pf_3wup_6Wisard_4learn(struct __pyx_obj_3wup_Wisard *__py
     }
   }
   if (!__pyx_t_4) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_target); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 61; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_target); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 66; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
   } else {
-    __pyx_t_3 = PyTuple_New(1+1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 61; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = PyTuple_New(1+1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 66; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_4); __Pyx_GIVEREF(__pyx_t_4); __pyx_t_4 = NULL;
     __Pyx_INCREF(__pyx_v_target);
     PyTuple_SET_ITEM(__pyx_t_3, 0+1, __pyx_v_target);
     __Pyx_GIVEREF(__pyx_v_target);
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 61; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 66; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "wup.pyx":62
+  /* "wup.pyx":67
  *         self._validate_pattern(pattern)
  *         self._validate_target(target)
  *         self._copy_pattern(pattern)             # <<<<<<<<<<<<<<
  *         wisard_learn(&self._wisard, self._array, target)
  * 
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_copy_pattern); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 62; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_copy_pattern); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 67; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -1096,33 +1142,33 @@ static PyObject *__pyx_pf_3wup_6Wisard_4learn(struct __pyx_obj_3wup_Wisard *__py
     }
   }
   if (!__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_pattern); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 62; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_pattern); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 67; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
   } else {
-    __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 62; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 67; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_3); __Pyx_GIVEREF(__pyx_t_3); __pyx_t_3 = NULL;
     __Pyx_INCREF(__pyx_v_pattern);
     PyTuple_SET_ITEM(__pyx_t_4, 0+1, __pyx_v_pattern);
     __Pyx_GIVEREF(__pyx_v_pattern);
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 62; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 67; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "wup.pyx":63
+  /* "wup.pyx":68
  *         self._validate_target(target)
  *         self._copy_pattern(pattern)
  *         wisard_learn(&self._wisard, self._array, target)             # <<<<<<<<<<<<<<
  * 
  *     def read_counts(self, pattern):
  */
-  __pyx_t_5 = __Pyx_PyInt_As_int(__pyx_v_target); if (unlikely((__pyx_t_5 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 63; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = __Pyx_PyInt_As_int(__pyx_v_target); if (unlikely((__pyx_t_5 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   wisard_learn((&__pyx_v_self->_wisard), __pyx_v_self->_array, __pyx_t_5);
 
-  /* "wup.pyx":59
+  /* "wup.pyx":64
  *         wisard_destroy(&self._wisard)
  * 
  *     def learn(self, pattern, target):             # <<<<<<<<<<<<<<
@@ -1146,7 +1192,7 @@ static PyObject *__pyx_pf_3wup_6Wisard_4learn(struct __pyx_obj_3wup_Wisard *__py
   return __pyx_r;
 }
 
-/* "wup.pyx":65
+/* "wup.pyx":70
  *         wisard_learn(&self._wisard, self._array, target)
  * 
  *     def read_counts(self, pattern):             # <<<<<<<<<<<<<<
@@ -1179,153 +1225,12 @@ static PyObject *__pyx_pf_3wup_6Wisard_6read_counts(struct __pyx_obj_3wup_Wisard
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("read_counts", 0);
 
-  /* "wup.pyx":66
- * 
- *     def read_counts(self, pattern):
- *         self._validate_pattern(pattern)             # <<<<<<<<<<<<<<
- *         self._copy_pattern(pattern)
- *         return wisard_readCounts(&self._wisard, self._array)
- */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_validate_pattern); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 66; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = NULL;
-  if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
-    __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_2);
-    if (likely(__pyx_t_3)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
-      __Pyx_INCREF(__pyx_t_3);
-      __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_2, function);
-    }
-  }
-  if (!__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_pattern); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 66; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_1);
-  } else {
-    __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 66; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_4);
-    PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_3); __Pyx_GIVEREF(__pyx_t_3); __pyx_t_3 = NULL;
-    __Pyx_INCREF(__pyx_v_pattern);
-    PyTuple_SET_ITEM(__pyx_t_4, 0+1, __pyx_v_pattern);
-    __Pyx_GIVEREF(__pyx_v_pattern);
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 66; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  }
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-  /* "wup.pyx":67
- *     def read_counts(self, pattern):
- *         self._validate_pattern(pattern)
- *         self._copy_pattern(pattern)             # <<<<<<<<<<<<<<
- *         return wisard_readCounts(&self._wisard, self._array)
- * 
- */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_copy_pattern); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 67; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = NULL;
-  if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
-    __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_2);
-    if (likely(__pyx_t_4)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
-      __Pyx_INCREF(__pyx_t_4);
-      __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_2, function);
-    }
-  }
-  if (!__pyx_t_4) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_pattern); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 67; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_1);
-  } else {
-    __pyx_t_3 = PyTuple_New(1+1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 67; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_3);
-    PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_4); __Pyx_GIVEREF(__pyx_t_4); __pyx_t_4 = NULL;
-    __Pyx_INCREF(__pyx_v_pattern);
-    PyTuple_SET_ITEM(__pyx_t_3, 0+1, __pyx_v_pattern);
-    __Pyx_GIVEREF(__pyx_v_pattern);
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 67; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  }
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-  /* "wup.pyx":68
- *         self._validate_pattern(pattern)
- *         self._copy_pattern(pattern)
- *         return wisard_readCounts(&self._wisard, self._array)             # <<<<<<<<<<<<<<
- * 
- *     def read_binary(self, pattern):
- */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(wisard_readCounts((&__pyx_v_self->_wisard), __pyx_v_self->_array)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_r = __pyx_t_1;
-  __pyx_t_1 = 0;
-  goto __pyx_L0;
-
-  /* "wup.pyx":65
- *         wisard_learn(&self._wisard, self._array, target)
- * 
- *     def read_counts(self, pattern):             # <<<<<<<<<<<<<<
- *         self._validate_pattern(pattern)
- *         self._copy_pattern(pattern)
- */
-
-  /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("wup.Wisard.read_counts", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "wup.pyx":70
- *         return wisard_readCounts(&self._wisard, self._array)
- * 
- *     def read_binary(self, pattern):             # <<<<<<<<<<<<<<
- *         self._validate_pattern(pattern)
- *         self._copy_pattern(pattern)
- */
-
-/* Python wrapper */
-static PyObject *__pyx_pw_3wup_6Wisard_9read_binary(PyObject *__pyx_v_self, PyObject *__pyx_v_pattern); /*proto*/
-static PyObject *__pyx_pw_3wup_6Wisard_9read_binary(PyObject *__pyx_v_self, PyObject *__pyx_v_pattern) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("read_binary (wrapper)", 0);
-  __pyx_r = __pyx_pf_3wup_6Wisard_8read_binary(((struct __pyx_obj_3wup_Wisard *)__pyx_v_self), ((PyObject *)__pyx_v_pattern));
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_3wup_6Wisard_8read_binary(struct __pyx_obj_3wup_Wisard *__pyx_v_self, PyObject *__pyx_v_pattern) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("read_binary", 0);
-
   /* "wup.pyx":71
  * 
- *     def read_binary(self, pattern):
+ *     def read_counts(self, pattern):
  *         self._validate_pattern(pattern)             # <<<<<<<<<<<<<<
  *         self._copy_pattern(pattern)
- *         return wisard_readBinary(&self._wisard, self._array)
+ *         return wisard_readCounts(&self._wisard, self._array)
  */
   __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_validate_pattern); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 71; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
@@ -1357,10 +1262,10 @@ static PyObject *__pyx_pf_3wup_6Wisard_8read_binary(struct __pyx_obj_3wup_Wisard
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "wup.pyx":72
- *     def read_binary(self, pattern):
+ *     def read_counts(self, pattern):
  *         self._validate_pattern(pattern)
  *         self._copy_pattern(pattern)             # <<<<<<<<<<<<<<
- *         return wisard_readBinary(&self._wisard, self._array)
+ *         return wisard_readCounts(&self._wisard, self._array)
  * 
  */
   __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_copy_pattern); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 72; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -1395,21 +1300,21 @@ static PyObject *__pyx_pf_3wup_6Wisard_8read_binary(struct __pyx_obj_3wup_Wisard
   /* "wup.pyx":73
  *         self._validate_pattern(pattern)
  *         self._copy_pattern(pattern)
- *         return wisard_readBinary(&self._wisard, self._array)             # <<<<<<<<<<<<<<
+ *         return wisard_readCounts(&self._wisard, self._array)             # <<<<<<<<<<<<<<
  * 
- *     def read_bleaching(self, pattern):
+ *     def read_binary(self, pattern):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(wisard_readBinary((&__pyx_v_self->_wisard), __pyx_v_self->_array)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 73; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyInt_From_int(wisard_readCounts((&__pyx_v_self->_wisard), __pyx_v_self->_array)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 73; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
   /* "wup.pyx":70
- *         return wisard_readCounts(&self._wisard, self._array)
+ *         wisard_learn(&self._wisard, self._array, target)
  * 
- *     def read_binary(self, pattern):             # <<<<<<<<<<<<<<
+ *     def read_counts(self, pattern):             # <<<<<<<<<<<<<<
  *         self._validate_pattern(pattern)
  *         self._copy_pattern(pattern)
  */
@@ -1420,7 +1325,7 @@ static PyObject *__pyx_pf_3wup_6Wisard_8read_binary(struct __pyx_obj_3wup_Wisard
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("wup.Wisard.read_binary", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("wup.Wisard.read_counts", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -1429,27 +1334,27 @@ static PyObject *__pyx_pf_3wup_6Wisard_8read_binary(struct __pyx_obj_3wup_Wisard
 }
 
 /* "wup.pyx":75
- *         return wisard_readBinary(&self._wisard, self._array)
+ *         return wisard_readCounts(&self._wisard, self._array)
  * 
- *     def read_bleaching(self, pattern):             # <<<<<<<<<<<<<<
+ *     def read_binary(self, pattern):             # <<<<<<<<<<<<<<
  *         self._validate_pattern(pattern)
  *         self._copy_pattern(pattern)
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_3wup_6Wisard_11read_bleaching(PyObject *__pyx_v_self, PyObject *__pyx_v_pattern); /*proto*/
-static PyObject *__pyx_pw_3wup_6Wisard_11read_bleaching(PyObject *__pyx_v_self, PyObject *__pyx_v_pattern) {
+static PyObject *__pyx_pw_3wup_6Wisard_9read_binary(PyObject *__pyx_v_self, PyObject *__pyx_v_pattern); /*proto*/
+static PyObject *__pyx_pw_3wup_6Wisard_9read_binary(PyObject *__pyx_v_self, PyObject *__pyx_v_pattern) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("read_bleaching (wrapper)", 0);
-  __pyx_r = __pyx_pf_3wup_6Wisard_10read_bleaching(((struct __pyx_obj_3wup_Wisard *)__pyx_v_self), ((PyObject *)__pyx_v_pattern));
+  __Pyx_RefNannySetupContext("read_binary (wrapper)", 0);
+  __pyx_r = __pyx_pf_3wup_6Wisard_8read_binary(((struct __pyx_obj_3wup_Wisard *)__pyx_v_self), ((PyObject *)__pyx_v_pattern));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_3wup_6Wisard_10read_bleaching(struct __pyx_obj_3wup_Wisard *__pyx_v_self, PyObject *__pyx_v_pattern) {
+static PyObject *__pyx_pf_3wup_6Wisard_8read_binary(struct __pyx_obj_3wup_Wisard *__pyx_v_self, PyObject *__pyx_v_pattern) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -1459,14 +1364,14 @@ static PyObject *__pyx_pf_3wup_6Wisard_10read_bleaching(struct __pyx_obj_3wup_Wi
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("read_bleaching", 0);
+  __Pyx_RefNannySetupContext("read_binary", 0);
 
   /* "wup.pyx":76
  * 
- *     def read_bleaching(self, pattern):
+ *     def read_binary(self, pattern):
  *         self._validate_pattern(pattern)             # <<<<<<<<<<<<<<
  *         self._copy_pattern(pattern)
- *         return wisard_readBleaching(&self._wisard, self._array)
+ *         return wisard_readBinary(&self._wisard, self._array)
  */
   __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_validate_pattern); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 76; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
@@ -1498,10 +1403,10 @@ static PyObject *__pyx_pf_3wup_6Wisard_10read_bleaching(struct __pyx_obj_3wup_Wi
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "wup.pyx":77
- *     def read_bleaching(self, pattern):
+ *     def read_binary(self, pattern):
  *         self._validate_pattern(pattern)
  *         self._copy_pattern(pattern)             # <<<<<<<<<<<<<<
- *         return wisard_readBleaching(&self._wisard, self._array)
+ *         return wisard_readBinary(&self._wisard, self._array)
  * 
  */
   __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_copy_pattern); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 77; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -1536,18 +1441,159 @@ static PyObject *__pyx_pf_3wup_6Wisard_10read_bleaching(struct __pyx_obj_3wup_Wi
   /* "wup.pyx":78
  *         self._validate_pattern(pattern)
  *         self._copy_pattern(pattern)
- *         return wisard_readBleaching(&self._wisard, self._array)             # <<<<<<<<<<<<<<
+ *         return wisard_readBinary(&self._wisard, self._array)             # <<<<<<<<<<<<<<
  * 
- *     def classes(self):
+ *     def read_bleaching(self, pattern):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(wisard_readBleaching((&__pyx_v_self->_wisard), __pyx_v_self->_array)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 78; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyInt_From_int(wisard_readBinary((&__pyx_v_self->_wisard), __pyx_v_self->_array)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 78; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
   /* "wup.pyx":75
+ *         return wisard_readCounts(&self._wisard, self._array)
+ * 
+ *     def read_binary(self, pattern):             # <<<<<<<<<<<<<<
+ *         self._validate_pattern(pattern)
+ *         self._copy_pattern(pattern)
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_AddTraceback("wup.Wisard.read_binary", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "wup.pyx":80
+ *         return wisard_readBinary(&self._wisard, self._array)
+ * 
+ *     def read_bleaching(self, pattern):             # <<<<<<<<<<<<<<
+ *         self._validate_pattern(pattern)
+ *         self._copy_pattern(pattern)
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_3wup_6Wisard_11read_bleaching(PyObject *__pyx_v_self, PyObject *__pyx_v_pattern); /*proto*/
+static PyObject *__pyx_pw_3wup_6Wisard_11read_bleaching(PyObject *__pyx_v_self, PyObject *__pyx_v_pattern) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("read_bleaching (wrapper)", 0);
+  __pyx_r = __pyx_pf_3wup_6Wisard_10read_bleaching(((struct __pyx_obj_3wup_Wisard *)__pyx_v_self), ((PyObject *)__pyx_v_pattern));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_3wup_6Wisard_10read_bleaching(struct __pyx_obj_3wup_Wisard *__pyx_v_self, PyObject *__pyx_v_pattern) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("read_bleaching", 0);
+
+  /* "wup.pyx":81
+ * 
+ *     def read_bleaching(self, pattern):
+ *         self._validate_pattern(pattern)             # <<<<<<<<<<<<<<
+ *         self._copy_pattern(pattern)
+ *         return wisard_readBleaching(&self._wisard, self._array)
+ */
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_validate_pattern); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 81; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = NULL;
+  if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
+    __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_2);
+    if (likely(__pyx_t_3)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+      __Pyx_INCREF(__pyx_t_3);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_2, function);
+    }
+  }
+  if (!__pyx_t_3) {
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_pattern); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 81; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_1);
+  } else {
+    __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 81; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_4);
+    PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_3); __Pyx_GIVEREF(__pyx_t_3); __pyx_t_3 = NULL;
+    __Pyx_INCREF(__pyx_v_pattern);
+    PyTuple_SET_ITEM(__pyx_t_4, 0+1, __pyx_v_pattern);
+    __Pyx_GIVEREF(__pyx_v_pattern);
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 81; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  }
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "wup.pyx":82
+ *     def read_bleaching(self, pattern):
+ *         self._validate_pattern(pattern)
+ *         self._copy_pattern(pattern)             # <<<<<<<<<<<<<<
+ *         return wisard_readBleaching(&self._wisard, self._array)
+ * 
+ */
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_copy_pattern); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 82; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_4 = NULL;
+  if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
+    __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_2);
+    if (likely(__pyx_t_4)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+      __Pyx_INCREF(__pyx_t_4);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_2, function);
+    }
+  }
+  if (!__pyx_t_4) {
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_pattern); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 82; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_1);
+  } else {
+    __pyx_t_3 = PyTuple_New(1+1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 82; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_3);
+    PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_4); __Pyx_GIVEREF(__pyx_t_4); __pyx_t_4 = NULL;
+    __Pyx_INCREF(__pyx_v_pattern);
+    PyTuple_SET_ITEM(__pyx_t_3, 0+1, __pyx_v_pattern);
+    __Pyx_GIVEREF(__pyx_v_pattern);
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 82; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  }
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "wup.pyx":83
+ *         self._validate_pattern(pattern)
+ *         self._copy_pattern(pattern)
+ *         return wisard_readBleaching(&self._wisard, self._array)             # <<<<<<<<<<<<<<
+ * 
+ *     def classes(self):
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyInt_From_int(wisard_readBleaching((&__pyx_v_self->_wisard), __pyx_v_self->_array)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 83; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "wup.pyx":80
  *         return wisard_readBinary(&self._wisard, self._array)
  * 
  *     def read_bleaching(self, pattern):             # <<<<<<<<<<<<<<
@@ -1569,7 +1615,7 @@ static PyObject *__pyx_pf_3wup_6Wisard_10read_bleaching(struct __pyx_obj_3wup_Wi
   return __pyx_r;
 }
 
-/* "wup.pyx":80
+/* "wup.pyx":85
  *         return wisard_readBleaching(&self._wisard, self._array)
  * 
  *     def classes(self):             # <<<<<<<<<<<<<<
@@ -1599,7 +1645,7 @@ static PyObject *__pyx_pf_3wup_6Wisard_12classes(struct __pyx_obj_3wup_Wisard *_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("classes", 0);
 
-  /* "wup.pyx":81
+  /* "wup.pyx":86
  * 
  *     def classes(self):
  *         return wisard_classes(&self._wisard)             # <<<<<<<<<<<<<<
@@ -1607,13 +1653,13 @@ static PyObject *__pyx_pf_3wup_6Wisard_12classes(struct __pyx_obj_3wup_Wisard *_
  *     def ram_bits(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(wisard_classes((&__pyx_v_self->_wisard))); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 81; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyInt_From_int(wisard_classes((&__pyx_v_self->_wisard))); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 86; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "wup.pyx":80
+  /* "wup.pyx":85
  *         return wisard_readBleaching(&self._wisard, self._array)
  * 
  *     def classes(self):             # <<<<<<<<<<<<<<
@@ -1632,7 +1678,7 @@ static PyObject *__pyx_pf_3wup_6Wisard_12classes(struct __pyx_obj_3wup_Wisard *_
   return __pyx_r;
 }
 
-/* "wup.pyx":83
+/* "wup.pyx":88
  *         return wisard_classes(&self._wisard)
  * 
  *     def ram_bits(self):             # <<<<<<<<<<<<<<
@@ -1662,7 +1708,7 @@ static PyObject *__pyx_pf_3wup_6Wisard_14ram_bits(struct __pyx_obj_3wup_Wisard *
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("ram_bits", 0);
 
-  /* "wup.pyx":84
+  /* "wup.pyx":89
  * 
  *     def ram_bits(self):
  *         return wisard_ramBits(&self._wisard)             # <<<<<<<<<<<<<<
@@ -1670,13 +1716,13 @@ static PyObject *__pyx_pf_3wup_6Wisard_14ram_bits(struct __pyx_obj_3wup_Wisard *
  *     def input_bits(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(wisard_ramBits((&__pyx_v_self->_wisard))); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 84; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyInt_From_int(wisard_ramBits((&__pyx_v_self->_wisard))); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 89; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "wup.pyx":83
+  /* "wup.pyx":88
  *         return wisard_classes(&self._wisard)
  * 
  *     def ram_bits(self):             # <<<<<<<<<<<<<<
@@ -1695,7 +1741,7 @@ static PyObject *__pyx_pf_3wup_6Wisard_14ram_bits(struct __pyx_obj_3wup_Wisard *
   return __pyx_r;
 }
 
-/* "wup.pyx":86
+/* "wup.pyx":91
  *         return wisard_ramBits(&self._wisard)
  * 
  *     def input_bits(self):             # <<<<<<<<<<<<<<
@@ -1725,7 +1771,7 @@ static PyObject *__pyx_pf_3wup_6Wisard_16input_bits(struct __pyx_obj_3wup_Wisard
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("input_bits", 0);
 
-  /* "wup.pyx":87
+  /* "wup.pyx":92
  * 
  *     def input_bits(self):
  *         return self._inputBits             # <<<<<<<<<<<<<<
@@ -1733,13 +1779,13 @@ static PyObject *__pyx_pf_3wup_6Wisard_16input_bits(struct __pyx_obj_3wup_Wisard
  *     def export_to(self, filename):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->_inputBits); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 87; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->_inputBits); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 92; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "wup.pyx":86
+  /* "wup.pyx":91
  *         return wisard_ramBits(&self._wisard)
  * 
  *     def input_bits(self):             # <<<<<<<<<<<<<<
@@ -1758,7 +1804,7 @@ static PyObject *__pyx_pf_3wup_6Wisard_16input_bits(struct __pyx_obj_3wup_Wisard
   return __pyx_r;
 }
 
-/* "wup.pyx":89
+/* "wup.pyx":94
  *         return self._inputBits
  * 
  *     def export_to(self, filename):             # <<<<<<<<<<<<<<
@@ -1788,17 +1834,17 @@ static PyObject *__pyx_pf_3wup_6Wisard_18export_to(struct __pyx_obj_3wup_Wisard 
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("export_to", 0);
 
-  /* "wup.pyx":90
+  /* "wup.pyx":95
  * 
  *     def export_to(self, filename):
  *         wisard_exportTo(&self._wisard, filename)             # <<<<<<<<<<<<<<
  * 
  *     def activations(self):
  */
-  __pyx_t_1 = __Pyx_PyObject_AsString(__pyx_v_filename); if (unlikely((!__pyx_t_1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 90; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_AsString(__pyx_v_filename); if (unlikely((!__pyx_t_1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 95; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   wisard_exportTo((&__pyx_v_self->_wisard), __pyx_t_1);
 
-  /* "wup.pyx":89
+  /* "wup.pyx":94
  *         return self._inputBits
  * 
  *     def export_to(self, filename):             # <<<<<<<<<<<<<<
@@ -1818,7 +1864,7 @@ static PyObject *__pyx_pf_3wup_6Wisard_18export_to(struct __pyx_obj_3wup_Wisard 
   return __pyx_r;
 }
 
-/* "wup.pyx":92
+/* "wup.pyx":97
  *         wisard_exportTo(&self._wisard, filename)
  * 
  *     def activations(self):             # <<<<<<<<<<<<<<
@@ -1853,7 +1899,7 @@ static PyObject *__pyx_pf_3wup_6Wisard_20activations(struct __pyx_obj_3wup_Wisar
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("activations", 0);
 
-  /* "wup.pyx":93
+  /* "wup.pyx":98
  * 
  *     def activations(self):
  *         cdef const int * activations = wisard_activations(&self._wisard)             # <<<<<<<<<<<<<<
@@ -1862,7 +1908,7 @@ static PyObject *__pyx_pf_3wup_6Wisard_20activations(struct __pyx_obj_3wup_Wisar
  */
   __pyx_v_activations = wisard_activations((&__pyx_v_self->_wisard));
 
-  /* "wup.pyx":94
+  /* "wup.pyx":99
  *     def activations(self):
  *         cdef const int * activations = wisard_activations(&self._wisard)
  *         cdef int discriminators = wisard_classes(&self._wisard)             # <<<<<<<<<<<<<<
@@ -1871,7 +1917,7 @@ static PyObject *__pyx_pf_3wup_6Wisard_20activations(struct __pyx_obj_3wup_Wisar
  */
   __pyx_v_discriminators = wisard_classes((&__pyx_v_self->_wisard));
 
-  /* "wup.pyx":95
+  /* "wup.pyx":100
  *         cdef const int * activations = wisard_activations(&self._wisard)
  *         cdef int discriminators = wisard_classes(&self._wisard)
  *         cdef int i = 0;             # <<<<<<<<<<<<<<
@@ -1880,14 +1926,14 @@ static PyObject *__pyx_pf_3wup_6Wisard_20activations(struct __pyx_obj_3wup_Wisar
  */
   __pyx_v_i = 0;
 
-  /* "wup.pyx":97
+  /* "wup.pyx":102
  *         cdef int i = 0;
  * 
  *         result = [0] * discriminators             # <<<<<<<<<<<<<<
  *         while i<discriminators:
  *             result[i] = activations[i]
  */
-  __pyx_t_1 = PyList_New(1 * ((__pyx_v_discriminators<0) ? 0:__pyx_v_discriminators)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 97; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyList_New(1 * ((__pyx_v_discriminators<0) ? 0:__pyx_v_discriminators)); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 102; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   { Py_ssize_t __pyx_temp;
     for (__pyx_temp=0; __pyx_temp < __pyx_v_discriminators; __pyx_temp++) {
@@ -1899,7 +1945,7 @@ static PyObject *__pyx_pf_3wup_6Wisard_20activations(struct __pyx_obj_3wup_Wisar
   __pyx_v_result = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "wup.pyx":98
+  /* "wup.pyx":103
  * 
  *         result = [0] * discriminators
  *         while i<discriminators:             # <<<<<<<<<<<<<<
@@ -1910,19 +1956,19 @@ static PyObject *__pyx_pf_3wup_6Wisard_20activations(struct __pyx_obj_3wup_Wisar
     __pyx_t_2 = ((__pyx_v_i < __pyx_v_discriminators) != 0);
     if (!__pyx_t_2) break;
 
-    /* "wup.pyx":99
+    /* "wup.pyx":104
  *         result = [0] * discriminators
  *         while i<discriminators:
  *             result[i] = activations[i]             # <<<<<<<<<<<<<<
  *             i = i + 1
  * 
  */
-    __pyx_t_1 = __Pyx_PyInt_From_int((__pyx_v_activations[__pyx_v_i])); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 99; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyInt_From_int((__pyx_v_activations[__pyx_v_i])); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 104; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
-    if (unlikely(__Pyx_SetItemInt(__pyx_v_result, __pyx_v_i, __pyx_t_1, int, 1, __Pyx_PyInt_From_int, 1, 1, 1) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 99; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (unlikely(__Pyx_SetItemInt(__pyx_v_result, __pyx_v_i, __pyx_t_1, int, 1, __Pyx_PyInt_From_int, 1, 1, 1) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 104; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "wup.pyx":100
+    /* "wup.pyx":105
  *         while i<discriminators:
  *             result[i] = activations[i]
  *             i = i + 1             # <<<<<<<<<<<<<<
@@ -1932,7 +1978,7 @@ static PyObject *__pyx_pf_3wup_6Wisard_20activations(struct __pyx_obj_3wup_Wisar
     __pyx_v_i = (__pyx_v_i + 1);
   }
 
-  /* "wup.pyx":102
+  /* "wup.pyx":107
  *             i = i + 1
  * 
  *         return result             # <<<<<<<<<<<<<<
@@ -1944,7 +1990,7 @@ static PyObject *__pyx_pf_3wup_6Wisard_20activations(struct __pyx_obj_3wup_Wisar
   __pyx_r = __pyx_v_result;
   goto __pyx_L0;
 
-  /* "wup.pyx":92
+  /* "wup.pyx":97
  *         wisard_exportTo(&self._wisard, filename)
  * 
  *     def activations(self):             # <<<<<<<<<<<<<<
@@ -1964,7 +2010,7 @@ static PyObject *__pyx_pf_3wup_6Wisard_20activations(struct __pyx_obj_3wup_Wisar
   return __pyx_r;
 }
 
-/* "wup.pyx":106
+/* "wup.pyx":111
  *     #void wisard_clone(CWisard * const wisard, const CWisard * other)
  * 
  *     def _validate_pattern(self, pattern):             # <<<<<<<<<<<<<<
@@ -1996,32 +2042,32 @@ static PyObject *__pyx_pf_3wup_6Wisard_22_validate_pattern(struct __pyx_obj_3wup
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_validate_pattern", 0);
 
-  /* "wup.pyx":107
+  /* "wup.pyx":112
  * 
  *     def _validate_pattern(self, pattern):
  *         if not len(pattern) == self._inputBits:             # <<<<<<<<<<<<<<
  *             raise IndexError("Invalid length on input pattern")
  * 
  */
-  __pyx_t_1 = PyObject_Length(__pyx_v_pattern); if (unlikely(__pyx_t_1 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 107; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyObject_Length(__pyx_v_pattern); if (unlikely(__pyx_t_1 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 112; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_t_2 = ((!((__pyx_t_1 == __pyx_v_self->_inputBits) != 0)) != 0);
   if (__pyx_t_2) {
 
-    /* "wup.pyx":108
+    /* "wup.pyx":113
  *     def _validate_pattern(self, pattern):
  *         if not len(pattern) == self._inputBits:
  *             raise IndexError("Invalid length on input pattern")             # <<<<<<<<<<<<<<
  * 
  *     def _validate_target(self, target):
  */
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_IndexError, __pyx_tuple_, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 108; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_IndexError, __pyx_tuple_, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 113; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 108; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 113; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
 
-  /* "wup.pyx":106
+  /* "wup.pyx":111
  *     #void wisard_clone(CWisard * const wisard, const CWisard * other)
  * 
  *     def _validate_pattern(self, pattern):             # <<<<<<<<<<<<<<
@@ -2042,7 +2088,7 @@ static PyObject *__pyx_pf_3wup_6Wisard_22_validate_pattern(struct __pyx_obj_3wup
   return __pyx_r;
 }
 
-/* "wup.pyx":110
+/* "wup.pyx":115
  *             raise IndexError("Invalid length on input pattern")
  * 
  *     def _validate_target(self, target):             # <<<<<<<<<<<<<<
@@ -2073,33 +2119,33 @@ static PyObject *__pyx_pf_3wup_6Wisard_24_validate_target(CYTHON_UNUSED struct _
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_validate_target", 0);
 
-  /* "wup.pyx":111
+  /* "wup.pyx":116
  * 
  *     def _validate_target(self, target):
  *         if target < 0:             # <<<<<<<<<<<<<<
  *             raise IndexError("Target may not be negative")
  * 
  */
-  __pyx_t_1 = PyObject_RichCompare(__pyx_v_target, __pyx_int_0, Py_LT); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 111; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_2 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 111; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyObject_RichCompare(__pyx_v_target, __pyx_int_0, Py_LT); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 116; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_2 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 116; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_2) {
 
-    /* "wup.pyx":112
+    /* "wup.pyx":117
  *     def _validate_target(self, target):
  *         if target < 0:
  *             raise IndexError("Target may not be negative")             # <<<<<<<<<<<<<<
  * 
  *     def _copy_pattern(self, pattern):
  */
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_IndexError, __pyx_tuple__2, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 112; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_IndexError, __pyx_tuple__2, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 117; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_Raise(__pyx_t_1, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 112; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[0]; __pyx_lineno = 117; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
 
-  /* "wup.pyx":110
+  /* "wup.pyx":115
  *             raise IndexError("Invalid length on input pattern")
  * 
  *     def _validate_target(self, target):             # <<<<<<<<<<<<<<
@@ -2120,7 +2166,7 @@ static PyObject *__pyx_pf_3wup_6Wisard_24_validate_target(CYTHON_UNUSED struct _
   return __pyx_r;
 }
 
-/* "wup.pyx":114
+/* "wup.pyx":119
  *             raise IndexError("Target may not be negative")
  * 
  *     def _copy_pattern(self, pattern):             # <<<<<<<<<<<<<<
@@ -2158,7 +2204,7 @@ static PyObject *__pyx_pf_3wup_6Wisard_26_copy_pattern(struct __pyx_obj_3wup_Wis
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_copy_pattern", 0);
 
-  /* "wup.pyx":115
+  /* "wup.pyx":120
  * 
  *     def _copy_pattern(self, pattern):
  *         for i, v in enumerate(pattern):             # <<<<<<<<<<<<<<
@@ -2171,25 +2217,25 @@ static PyObject *__pyx_pf_3wup_6Wisard_26_copy_pattern(struct __pyx_obj_3wup_Wis
     __pyx_t_2 = __pyx_v_pattern; __Pyx_INCREF(__pyx_t_2); __pyx_t_3 = 0;
     __pyx_t_4 = NULL;
   } else {
-    __pyx_t_3 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_v_pattern); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 115; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_v_pattern); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 120; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = Py_TYPE(__pyx_t_2)->tp_iternext; if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 115; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = Py_TYPE(__pyx_t_2)->tp_iternext; if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 120; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   for (;;) {
     if (likely(!__pyx_t_4)) {
       if (likely(PyList_CheckExact(__pyx_t_2))) {
         if (__pyx_t_3 >= PyList_GET_SIZE(__pyx_t_2)) break;
         #if CYTHON_COMPILING_IN_CPYTHON
-        __pyx_t_5 = PyList_GET_ITEM(__pyx_t_2, __pyx_t_3); __Pyx_INCREF(__pyx_t_5); __pyx_t_3++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 115; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_5 = PyList_GET_ITEM(__pyx_t_2, __pyx_t_3); __Pyx_INCREF(__pyx_t_5); __pyx_t_3++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 120; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         #else
-        __pyx_t_5 = PySequence_ITEM(__pyx_t_2, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 115; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_5 = PySequence_ITEM(__pyx_t_2, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 120; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         #endif
       } else {
         if (__pyx_t_3 >= PyTuple_GET_SIZE(__pyx_t_2)) break;
         #if CYTHON_COMPILING_IN_CPYTHON
-        __pyx_t_5 = PyTuple_GET_ITEM(__pyx_t_2, __pyx_t_3); __Pyx_INCREF(__pyx_t_5); __pyx_t_3++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 115; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_5 = PyTuple_GET_ITEM(__pyx_t_2, __pyx_t_3); __Pyx_INCREF(__pyx_t_5); __pyx_t_3++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 120; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         #else
-        __pyx_t_5 = PySequence_ITEM(__pyx_t_2, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 115; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_5 = PySequence_ITEM(__pyx_t_2, __pyx_t_3); __pyx_t_3++; if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 120; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         #endif
       }
     } else {
@@ -2198,7 +2244,7 @@ static PyObject *__pyx_pf_3wup_6Wisard_26_copy_pattern(struct __pyx_obj_3wup_Wis
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(exc_type == PyExc_StopIteration || PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 115; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+          else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 120; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         }
         break;
       }
@@ -2208,24 +2254,24 @@ static PyObject *__pyx_pf_3wup_6Wisard_26_copy_pattern(struct __pyx_obj_3wup_Wis
     __pyx_t_5 = 0;
     __Pyx_INCREF(__pyx_t_1);
     __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_1);
-    __pyx_t_5 = PyNumber_Add(__pyx_t_1, __pyx_int_1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 115; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = PyNumber_Add(__pyx_t_1, __pyx_int_1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 120; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_1);
     __pyx_t_1 = __pyx_t_5;
     __pyx_t_5 = 0;
 
-    /* "wup.pyx":116
+    /* "wup.pyx":121
  *     def _copy_pattern(self, pattern):
  *         for i, v in enumerate(pattern):
  *             self._array[i] = v             # <<<<<<<<<<<<<<
  * 
  * 
  */
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_v_v); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 116; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __pyx_t_7 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i); if (unlikely((__pyx_t_7 == (Py_ssize_t)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 116; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_v_v); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 121; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_7 = __Pyx_PyIndex_AsSsize_t(__pyx_v_i); if (unlikely((__pyx_t_7 == (Py_ssize_t)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 121; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     (__pyx_v_self->_array[__pyx_t_7]) = __pyx_t_6;
 
-    /* "wup.pyx":115
+    /* "wup.pyx":120
  * 
  *     def _copy_pattern(self, pattern):
  *         for i, v in enumerate(pattern):             # <<<<<<<<<<<<<<
@@ -2236,7 +2282,7 @@ static PyObject *__pyx_pf_3wup_6Wisard_26_copy_pattern(struct __pyx_obj_3wup_Wis
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "wup.pyx":114
+  /* "wup.pyx":119
  *             raise IndexError("Target may not be negative")
  * 
  *     def _copy_pattern(self, pattern):             # <<<<<<<<<<<<<<
@@ -2388,14 +2434,18 @@ static struct PyModuleDef __pyx_moduledef = {
 #endif
 
 static __Pyx_StringTabEntry __pyx_string_tab[] = {
+  {&__pyx_kp_s_1_0, __pyx_k_1_0, sizeof(__pyx_k_1_0), 0, 0, 1, 0},
   {&__pyx_n_s_IndexError, __pyx_k_IndexError, sizeof(__pyx_k_IndexError), 0, 0, 1, 1},
   {&__pyx_kp_s_Invalid_length_on_input_pattern, __pyx_k_Invalid_length_on_input_pattern, sizeof(__pyx_k_Invalid_length_on_input_pattern), 0, 0, 1, 0},
   {&__pyx_n_s_MemoryError, __pyx_k_MemoryError, sizeof(__pyx_k_MemoryError), 0, 0, 1, 1},
   {&__pyx_kp_s_Target_may_not_be_negative, __pyx_k_Target_may_not_be_negative, sizeof(__pyx_k_Target_may_not_be_negative), 0, 0, 1, 0},
+  {&__pyx_n_s_WUP_VERSION, __pyx_k_WUP_VERSION, sizeof(__pyx_k_WUP_VERSION), 0, 0, 1, 1},
   {&__pyx_n_s_bits, __pyx_k_bits, sizeof(__pyx_k_bits), 0, 0, 1, 1},
+  {&__pyx_n_s_cinit, __pyx_k_cinit, sizeof(__pyx_k_cinit), 0, 0, 1, 1},
   {&__pyx_n_s_classes, __pyx_k_classes, sizeof(__pyx_k_classes), 0, 0, 1, 1},
   {&__pyx_n_s_copy_pattern, __pyx_k_copy_pattern, sizeof(__pyx_k_copy_pattern), 0, 0, 1, 1},
   {&__pyx_n_s_enumerate, __pyx_k_enumerate, sizeof(__pyx_k_enumerate), 0, 0, 1, 1},
+  {&__pyx_kp_s_home_diegofps_Sources_WUP_pytho, __pyx_k_home_diegofps_Sources_WUP_pytho, sizeof(__pyx_k_home_diegofps_Sources_WUP_pytho), 0, 0, 1, 0},
   {&__pyx_n_s_inputs, __pyx_k_inputs, sizeof(__pyx_k_inputs), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {&__pyx_n_s_pattern, __pyx_k_pattern, sizeof(__pyx_k_pattern), 0, 0, 1, 1},
@@ -2403,12 +2453,13 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_test, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
   {&__pyx_n_s_validate_pattern, __pyx_k_validate_pattern, sizeof(__pyx_k_validate_pattern), 0, 0, 1, 1},
   {&__pyx_n_s_validate_target, __pyx_k_validate_target, sizeof(__pyx_k_validate_target), 0, 0, 1, 1},
+  {&__pyx_n_s_wup, __pyx_k_wup, sizeof(__pyx_k_wup), 0, 0, 1, 1},
   {0, 0, 0, 0, 0, 0, 0}
 };
 static int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_MemoryError = __Pyx_GetBuiltinName(__pyx_n_s_MemoryError); if (!__pyx_builtin_MemoryError) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 53; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_builtin_IndexError = __Pyx_GetBuiltinName(__pyx_n_s_IndexError); if (!__pyx_builtin_IndexError) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 108; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_builtin_enumerate = __Pyx_GetBuiltinName(__pyx_n_s_enumerate); if (!__pyx_builtin_enumerate) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 115; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_MemoryError = __Pyx_GetBuiltinName(__pyx_n_s_MemoryError); if (!__pyx_builtin_MemoryError) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 58; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_IndexError = __Pyx_GetBuiltinName(__pyx_n_s_IndexError); if (!__pyx_builtin_IndexError) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 113; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_enumerate = __Pyx_GetBuiltinName(__pyx_n_s_enumerate); if (!__pyx_builtin_enumerate) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 120; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -2418,27 +2469,36 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "wup.pyx":108
+  /* "wup.pyx":113
  *     def _validate_pattern(self, pattern):
  *         if not len(pattern) == self._inputBits:
  *             raise IndexError("Invalid length on input pattern")             # <<<<<<<<<<<<<<
  * 
  *     def _validate_target(self, target):
  */
-  __pyx_tuple_ = PyTuple_Pack(1, __pyx_kp_s_Invalid_length_on_input_pattern); if (unlikely(!__pyx_tuple_)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 108; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple_ = PyTuple_Pack(1, __pyx_kp_s_Invalid_length_on_input_pattern); if (unlikely(!__pyx_tuple_)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 113; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple_);
   __Pyx_GIVEREF(__pyx_tuple_);
 
-  /* "wup.pyx":112
+  /* "wup.pyx":117
  *     def _validate_target(self, target):
  *         if target < 0:
  *             raise IndexError("Target may not be negative")             # <<<<<<<<<<<<<<
  * 
  *     def _copy_pattern(self, pattern):
  */
-  __pyx_tuple__2 = PyTuple_Pack(1, __pyx_kp_s_Target_may_not_be_negative); if (unlikely(!__pyx_tuple__2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 112; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__2 = PyTuple_Pack(1, __pyx_kp_s_Target_may_not_be_negative); if (unlikely(!__pyx_tuple__2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 117; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__2);
   __Pyx_GIVEREF(__pyx_tuple__2);
+
+  /* "wup.pyx":5
+ * __WUP_VERSION = "1.0"
+ * 
+ * def __cinit__():             # <<<<<<<<<<<<<<
+ *     pass
+ * 
+ */
+  __pyx_codeobj__3 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_diegofps_Sources_WUP_pytho, __pyx_n_s_cinit, 5, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -2537,19 +2597,40 @@ PyMODINIT_FUNC PyInit_wup(void)
   /*--- Variable export code ---*/
   /*--- Function export code ---*/
   /*--- Type init code ---*/
-  if (PyType_Ready(&__pyx_type_3wup_Wisard) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 35; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyType_Ready(&__pyx_type_3wup_Wisard) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_type_3wup_Wisard.tp_print = 0;
-  if (PyObject_SetAttrString(__pyx_m, "Wisard", (PyObject *)&__pyx_type_3wup_Wisard) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 35; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyObject_SetAttrString(__pyx_m, "Wisard", (PyObject *)&__pyx_type_3wup_Wisard) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_ptype_3wup_Wisard = &__pyx_type_3wup_Wisard;
   /*--- Type import code ---*/
   /*--- Variable import code ---*/
   /*--- Function import code ---*/
   /*--- Execution code ---*/
 
+  /* "wup.pyx":3
+ * from libc.stdlib cimport malloc, free
+ * 
+ * __WUP_VERSION = "1.0"             # <<<<<<<<<<<<<<
+ * 
+ * def __cinit__():
+ */
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_WUP_VERSION, __pyx_kp_s_1_0) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+
+  /* "wup.pyx":5
+ * __WUP_VERSION = "1.0"
+ * 
+ * def __cinit__():             # <<<<<<<<<<<<<<
+ *     pass
+ * 
+ */
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_3wup_1__cinit__, NULL, __pyx_n_s_wup); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_cinit, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
   /* "wup.pyx":1
  * from libc.stdlib cimport malloc, free             # <<<<<<<<<<<<<<
  * 
- * cdef extern from "wup/wup.h" :
+ * __WUP_VERSION = "1.0"
  */
   __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
