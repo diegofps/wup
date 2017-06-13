@@ -3,7 +3,7 @@
 
 namespace wup {
 
-    #ifdef JNI_VERSION_1_1
+    #ifdef JNI_H_
     class Pattern {
     public:
 	    Pattern(int * array) : _env(NULL), _array(NULL), _intArray(array)

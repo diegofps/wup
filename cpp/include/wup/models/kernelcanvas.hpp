@@ -8,15 +8,19 @@
 #ifndef INCLUDE_WUP_MODELS_KERNELCANVAS_HPP_
 #define INCLUDE_WUP_MODELS_KERNELCANVAS_HPP_
 
-#include <wup/models/kernelgens.hpp>
 #include <cstdlib>
+
+#include <wup/models/kernelgens.hpp>
+#include <wup/common/exceptions.hpp>
+#include <wup/common/sbio.hpp>
+#include <wup/common/generic.hpp>
 
 namespace wup {
 
-class EuclidianKernels {
+class EuclideanKernels {
 public:
 
-    EuclidianKernels (wup::sbreader<double> &reader) :
+    EuclideanKernels (wup::sbreader<double> &reader) :
             _numKernels(0),
             _dims(0),
             _tmp(NULL),
@@ -35,10 +39,10 @@ public:
 
         _tmp = new double[_dims];
         _boxes = new BOX[_numKernels];
-        _selections = new int[_k];
+        _selections = new int[_numKernels];
     }
 
-    EuclidianKernels (const int numKernels, const int dims,
+    EuclideanKernels (const int numKernels, const int dims,
     		const double act, double ** kernels) :
         _numKernels(numKernels),
 		_dims(dims),
@@ -54,14 +58,14 @@ public:
 
         _tmp = new double[dims];
     	_boxes = new BOX[_numKernels];
-    	_selections = new int[_k];
+        _selections = new int[_numKernels];
     }
 
     virtual
-	~EuclidianKernels ()
+	~EuclideanKernels ()
     {
         for (int i=0;i<_numKernels;++i)
-            delete _kernels[i];
+            delete [] _kernels[i];
 
         delete [] _selections;
         delete [] _kernels;
@@ -80,19 +84,24 @@ public:
             _boxes[i].id = i;
         }
 
-        wup::halfqsort(_boxes, 0, _numKernels-1, _k-1);
+//        wup::halfqsort(_boxes, 0, _numKernels-1, _k-1);
+        wup::halfqsort(_boxes, 0, _numKernels-1, _numKernels-1);
 
-        for (int i=0;i< _k; ++i)
+        for (int i=0;i< _numKernels; ++i)
             _selections[i] = _boxes[i].id;
 
         return _selections;
     }
 
     int k() const
-    { return _k; }
+    {
+        return _k;
+    }
 
     int numKernels() const
-    { return _numKernels; }
+    {
+        return _numKernels;
+    }
 
     void exportTo(wup::sbwriter<double> &writer) {
     	writer.put(-1.0);
@@ -101,11 +110,11 @@ public:
         writer.put(-1.0);
     }
 
-    bool operator !=(EuclidianKernels const& other) const {
+    bool operator !=(EuclideanKernels const& other) const {
     	return !(*this == other);
     }
 
- 	bool operator ==(EuclidianKernels const& other) const {
+ 	bool operator ==(EuclideanKernels const& other) const {
  		if (_numKernels != other._numKernels) return false;
  		if (_dims != other._dims) return false;
  		if (_k != other._k) return false;
@@ -124,16 +133,24 @@ public:
  	}
 
 private:
+
     int _numKernels;
+
     int _dims;
+
     double * _tmp;
+
     double ** _kernels;
+
     int * _selections;
+
     int _k;
-	BOX *_boxes;
+
+    BOX *_boxes;
+
 };
 
-template <typename KernelSpace=EuclidianKernels>
+template <typename KernelSpace=EuclideanKernels>
 class KernelCanvas {
 public:
 
@@ -141,6 +158,7 @@ public:
             _term_bits(reader.get()),
             _kernelSpace(reader),
             _outputFreq(new int[_kernelSpace.numKernels()]),
+            _freshInk(new bool[_kernelSpace.numKernels()]),
             _outputBits(new int[_kernelSpace.numKernels() * _term_bits])
     {
         if (reader.get() != -1.0)
@@ -152,67 +170,123 @@ public:
         _term_bits(term_bits),
         _kernelSpace(numKernels, inputs, act, kernels),
         _outputFreq(new int[_kernelSpace.numKernels()]),
+        _freshInk(new bool[_kernelSpace.numKernels()]),
         _outputBits(new int[_kernelSpace.numKernels() * term_bits])
-    { }
+    {
+
+    }
 
     ~KernelCanvas()
     {
         delete [] _outputFreq;
         delete [] _outputBits;
+        delete [] _freshInk;
     }
 
-    void clear()
+    void
+    clear()
+    {
+        for (int i=0;i<_kernelSpace.numKernels();++i) {
+            _outputFreq[i] = 0;
+            _freshInk[i] = false;
+        }
+    }
+
+    void
+    clearInk()
     {
         for (int i=0;i<_kernelSpace.numKernels();++i)
-            _outputFreq[i] = 0;
+            _freshInk[i] = false;
     }
 
     void read(const double * pattern)
     {
+        int i = 0;
         const int * const ids = _kernelSpace.select( pattern );
-        for (int i=0; i<_kernelSpace.k(); ++i)
-            _outputFreq[ids[i]] = 1;
+        for (i=0; i<_kernelSpace.k(); ++i)
+        {
+            const int id = ids[i];
+            if (!_freshInk[id])
+            {
+                ++_outputFreq[id];
+                _freshInk[id] = true;
+            }
+        }
+
+        for (i=3*_kernelSpace.k(); i<_kernelSpace.numKernels(); ++i)
+        {
+            const int id = ids[i];
+            _freshInk[id] = false;
+        }
     }
 
     int * binary_output()
     {
         int offset = -1;
         for (int i=0;i<_kernelSpace.numKernels();++i)
-			if (_outputFreq[i] == 1)
-				for (int j=0;j<_term_bits;++j)
-					_outputBits[++offset] = 1;
+            if (_outputFreq[i] == 0)
+                for (int j=0;j<_term_bits;++j)
+                    _outputBits[++offset] = 0;
 			else
-				for (int j=0;j<_term_bits;++j)
-					_outputBits[++offset] = 0;
+                for (int j=0;j<_term_bits;++j)
+                    _outputBits[++offset] = 1;
+        return _outputBits;
+    }
+
+    int * timestamp_output()
+    {
+        const int len = _kernelSpace.numKernels();
+        for (int i=0;i<_term_bits;++i)
+            std::copy(_outputFreq, &_outputFreq[len], &_outputBits[i * len]);
         return _outputBits;
     }
 
     double * real_output()
-    { return _outputFreq; }
+    {
+        return _outputFreq;
+    }
 
-    int binary_outputs() const
-    { return _kernelSpace.numKernels() * _term_bits; }
+    int binary_output_size() const
+    {
+        return _kernelSpace.numKernels() * _term_bits;
+    }
 
-    int real_outputs() const
-    { return _kernelSpace.numKernels(); }
+    int real_output_size() const
+    {
+        return _kernelSpace.numKernels();
+    }
 
-    void exportTo(wup::sbwriter<double> &writer) {
+    int timestap_output_size()
+    {
+        return _kernelSpace.numKernels() * _term_bits;
+    }
+
+    void exportTo(wup::sbwriter<double> &writer)
+    {
         writer.put((double)_term_bits);
         _kernelSpace.exportTo(writer);
         writer.put(-1.0);
     }
 
- 	bool operator ==(wup::KernelCanvas<KernelSpace> const& other) const {
+    bool operator ==(wup::KernelCanvas<KernelSpace> const& other) const
+    {
  		if (_term_bits != other._term_bits) return false;
  		if (_kernelSpace != other._kernelSpace) return false;
  		return true;
  	}
 
 private:
+
     int _term_bits;
+
     KernelSpace _kernelSpace;
+
     int * _outputFreq;
+
+    bool * _freshInk;
+
     int * _outputBits;
+
 };
 
 } /* wup */

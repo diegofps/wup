@@ -3,8 +3,11 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <cstdlib>
 #include <string>
+
+#include <wup/common/exceptions.hpp>
 
 using std::ofstream;
 using std::ifstream;
@@ -16,19 +19,22 @@ class sbwriter {
 public:
     
     sbwriter(const std::string &filename) : sbwriter(filename, 10240)
-    { }
+    {
+
+    }
     
-    sbwriter(const std::string &filename, const int capacity) :
+    sbwriter(const std::string &filename, const uint capacity) :
         _stream(filename.c_str(), std::ios::binary | std::ios::trunc)
     {
         _buffer = (T*) malloc(sizeof(T) * capacity);
-        _current = 0;
+        _current = 0l;
         _capacity = capacity;
     }
     
     ~sbwriter()
     {
-        if (_current != 0) {
+        if (_current != 0)
+        {
             _stream.write((char*) _buffer, sizeof(T) * _current);
         }
 
@@ -41,20 +47,30 @@ public:
     {
         _buffer[_current++] = t;
         
-        if (_current == _capacity) {
+        if (_current == _capacity)
+        {
             _stream.write((char*) _buffer, sizeof(T) * _current);
             _current = 0;
         }
     }
     
+    void put(std::string str)
+    {
+        for (int i=0;str[i] != '\0'; ++i)
+            put((double)str[i]);
+        put(0.0);
+    }
+
     bool good()
-    { return _stream.good(); }
+    {
+        return _stream.good();
+    }
     
 private:
     ofstream _stream;
     T * _buffer;
-    int _capacity;
-    int _current;
+    uint _capacity;
+    uint _current;
 };
 
 template <typename T>
@@ -62,7 +78,9 @@ class sbreader {
 public:
     
     sbreader(const std::string &filename) : sbreader(filename, 10240)
-    { }
+    {
+
+    }
     
     sbreader(const std::string &filename, const int capacity) :
         _stream(filename.c_str(), std::ios::binary | std::ios::in)
@@ -85,6 +103,17 @@ public:
         t = _buffer[_current++];
     }
 
+    std::string getString()
+    {
+        std::stringstream ss;
+
+        double tmp;
+        while ((tmp = get()) != 0.0)
+            ss << (char) tmp;
+
+        return ss.str();
+    }
+
     const T & get()
     {
         if (_current == _content) readMore();
@@ -92,13 +121,16 @@ public:
     }
 
     bool good()
-    { return _stream.good(); }
+    {
+        return _stream.good();
+    }
 
 private:
 
-    void readMore() {
+    void readMore()
+    {
         _stream.read((char*) _buffer, sizeof(T) * _capacity);
-        int chars = _stream.gcount();
+        //int chars = _stream.gcount();
         _content = _stream.gcount() / sizeof(T);
         _current = 0;
 //        print("Read ", chars, " characters, giving ", _content, " entities");
@@ -110,9 +142,9 @@ private:
 private:
     ifstream _stream;
     T * _buffer;
-    int _capacity;
-    int _current;
-    int _content;
+    uint _capacity;
+    uint _current;
+    uint _content;
 };
 
 } /* wup */

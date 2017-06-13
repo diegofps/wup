@@ -8,39 +8,69 @@
 #ifndef INCLUDE_WUP_NODES_TANH_HPP_
 #define INCLUDE_WUP_NODES_TANH_HPP_
 
+#include <initializer_list>
+#include <wup/common/seq.hpp>
+#include <wup/nodes/node.hpp>
+
 namespace wup {
 
 namespace node {
 
-class Tanh : public Node {
+class Tanh : public Node {    
+private:
+
+    seq<uint> _columns;
+
 public:
 
-	Tanh(Node * const parent) :
-		Node(parent),
-		_columns()
-	{
-		const int length = parent->outputLength();
-		_columns.resize(length);
+    Tanh(Node * const parent) : Node(parent),
+        _columns(parent->output().size())
+    {
+        for (uint i=0;i<_columns.size();++i)
+            _columns[i] = i;
+    }
 
-		for (int i=0;i<length;++i)
-			_columns[i] = i;
-	}
+    Tanh(Node * const parent, const seq<uint> & columns) :
+        Node(parent),
+        _columns(columns)
+    {
 
-	Tanh(Node * const parent, const seq<int> & columns) :
-		Node(parent),
-		_columns(columns)
-	{ }
+    }
+
+    Tanh(Node * const parent, sbreader<double> & reader) :
+        Node(parent, reader),
+        _columns(reader.get())
+    {
+        for (uint i=0; i<_columns.size(); ++i)
+            _columns[i] = reader.get();
+    }
+
+    virtual
+    void onExport(sbwriter<double> & writer)
+    {
+        writer.put(_columns.size());
+        for (uint i=0;i<_columns.size(); ++i)
+            writer.put(_columns[i]);
+    }
+
+    virtual void onStart()
+    {
+
+    }
 
     virtual void onDigest(const Feature & input)
     {
-    	feature() = input;
-    	for (int i=0;i<_columns.size();++i)
-    		feature()[_columns[i]] = tanh(input[_columns[i]]);
-    	yield(feature());
+        output() = input;
+        for (uint i=0; i<_columns.size(); ++i)
+            output()[_columns[i]] = tanh(input[_columns[i]]);
+        publish(output());
     }
 
-private:
-	seq<int> _columns;
+    virtual void onFinish()
+    {
+
+    }
+
 };
 
 } /* node */

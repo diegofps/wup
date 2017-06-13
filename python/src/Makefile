@@ -1,5 +1,7 @@
 all:
 	python setup.py build_ext --inplace
-	cp ./wup.so ../lib/
-	cp ./wup.so ../examples/
+	python setup.py install
 
+clean:
+	rm -f *.so
+	rm -rf ./build

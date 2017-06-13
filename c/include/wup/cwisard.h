@@ -29,41 +29,45 @@ int wisard_readBleaching(CWisard * const self, const int * const pattern);
 
 const int * wisard_activations(const CWisard * const self);
 
-int wisard_classes(const CWisard * const self);
+int wisard_numDiscriminators(const CWisard * const self);
 
-int wisard_ramBits(const CWisard * const self);
+int wisard_numRamBits(const CWisard * const self);
 
-int wisard_inputBits(const CWisard * const self);
+int wisard_numRams(const CWisard * const self);
+
+int wisard_numInputBits(const CWisard * const self);
 
 
 
-int fwisard_importFrom(CWisard * const self, const char * const filename);
+int graywisard_importFrom(CWisard * const self, const char * const filename);
 
-void fwisard_exportTo(const CWisard * const self, const char * const filename);
+void graywisard_exportTo(const CWisard * const self, const char * const filename);
 
-void fwisard_create(CWisard * const self, const int inputs, const int bits, 
+void graywisard_create(CWisard * const self, const int inputs, const int bits, 
         const int discriminators);
         
-void fwisard_clone(CWisard * const self, const CWisard * const other);
+void graywisard_clone(CWisard * const self, const CWisard * const other);
 
-void fwisard_destroy(CWisard * const self);
+void graywisard_destroy(CWisard * const self);
 
-void fwisard_learn(CWisard * const self, const int * const pattern, 
+void graywisard_learn(CWisard * const self, const int * const pattern, 
         const int target);
 
-int fwisard_readBinary(CWisard * const self, const int * const pattern);
+int graywisard_readBinary(CWisard * const self, const int * const pattern);
 
-int fwisard_readCounts(CWisard * const self, const int * const pattern);
+int graywisard_readCounts(CWisard * const self, const int * const pattern);
 
-int fwisard_readBleaching(CWisard * const self, const int * const pattern);
+int graywisard_readBleaching(CWisard * const self, const int * const pattern);
 
-const int * fwisard_activations(const CWisard * const self);
+const int * graywisard_activations(const CWisard * const self);
 
-int fwisard_classes(const CWisard * const self);
+int graywisard_numDiscriminators(const CWisard * const self);
 
-int fwisard_ramBits(const CWisard * const self);
+int graywisard_numRamBits(const CWisard * const self);
 
-int fwisard_inputBits(const CWisard * const self);
+int graywisard_numRams(const CWisard * const self);
+
+int graywisard_numInputBits(const CWisard * const self);
 
 #ifdef __cplusplus
 }

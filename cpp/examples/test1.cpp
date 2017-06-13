@@ -3,12 +3,12 @@
 
 using namespace wup;
 
-const int TRAIN_ITERS = 20;
-const int TEST_ITERS = 10;
-const int LENGTH = 512;
+const int TRAIN_ITERS = 1000;
+const int TEST_ITERS = 1000;
+const int LENGTH = 128;
 
 const int RAM_BITS = 16;
-const int CLASSES = 500;
+const int CLASSES = 10;
 
 const char * FILENAME = "wisard.bin";
 
@@ -38,7 +38,7 @@ test(const double noise)
     // Performs creation, training and exportTo
     {
         // Creates a Wisard Network with two discriminators
-        Wisard w(LENGTH, RAM_BITS, CLASSES);
+        BaseWisard<BinaryInput> w(LENGTH, RAM_BITS, CLASSES);
         
         // Perform training
         trainTime.start();
@@ -60,7 +60,7 @@ test(const double noise)
     {
         importTime.start();
         sbreader<int> reader(FILENAME);
-        Wisard w2(reader);
+        BaseWisard<BinaryInput> w2(reader);
         importTime.stop();
         
         testTime.start();
@@ -97,6 +97,7 @@ test(const double noise)
 int 
 main(int argc, char **argv)
 {
+    Params params(argc, argv);
     srand(time(NULL));
     
     Clock total;

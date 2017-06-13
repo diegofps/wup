@@ -1,6 +1,10 @@
 #ifndef __WUP__NODE__EXPORT_HPP
 #define __WUP__NODE__EXPORT_HPP
 
+#include <wup/nodes/node.hpp>
+#include <wup/common/bundle.hpp>
+#include <wup/common/dataset.hpp>
+
 namespace wup {
 
 namespace node {
@@ -10,43 +14,67 @@ public:
     
     Export(Node * const parent, const char * const filename) :
         Node(parent),
-		_bundle(parent->outputLength()),
-		_filename(filename)
-    { }
-    
+        _bundle(parent->output().size()),
+        _filename(filename)
+    {
+
+    }
+
+    Export(Node * const parent, sbreader<double> & reader) :
+        Node(parent, reader),
+        _filename(reader.getString())
+    {
+
+    }
+
+    virtual
+    void onExport(sbwriter<double> & writer)
+    {
+        writer.put(_filename);
+    }
+
     ~Export()
-    { }
-    
-    void onStart()
-    { }
+    {
+
+    }
 
     void filename(const char * filename)
-    { _filename = filename; }
+    {
+        _filename = filename;
+    }
 
     void filename(const std::string & filename)
-    { _filename = filename; }
-
-    void onFinish()
     {
-    	//print("OnFinish");
-    	std::ofstream file_out( _filename.c_str() );
-        for ( int i=0;i<_bundle.numRows();++i ) {
+        _filename = filename;
+    }
+
+    virtual void onStart()
+    {
+
+    }
+
+    virtual void
+    onDigest(const Feature & input)
+    {
+        _bundle.push_back(input.data(), input.size());
+    }
+
+    virtual void onFinish()
+    {
+        std::ofstream file_out( _filename.c_str() );
+        for (uint i=0; i<_bundle.numRows(); ++i) {
             file_out << _bundle(i,0);
-            for ( int j=1;j<_bundle.numCols();++j )
+            for (uint j=1; j<_bundle.numCols(); ++j)
                 file_out << "," << _bundle(i,j);
             file_out << std::endl;
         }
-        
-    	_bundle.clear();
-    }
 
-    virtual void onDigest(const Feature & input)
-    {
-    	_bundle.push_back(input.data(), input.size());
+        _bundle.clear();
     }
 
 private:
     Bundle<double> _bundle;
+
     std::string _filename;
 };
 

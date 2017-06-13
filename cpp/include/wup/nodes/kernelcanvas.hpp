@@ -8,6 +8,7 @@
 #ifndef INCLUDE_WUP_NODES_KERNELCANVAS_HPP_
 #define INCLUDE_WUP_NODES_KERNELCANVAS_HPP_
 
+#include <wup/nodes/node.hpp>
 #include <wup/models/kernelcanvas.hpp>
 
 namespace wup {
@@ -18,46 +19,73 @@ class KernelCanvas : public Node {
 public:
 
     KernelCanvas(Node * const parent, wup::sbreader<double> &reader) :
-            Node(parent),
+            Node(parent, reader),
             _kc(reader)
-    { }
-
-    KernelCanvas(Node * const parent, const int kernels,
-			const double activation, const int bits) :
-		Node(parent),
-		_kc(parent->outputLength(), kernels, activation, bits, NULL)
-	{ }
-
-    virtual void onStart()
     {
-    	_kc.clear();
+
     }
 
-    virtual void onDigest(const Feature & input)
+    KernelCanvas(Node * const parent, const int numKernels,
+                 const double activation, const int bits,
+                 double ** kernels=NULL) :
+        Node(parent),
+        _kc(parent->output().size(), numKernels, activation, bits, kernels)
     {
-    	_kc.read(input.data());
+
     }
 
-    virtual void binaryOutput(int * dst)
+    virtual void
+    onClear()
     {
-    	memcpy(dst, _kc.binary_output(),
-    			sizeof(int)*_kc.binary_outputs());
+        _kc.clear();
     }
 
-    virtual int binaryOutputLength()
-    { return _kc.binary_outputs(); }
+    virtual void
+    onStart()
+    {
+        _kc.clearInk();
+    }
 
-    virtual void exportTo(wup::sbwriter<double> &writer) {
+    virtual void
+    onDigest(const Feature & input)
+    {
+        _kc.read(input.data());
+    }
+
+    virtual void onFinish()
+    {
+
+    }
+
+    virtual void
+    toPattern(int * dst)
+    {
+//        memcpy(dst, _kc.binary_output(),
+//                sizeof(int) * _kc.binary_output_size());
+        memcpy(dst, _kc.timestamp_output(),
+                sizeof(int) * _kc.timestap_output_size());
+    }
+
+    virtual int patternSize()
+    {
+//        return _kc.binary_output_size();
+        return _kc.timestap_output_size();
+    }
+
+
+    virtual void onExport(sbwriter<double> & writer)
+    {
         _kc.exportTo(writer);
     }
 
- 	bool operator ==(node::KernelCanvas const& other) const {
- 		return _kc == other._kc;
- 	}
+    bool operator ==(node::KernelCanvas const& other) const
+    {
+         return _kc == other._kc;
+     }
 
 private:
 
-	wup::KernelCanvas<EuclidianKernels> _kc;
+    wup::KernelCanvas<EuclideanKernels> _kc;
 
 };
 

@@ -2,67 +2,81 @@
 #define WISARD_HPP
 
 #include <unordered_map>
+#include <vector>
+#include <cmath>
 #include <map>
 
-#include "../common/sbio.hpp"
-#include "binaryinput.hpp"
-#include "factorialinput.hpp"
-#include "pattern.hpp"
+#include <wup/common/exceptions.hpp>
+#include <wup/common/sbio.hpp>
+#include <wup/models/binarydecoder.hpp>
+#include <wup/models/graydecoder.hpp>
+#include <wup/models/pattern.hpp>
 
-namespace wup {
+namespace wup
+{
 
-template <typename RamInput=BinaryInput>
-class Wisard {
+template <typename Decoder=BinaryDecoder, bool IgnoreZeroAddress=false>
+class BaseWisard;
+
+typedef BaseWisard<BinaryDecoder> Wisard;
+typedef BaseWisard<GrayDecoder> GrayWisard;
+
+template <typename Decoder, bool IgnoreZeroAddress>
+class BaseWisard 
+{
 public:
     
-    typedef std::map<int, int> innermap;
-    typedef std::unordered_map<RamInput, innermap> outtermap;
+    typedef std::map<int, int> MultiDiscriminator;
+    typedef std::unordered_map<Decoder, MultiDiscriminator> Ram;
 
-    Wisard(const int inputBits, const int ramBits) : 
-            Wisard(inputBits, ramBits, 2)
-        { }
+    BaseWisard(const int inputBits, const int ramBits) :
+            BaseWisard(inputBits, ramBits, 2)
+    {
+		
+	}
     
-    Wisard(const int inputBits, const int ramBits, const int classes) : 
+    BaseWisard(const int numInputBits, const int numRamBits, const int numClasses) :
             _confidence(1.0), 
-            _memory(NULL), 
+            _rams(NULL),
             _maxBleaching(1), 
             _activations(NULL), 
-            _numDiscriminators(classes), 
+            _activationsCapacity(numClasses),
             _k1(0), 
             _k2(0), 
             _k3(0), 
-            _numRams((int) ceil(inputBits / float(ramBits))), 
+            _numRams((int) ceil(numInputBits / float(numRamBits))),
             _shuffling(NULL), 
-            _ramInputs(NULL), 
-            _inputBits(inputBits), 
-            _ramBits(ramBits)
+            _decoders(NULL),
+            _numInputBits(numInputBits),
+            _numRamBits(numRamBits)
     {
-        _memory = new outtermap[_numRams]();
-        _activations = new int[_numDiscriminators]();
-        _shuffling = randperm(_inputBits);
-        _ramInputs = new RamInput[_numRams]();
+        _rams = new Ram[_numRams]();
+        _activations = new int[_activationsCapacity]();
+        _shuffling = randperm(_numInputBits);
+        _decoders = new Decoder[_numRams]();
         
-        for (int i=0;i<_numRams;++i) {
-            const int start = i*_ramBits;
-            const int end   = min((i+1)*_ramBits, inputBits);
-            _ramInputs[i] = RamInput(&_shuffling[start], end-start);
+        for (int i=0;i<_numRams;++i) 
+        {
+            const int start = i*_numRamBits;
+            const int end   = min((i+1)*_numRamBits, numInputBits);
+            _decoders[i] = Decoder(&_shuffling[start], end-start);
         }
     }
     
-    Wisard(sbreader<int> &reader) : 
+    BaseWisard(sbreader<int> &reader) :
             _confidence(1.0), 
-            _memory(NULL),
+            _rams(NULL),
             _maxBleaching(1),
             _activations(NULL), 
-            _numDiscriminators(0),
+            _activationsCapacity(0),
             _k1(0),
             _k2(0),
             _k3(0),
             _numRams(0),
             _shuffling(NULL),
-            _ramInputs(NULL),
-            _inputBits(0),
-            _ramBits(0)
+            _decoders(NULL),
+            _numInputBits(0),
+            _numRamBits(0)
     {
         // Número de verificação
         int tmp = 0;
@@ -72,15 +86,16 @@ public:
         
         // Atributos simples
         reader.get(_maxBleaching);
-        reader.get(_numDiscriminators);
-        reader.get(_inputBits);
-        reader.get(_ramBits);
+        reader.get(_activationsCapacity);
+        reader.get(_numInputBits);
+        reader.get(_numRamBits);
         reader.get(_numRams);
-        
+
         int thrashSize;
         int thrashItem;
         reader.get(thrashSize);
-        for (int i=0;i<thrashSize;++i) {
+        for (int i=0;i<thrashSize;++i)
+        {
             reader.get(thrashItem);
             _thrash.push_back(thrashItem);
         }
@@ -88,67 +103,105 @@ public:
         int targetSize;
         int inner, outter;
         reader.get(targetSize);
-        for (int i=0;i<targetSize;++i) {
+        for (int i=0;i<targetSize;++i) 
+        {
             reader.get(inner);
             reader.get(outter);
             _innerToOutter[inner] = outter;
             _outterToInner[outter] = inner;
         }
         
-        try {
-        
+        try 
+        {
             // Aloca os vetores internos
-            _activations = new int[_numDiscriminators]();
-            _memory = new outtermap[_numRams]();
-            _shuffling = new int[_inputBits];
-            _ramInputs = new RamInput[_numRams];
-            int * tmp = new int[_ramBits];
+            _activations = new int[_activationsCapacity]();
+            _rams = new Ram[_numRams]();
+            _shuffling = new uint[_numInputBits];
+            _decoders = new Decoder[_numRams];
+            //int * tmp = new int[_ramBits];
             
-            // carrega o shuffling e cria os RamInputs
-            for (int i=0;i<_inputBits;++i)
-                reader.get(_shuffling[i]);
-            
+            // Carrega o shuffling
+            for (int i=0;i<_numInputBits;++i)
+                _shuffling[i] = reader.get();
+
+            // Cria as RamInputs
             for (int i=0;i<_numRams;++i)
-                _ramInputs[i] = RamInput(&_shuffling[i*_ramBits], _ramBits);
-            
-            int length, target, hits;
-            RamInput key(NULL, _ramBits);
-            
+            {
+                const int start = i*_numRamBits;
+                const int end   = min((i+1)*_numRamBits, _numInputBits);
+                _decoders[i] = Decoder(&_shuffling[start], end-start);
+            }
+
+            int length, discriminator, hits;
+            //Decoder key(NULL, _ramBits);
+            std::stringstream ss;
+
             // Para cada ram
-            for (int r=0;r<_numRams;++r) {
-                int keys;
-                reader.get(keys);
-                outtermap &omap = _memory[r];
+            for (int r=0;r<_numRams;++r) 
+            {
+                // Pega o input correspondente
+                Decoder & decoder = _decoders[r];
+
+                // Pega a ram correspondente (omap)
+                Ram &ram = _rams[r];
+
+                // Carrega o numero de chaves na ram
+                int numKeys;
+                reader.get(numKeys);
                 //LOGE("I: Ram %d has %d STARTED", r, keys);
             
                 // Para cada chave nesta ram
-                for (int k=0;k<keys;++k) {
-                
-                    for (int i=0;i<_ramBits;++i)
-                        reader.get(tmp[i]);
-                    
-                    key.setInput(tmp);
+                for (int k=0;k<numKeys;++k)
+                {
+                    // Carrega o padrão para o input e atualiza a funcao de hash
+                    for (int i=0;i<decoder.size();++i)
+                        reader.get(decoder.pattern()[i]);
+                    decoder.updateHash();
+
+                    // Carrega a posição endereçada
+                    MultiDiscriminator &multidiscriminator = ram[decoder];
+
+                    // Carrega o numero de discriminadores que acessaram esta posição
                     reader.get(length);
                     
-                    //LOGE("I: Ram %d Key %d", r, key);
-                    innermap &imap = omap[key];
-                    for (int t=0;t<length;++t) {
-                        reader.get(target);
+                    // Carrega o conteudo desta posicao endereçada
+                    for (int t=0;t<length;++t)
+                    {
+                        reader.get(discriminator);
                         reader.get(hits);
-                        imap[target] = hits;
+                        multidiscriminator[discriminator] = hits;
                     }
+
+//                    if (r == 0) {
+//                        std::stringstream ss;
+//                        for (int i=0;i<input.size();++i)
+//                            ss << input.pattern()[i] << " ";
+//                        LOGE("RAM=0, key=%d, hash=%d, Saving %s", k, input.hash(), ss.str().c_str());
+//                    }
+
+                    //LOGE("I: Ram %d Key %d", r, key);
+                    //ss.clear();
+                    //for (int jj=0;jj<input.size();++jj)
+                    //    ss << input.pattern()[jj] << " ";
+
+                    //LOGE("Ram %d: ---%s", r, ss.str().c_str());
+                    //LOGE("Ram %d, Key %d, Hash %d", r, k, (int)input.hash());
                 }
-                
+
+                //if (r == 0)
+//                    LOGE("Expected %d, ram learned %d addresses", keys, omap.size());
                 //LOGE("I: Ram %d has %d ENDED", r, keys);
             }
             
-            delete [] tmp;
+            //delete [] tmp;
             // Se algo der errado limpe os vetores
-        } catch (WUPException e) {
-            delete [] _memory;
+        }
+        catch (WUPException e) 
+        {
+            delete [] _rams;
             delete [] _activations;
             delete [] _shuffling;
-            delete [] _ramInputs;
+            delete [] _decoders;
             
             throw e;
         }
@@ -160,18 +213,18 @@ public:
             throw WUPException("Illegal or corrupted WiSARD file");
     }
 
-    ~Wisard()
+    ~BaseWisard()
     {
-        delete [] _memory;
+        delete [] _rams;
         delete [] _activations;
         delete [] _shuffling;
-        delete [] _ramInputs;
+        delete [] _decoders;
     }
 
     void
-    exportTo(const char * const filename) const
+    exportTo(const char * const filepath) const
     {
-        sbwriter<int> writer(filename, 10240);
+        sbwriter<int> writer(filepath, 10240);
         exportTo(writer);
     }
 
@@ -184,9 +237,9 @@ public:
         
         // Atributos simples
         writer.put(_maxBleaching);
-        writer.put(_numDiscriminators);
-        writer.put(_inputBits);
-        writer.put(_ramBits);
+        writer.put(_activationsCapacity);
+        writer.put(_numInputBits);
+        writer.put(_numRamBits);
         writer.put(_numRams);
         
         if (_innerToOutter.size() != _outterToInner.size())
@@ -197,36 +250,46 @@ public:
             writer.put(n);
         
         writer.put(_innerToOutter.size());
-        for (auto &pair : _innerToOutter) {
+        for (auto &pair : _innerToOutter) 
+        {
             writer.put(pair.first);
             writer.put(pair.second);
         }
         
-        for (int i=0;i<_inputBits;++i)
+        for (int i=0;i<_numInputBits;++i)
             writer.put(_shuffling[i]);
         
         // Para cada ram
-        for (int r=0;r<_numRams;++r) {
-            outtermap &omap = _memory[r];
+        for (int r=0;r<_numRams;++r) 
+        {
+            Ram &ram = _rams[r];
             
-            int keys = omap.size();
-            writer.put(keys);
-            //LOGE("E: Ram %d has %d", r, _memory[r].size());
+            int numKeys = ram.size();
+            writer.put(numKeys);
+
+//            if (r == 0)
+//                LOGE("Ram %d has %d addresses", r, omap.size());
             
             // Para cada posição nela endereçada
-            typename outtermap::const_iterator it;
-            for (it=omap.begin(); it!=omap.end();++it) {
-                const innermap &imap = it->second;
+            // int key = 0;
+            for (auto it=ram.begin(); it!=ram.end();++it) {
+                const MultiDiscriminator &multidiscriminator = it->second;
                 
-                for (int i=0;i<_ramBits;++i)
-                    writer.put(it->first.pattern()[i]?1:0);
-                writer.put(imap.size());
-                
-                //LOGE("E: Ram %d Key %lld", r, it->first);
-                
+                const Decoder & ram = it->first;
+                for (int i=0;i<ram.size();++i)
+                    writer.put(ram.pattern()[i]);
+                writer.put(multidiscriminator.size());
+
+//                if (r == 0) {
+//                    std::stringstream ss;
+//                    for (int i=0;i<ram.size();++i)
+//                        ss << ram.pattern()[i] << " ";
+//                    LOGE("RAM=0, key=%d, hash=%d, Saving %s", key++, ram.hash(), ss.str().c_str());
+//                }
+
                 // Salva as caixas
-                innermap::const_iterator it2;
-                for (it2=imap.begin(); it2 != imap.end();++it2) {
+                for (auto it2=multidiscriminator.begin(); it2 != multidiscriminator.end();++it2)
+                {
                     writer.put(it2->first);
                     writer.put(it2->second);
                 }
@@ -239,201 +302,274 @@ public:
     
     const int *
     activations() const
-    { return _activations; }
+    { 
+		return _activations; 
+	}
     
     int 
-    classes() const
-    { return _numDiscriminators; }
+    numDiscriminators() const
+    {
+		return _outterToInner.size();
+	}
     
     int 
-    ramBits() const
-    { return _ramBits; }
+    numRamBits() const
+    {
+        return _numRamBits;
+	}
     
     int
 	numRams() const
-    { return _numRams; }
+    {
+		return _numRams;
+	}
 
     int
-    inputBits() const
-    { return _inputBits; }
+    numInputBits() const
+    {
+        return _numInputBits;
+	}
     
-    int
-    learn(const Pattern & pattern, int target)
+    template <typename Retina>
+    int learn(const Retina & retina, int target)
     {
     	target = getInnerTarget(target);
 
-        // Prepara as chaves de hash
-        for (int i=0;i<_numRams;++i)
-            _ramInputs[i].read(pattern);
-        
         // Redimensiona o tamanho dos vetores de classes
-		if (target >= _numDiscriminators) {
-			_numDiscriminators = target * 2;
+        if (target >= _activationsCapacity)
+		{
+            _activationsCapacity = target == 0 ? 2 : target * 2;
 			delete [] _activations;
-			_activations = new int[_numDiscriminators];
+            _activations = new int[_activationsCapacity];
 		}
 		
 		// Para cada RAM
-		for (int r=0;r<_numRams;++r) {
-			outtermap &omap = _memory[r];
-			innermap &imap = omap[_ramInputs[r]];
+		for (int r=0;r<_numRams;++r)
+		{
+            _decoders[r].read(retina);
+		    
+            if (IgnoreZeroAddress && _decoders[r].hash() == 0)
+		        continue;
+
+//            if (r == 0) {
+//                std::stringstream ss;
+//                for (int i=0;i<_decoders[r].size();++i)
+//                    ss << _decoders[r].pattern()[i] << " ";
+//                LOGE("RAM=0 is learning a key, hash=%d, Saving %s", _decoders[r].hash(), ss.str().c_str());
+//            }
+
+            Ram &ram = _rams[r];
+            MultiDiscriminator &multidiscriminator = ram[_decoders[r]];
 			
 			// Se a posição endereçada não foi alocada
-			if (imap.find(target) == imap.end()) {
-			    imap[target] = 1;
-			} else {
-			    imap[target] = imap[target] + 1;
+            if (multidiscriminator.find(target) == multidiscriminator.end())
+			{
+                multidiscriminator[target] = 1;
+			}
+			else
+			{
+                multidiscriminator[target] = multidiscriminator[target] + 1;
 			
 			    // Incrementa maxBleaching se necessario
-			    if (imap[target] > _maxBleaching)
-			        _maxBleaching = imap[target];
+                if (multidiscriminator[target] > _maxBleaching)
+                    _maxBleaching = multidiscriminator[target];
 	        }
-		}
+
+//            if (r == 0) {
+//                auto it = omap.find(_decoders[r]);
+//                auto input = it->first;
+//
+//                std::stringstream ss;
+//                for (int i=0;i<input.size();++i)
+//                    ss << input.pattern()[i] << " ";
+//                LOGE("RAM0's omap has saved %s at the addressed position", ss.str().c_str());
+//            }
+
+        }
 
 		return target;
     }
 
     void
-	forget(const int target)
+    forget(const int target)
     {
     	auto it = _outterToInner.find(target);
     	if (it == _outterToInner.end())
     		return;
 
-    	const int realTarget = it->second;
+        const int innerTarget = it->second;
 
-    	for (int r=0;r<_numRams;++r) {
-    		outtermap &omap = _memory[r];
-    		for (auto &pair : omap) {
-    			innermap &imap = pair.second;
-    			auto it2 = imap.find(realTarget);
-    			if (it2 != imap.end())
-    				imap.erase(it2);
+        for (int r=0;r<_numRams;++r)
+        {
+            Ram &ram = _rams[r];
+            for (auto &pair : ram)
+			{
+                MultiDiscriminator &multidiscriminator = pair.second;
+                auto it2 = multidiscriminator.find(innerTarget);
+                if (it2 != multidiscriminator.end())
+                    multidiscriminator.erase(it2);
     		}
     	}
 
     	_innerToOutter.erase(it->second);
     	_outterToInner.erase(it);
-    	_thrash.push_back(realTarget);
+        _thrash.push_back(innerTarget);
     }
 
-	int 
-	readCounts(const Pattern &pattern)
+	template <typename Retina>
+    int readCounts(const Retina &retina)
 	{
-        // Prepara as chaves de hash
-        for (int i=0;i<_numRams;++i)
-            _ramInputs[i].read(pattern);
-        
-		// Limpa o vetor de ativações
-		for (int i=0;i<_numDiscriminators;++i)
+        if (numDiscriminators() == 0)
+        {
+            _k1 = 0;
+            _k2 = _k3 = -1;
+            _confidence = 0.0;
+            return 0;
+        }
+
+        // Limpa o vetor de ativações
+        for (int i=0;i<numDiscriminators();++i)
 			_activations[i] = 0;
 
 		// Para cada RAM
-		for (int r=0;r<_numRams;++r) {
-			outtermap &omap = _memory[r];
-            const RamInput & rIn = _ramInputs[r];
+        for (int r=0;r<_numRams;++r)
+        {
+            _decoders[r].read(retina);
+		    
+            Ram &ram = _rams[r];
+            const Decoder & decoder = _decoders[r];
             
 			// Se não contém o endereço mapeado continua
-			if (omap.find(rIn) == omap.end())
+            if (ram.find(decoder) == ram.end())
 				continue;
 
-			// Do contrario incrementa as ativações
-			innermap::const_iterator it;
-			innermap &imap = omap[rIn];
-			for (it=imap.begin(); it!= imap.end();++it)
+            // Do contrario incrementa as ativações
+            MultiDiscriminator &multidiscriminator = ram[decoder];
+            for (auto it=multidiscriminator.begin(); it!= multidiscriminator.end();++it)
 				_activations[it->first] += it->second;
 		}
 
 		// Retorna o discriminador mais ativado, calculando a confiança
-		return getOutterTarget(indexOfMax(_activations, _numDiscriminators));
+        return getOutterTarget(indexOfMax(_activations, numDiscriminators()));
 	}
 
-    int 
-    readBinary(const Pattern &pattern) 
+    template <typename Retina>
+    int readBinary(const Retina &retina, const int threshold=1)
     {
+        if (numDiscriminators() == 0)
+        {
+            _k1 = 0;
+            _k2 = _k3 = -1;
+            _confidence = 0.0;
+            return 0;
+        }
+
         // Prepara as chaves de hash
         for (int i=0;i<_numRams;++i)
-            _ramInputs[i].read(pattern);
+            _decoders[i].read(retina);
         
         // Equivalente ao bleaching com threshold fixo e igual a 1
-        return getOutterTarget(readThreshold(1));
+        return getOutterTarget(readBleached(threshold));
     }
     
-    int 
-    readBleaching(const Pattern &pattern)
-    { return readBleaching(pattern, 1, 0.1); }
+    template <typename Retina>
+    int readBleaching(const Retina &retina)
+    {
+        return readBleaching(retina, 1, 0.1);
+    }
     
-    int 
-    readBleaching(const Pattern &pattern, const int step, 
+    template <typename Retina>
+    int readBleaching(const Retina &retina, const int step,
         const float minConfidence)
     {
+        if (numDiscriminators() == 0)
+        {
+            _k1 = 0;
+            _k2 = _k3 = -1;
+            _confidence = 0.0;
+            return 0;
+        }
+
         if (step <= 0)
             throw WUPException("step must be larger than 0");
+            
         if (minConfidence < 0.0 || minConfidence > 1.0)
             throw WUPException("minConfidence must be between 0.0 and 1.0");
         
         // Prepara as chaves de hash
         for (int i=0;i<_numRams;++i)
-            _ramInputs[i].read(pattern);
+            _decoders[i].read(retina);
         
-		int bestPredicted    = 0;
+        int bestPrediction    = 0;
 		float bestConfidence = 0;
 
 		// Aplica o bleaching
-		for (int t=1;t<=_maxBleaching;t+=step) {
-			const int predicted    = readThreshold(t);
+        for (int t=1;t<=_maxBleaching;t+=step)
+        {
+            const int predicted    = readBleached(t);
 			const float confidence = getConfidence();
 			
 			// Se atingiu a confiança mínima retorne a resposta
-			if (confidence > minConfidence)  {
+			if (confidence > minConfidence)
 				return getOutterTarget(predicted);
-			}
 			
 			// Se for a de maior confiança até agora guarde-a
-			if (confidence > bestConfidence) {
+			if (confidence > bestConfidence)
+			{
 				bestConfidence = confidence;
-				bestPredicted  = predicted;
+                bestPrediction  = predicted;
 			}
 		}
 		
 		// Se nenhum deles atingiu a confiança mínima, 
 		// retorne o melhor encontrado
-	    //LOGI("Predicted %d", bestPredicted);
-	    if (bestPredicted == -1) 
-	        return _innerToOutter.empty()?0:_innerToOutter.begin()->second;
-        else
-    		return getOutterTarget(bestPredicted);
+        //LOGI("Predicted %d", bestPredicted);
+        return bestPrediction == -1
+			? (_innerToOutter.empty() ? 0 : _innerToOutter.begin()->second)
+            : getOutterTarget(bestPrediction);
     }
 
-    int 
-    readBinaryBleaching(const Pattern &pattern)
+    template <typename Retina>
+    int readBinaryBleaching(const Retina &retina)
     {
+        if (numDiscriminators() == 0)
+        {
+            _k1 = 0;
+            _k2 = _k3 = -1;
+            _confidence = 0.0;
+            return 0;
+        }
+
         // Prepara as chaves de hash
         for (int i=0;i<_numRams;++i)
-            _ramInputs[i].read(pattern);
+            _decoders[i].read(retina);
         
         if (_maxBleaching == 1)
-            return getOutterTarget(readThreshold(1));
+            return getOutterTarget(readBleached(1));
         
         int begin = 1;
         int end = _maxBleaching;
         int current = _nextBinaryStep(begin, end);
         
-        double weightBegin = _activations[readThreshold(begin)];
-        double weightCurrent = _activations[readThreshold(current)];
+        double weightBegin = _activations[readBleached(begin)];
+        double weightCurrent = _activations[readBleached(current)];
         
         double weightOne = weightBegin;
         
-        while(begin != end - 1) {
-            if (weightCurrent == weightOne) {
+        while(begin != end - 1)
+        {
+            if (weightCurrent == weightOne)
+            {
                 begin = current;
                 weightBegin = weightCurrent;
-            } else {
+            } 
+            else 
+            {
                 end = current;
             }
             
             current = _nextBinaryStep(begin, end);
-            weightCurrent = _activations[readThreshold(current)];
+            weightCurrent = _activations[readBleached(current)];
         }
         
         return getOutterTarget(getFirstBestPrediction());
@@ -441,7 +577,9 @@ public:
     
     float 
     getConfidence() const
-    { return _confidence; }
+    {
+		return _confidence;
+	}
     
     int
     getExcitation(const int target) const
@@ -455,36 +593,65 @@ public:
         return _activations[it->second];
 	}
     
-    int 
+    int
     getFirstBestPrediction() const
-    { return getOutterTarget(_k1); }
+    {
+        return getOutterTarget(_k1);
+	}
     
-    int 
+    int
     getSecondBestPrediction() const
-    { return getOutterTarget(_k2); }
+    {
+		return getOutterTarget(_k2);
+	}
     
     int
     getThirdBestPrediction() const
-    { return getOutterTarget(_k3); }
+    {
+		return getOutterTarget(_k3);
+	}
 
-    bool operator !=(Wisard const& other) const {
+    bool 
+    operator !=(BaseWisard const& other) const
+    {
     	return !(*this == other);
     }
 
- 	bool operator ==(Wisard const& other) const {
- 		if (_memory->size() != other._memory->size()) return false;
- 		if (_maxBleaching != other._maxBleaching) return false;
- 		if (_numDiscriminators != other._numDiscriminators) return false;
- 		if (_numRams != other._numRams) return false;
- 		if (_inputBits != other._inputBits) return false;
- 		if (_ramBits != other._ramBits) return false;
- 		if (_thrash.size() != other._thrash.size()) return false;
- 		if (_innerToOutter.size() != other._innerToOutter.size()) return false;
- 		if (_outterToInner.size() != other._outterToInner.size()) return false;
+ 	bool 
+    operator ==(BaseWisard const& other) const
+    {
+        if (_rams->size() != other._rams->size())
+			return false;
+			
+ 		if (_maxBleaching != other._maxBleaching) 
+			return false;
+			
+        if (_activationsCapacity != other._activationsCapacity)
+			return false;
+			
+ 		if (_numRams != other._numRams) 
+			return false;
+			
+        if (_numInputBits != other._numInputBits)
+			return false;
+			
+        if (_numRamBits != other._numRamBits)
+			return false;
+			
+ 		if (_thrash.size() != other._thrash.size()) 
+			return false;
+			
+ 		if (_innerToOutter.size() != other._innerToOutter.size()) 
+			return false;
+			
+ 		if (_outterToInner.size() != other._outterToInner.size()) 
+			return false;
 
- 		for (int i=0;i<_inputBits;++i)
+        for (int i=0;i<_numInputBits;++i)
  			if (_shuffling[i] != other._shuffling[i])
  				return false;
+
+        // TODO: Compare each ram?
 
  		return true;
  	}
@@ -495,62 +662,66 @@ private:
     _nextBinaryStep(const int begin, const int end) const
     {
         const int r = (int) round(sqrt((float) (begin * end)));
-        if (r == begin) return begin + 1;
-        if (r == end) return end - 1;
+        
+        if (r == begin) 
+			return begin + 1;
+			
+        if (r == end) 
+			return end - 1;
+			
         return r;
     }
     
     int
-    readThreshold(const int threshold)
+    readBleached(const int threshold)
     {
 		// Limpa o vetor de ativações
-		for (int i=0;i<_numDiscriminators;++i)
+        for (int i=0;i<_activationsCapacity;++i)
 			_activations[i] = 0;
 		
 		// Para cada RAM
-		for (int r=0;r<_numRams;++r) {
-			outtermap &omap = _memory[r];
-            const RamInput & rIn = _ramInputs[r];
+        for (int r=0;r<_numRams;++r) 
+        {
+            Ram &ram = _rams[r];
+            const Decoder & decoder = _decoders[r];
 			
 			// Se não contém o endereço mapeado continua
-			if (omap.find(rIn) == omap.end())
+            if (ram.find(decoder) == ram.end())
 			    continue;
 		    
-		    // Do contrario incrementa as ativações
-			innermap::const_iterator it;
-			innermap &imap = omap[rIn];
-			for (it=imap.begin(); it!= imap.end();++it)
+            // Do contrario incrementa as ativações
+            MultiDiscriminator &imap = ram[decoder];
+            for (auto it=imap.begin(); it!= imap.end();++it)
 			    if (it->second >= threshold)
 			        ++_activations[it->first];
 		}
 		
 		// Retorna o discriminador mais ativado, calculando a confiança 
-		return indexOfMax(_activations, _numDiscriminators);
+        return indexOfMax(_activations, _activationsCapacity);
     }
     
-    int 
+    int
     indexOfMax(const int * const array, const int length)
     {
 		_k1 = -1;
 		_k2 = -1;
 		_k3 = -1;
 		
-		for (int i=0;i<length;++i)
+        for (int i=0;i<length;++i)
 			if (_k1 == -1 || array[i] > array[_k1] )
 				_k1 =  i;
 		
-		for (int i=0;i<length;++i)
+        for (int i=0;i<length;++i)
 		    if (i != _k1 && (_k2 == -1 || array[i] > array[_k2]))
 		        _k2 = i;
         
-		for (int i=0;i<length;++i)
+        for (int i=0;i<length;++i)
 		    if (i != _k1 && i != _k2 && (_k3 == -1 || array[i] > array[_k3]))
 		        _k3 = i;
         
-		if (_k1 == -1 || _k2 == -1) 
-			_confidence = 1.0;
-		else 
-			_confidence = (float) (array[_k1] - array[_k2]) / (array[_k1]);
+		_confidence = _k1 == -1 || _k2 == -1 
+				? 1.0 
+				: (float) (array[_k1] - array[_k2]) / (array[_k1]);
 		
 		return _k1;
 	}
@@ -559,20 +730,26 @@ private:
 	getInnerTarget(const int outter)
     {
     	auto it = _outterToInner.find(outter);
-    	if (it == _outterToInner.end()) {
-    		if (_thrash.empty()) {
+    	if (it == _outterToInner.end())
+    	{
+    		if (_thrash.empty()) 
+    		{
     			const int result = _outterToInner.size();
     			_outterToInner[outter] = result;
     			_innerToOutter[result] = outter;
     			return result;
-    		} else {
+    		} 
+    		else 
+    		{
     			const int result = _thrash.back();
     			_thrash.pop_back();
     			_outterToInner[outter] = result;
     			_innerToOutter[result] = outter;
     			return result;
     		}
-    	} else {
+    	}
+    	else
+    	{
     		return it->second;
     	}
     }
@@ -580,33 +757,35 @@ private:
     int getInnerTarget(const int outter) const
     {
         const auto it = _outterToInner.find(outter);
-        if (it != _outterToInner.end())
-            return it->second;
-        else
+        
+        if (it == _outterToInner.end())
             throw WUPException("Unknown target");
+		
+		return it->second;    
     }
 
     int
 	getOutterTarget(const int inner) const
     {
         const auto it = _innerToOutter.find(inner);
-        if (it != _innerToOutter.end())
-            return it->second;
-        else
+        
+        if (it == _innerToOutter.end())
             throw WUPException("Internal error");
+		
+		return it->second;    
     }
 
 private:
 
     float _confidence;
     
-    outtermap *_memory;
+    Ram *_rams;
     
     int _maxBleaching;
     
     int *_activations;
     
-    int _numDiscriminators;
+    int _activationsCapacity;
     
     int _k1;
     
@@ -616,13 +795,13 @@ private:
 
     int _numRams;
     
-    int * _shuffling;
+    uint * _shuffling;
     
-    RamInput * _ramInputs;
+    Decoder * _decoders;
     
-    int _inputBits;
+    int _numInputBits;
     
-    int _ramBits;
+    int _numRamBits;
     
     std::vector<int> _thrash;
 

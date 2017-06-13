@@ -8,7 +8,13 @@
 #ifndef INCLUDE_WUP_MODELS_KERNELGENS_HPP
 #define INCLUDE_WUP_MODELS_KERNELGENS_HPP
 
+#include <cstdlib>
+#include <cstring>
+#include <vector>
 #include <cmath>
+
+#include <wup/common/sbio.hpp>
+#include <wup/common/generic.hpp>
 
 namespace wup {
 
@@ -377,7 +383,7 @@ namespace kernelgens {
         delete [] dimBreaks;
     }
 
-    void
+    inline void
     createNGKernels(const int dims, const int * const coeffs, const int coeffIndex,
         double * const currentKernel, double ** const kernels, int &kernelIndex)
     {

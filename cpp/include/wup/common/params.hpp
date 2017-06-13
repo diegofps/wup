@@ -10,7 +10,7 @@ namespace wup
 
 class Params {
 public:
-    
+
     Params(const int argc, const char ** argv)
     {
         std::vector<std::string> *list;
@@ -32,7 +32,10 @@ public:
             }
         }
     }
-    
+
+    Params(const int argc, char ** argv) : Params(argc, const_cast<const char **>(argv))
+    { }
+
     bool has(const char * const cmd) const
     { return !misses(cmd); }
 

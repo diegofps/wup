@@ -6,21 +6,38 @@
 #include <vector>
 #include <cmath>
 #include <sstream>
+#include <dirent.h>
 
 #include <wup/common/exceptions.hpp>
 #include <wup/common/msgs.hpp>
 
 namespace wup {
 
-typedef struct {
-	double w;
-	int id;
+typedef struct _BOX {
+    int id;
+    double w;
+
+    _BOX() {  }
+    _BOX(const int _id, const double _w) : id(_id), w(_w) { }
+
+    bool operator<(const wup::_BOX & other)
+    { return w < other.w; }
 } BOX;
 
 #ifdef __ANDROID_API__
 inline double log2(const double value)
 { return log(value) / log(2.); }
 #endif
+
+inline long 
+factorial(long n)
+{
+    if (n <= 1) return 1;
+    
+    long r = 1;
+    for (r=1; n!=1; r*=n, --n);
+    return r;
+}
 
 inline double
 sdistance(const double * const v1, const double * const v2, const int cols)
@@ -37,7 +54,7 @@ inline double
 distance(const double * const v1, const double * const v2, const int cols)
 { return sqrt( sdistance(v1, v2, cols) ); }
 
-int *
+inline int *
 randomPattern(const int length, const int n=2)
 {
     auto array = new int[length];
@@ -46,7 +63,7 @@ randomPattern(const int length, const int n=2)
     return array;
 }
 
-void
+inline void
 addNoise(int * const pattern, const int length, 
     const double noise, const int n=2)
 {
@@ -118,9 +135,9 @@ halfqsort(BOX * const array, const int bottom, const int top, const int k)
     int i = bottom;
     int j = top;
 
-    double x = array[(bottom + top) / 2].w;
-
     while (i <= j) {
+        const double x = array[(bottom + top) / 2].w;
+
         while (array[i].w > x && i < top)
         	++i;
 
@@ -142,6 +159,12 @@ halfqsort(BOX * const array, const int bottom, const int top, const int k)
 
 	if (i < top && i <= k)
 		halfqsort(array,  i, top, k);
+}
+
+inline void
+halfqsort(BOX * const array, const int length, const int k)
+{
+    halfqsort(array, 0, length - 1, k);
 }
 
 inline double
@@ -168,7 +191,7 @@ meanNstd(const int n, const T s1, const T s2,
 
 template<typename T>
 void
-meanNstd(const T *signal, const int length,
+meanNstd(const T * signal, const int length,
         double &mean, double &_std)
 {
 	double s1 = 0.0;
@@ -210,20 +233,20 @@ A sum(const A * const array, const int length)
 	return a;
 }
 
-inline int *
-randperm(const int n, int * const indexes)
+inline uint *
+randperm(const uint n, uint * const indexes)
 {
     int r, t;
     //boost::random::mt19937 gen(time(NULL));
     //boost::random::uniform_real_distribution<> dist;
 
-    for (int i=0;i<n;++i) {
+    for (uint i=0; i<n; ++i) {
         indexes[i] = i;
     }
 
 //    std::random_shuffle(indexes, &indexes[n-1]);
 
-    for (int i=0;i<n;++i) {
+    for (uint i=0; i<n; ++i) {
 //    	r = (int)(rand() / (float) RAND_MAX * (n - i));
 //    	if (r == (n - i)) --r;
 
@@ -237,10 +260,10 @@ randperm(const int n, int * const indexes)
     return indexes;
 }
 
-inline int *
+inline uint *
 randperm(const int n)
 {
-    return randperm(n, new int[n]);
+    return randperm(n, new uint[n]);
 }
 
 template <typename T>
@@ -329,8 +352,9 @@ T load_value(const std::string filename)
     return tmp;
 }
 
-std::vector<std::string> & split(std::vector<std::string> &elems,
-        const std::string &s, char delim)
+inline std::vector<std::string> &
+split(std::vector<std::string> &elems,
+    const std::string &s, char delim)
 {
     std::stringstream ss(s);
     std::string item;
@@ -387,6 +411,34 @@ export_vector(std::string filename,
 	fout.open(filename.c_str(), std::ios::out);
 	for (auto point : path)
 		fout << point << "\n";
+}
+
+inline std::vector<std::string> &
+dirFiles(const char * path, std::vector<std::string> &list)
+{
+    DIR *dir;
+    struct dirent *ent;
+    
+    if ((dir = opendir (path)) == NULL)
+        throw WUPException(cat("Directory '", path, "' does not exists"));
+    
+    while ((ent = readdir (dir)) != NULL) {
+        std::string tmp(ent->d_name);
+        
+        if (tmp == "." || tmp == "..")
+            continue;
+        
+        list.push_back(cat(path, tmp));
+    }
+    
+    closedir(dir);
+    return list;
+}
+
+inline std::vector<std::string> &
+dirFiles(const std::string & path, std::vector<std::string> &list)
+{
+    return dirFiles(path.c_str(), list);
 }
 
 } /* wup */

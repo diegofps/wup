@@ -8,6 +8,8 @@
 #ifndef INCLUDE_WUP_NODES_DIRECTION_HPP_
 #define INCLUDE_WUP_NODES_DIRECTION_HPP_
 
+#include <wup/nodes/node.hpp>
+
 namespace wup {
 
 namespace node {
@@ -15,59 +17,80 @@ namespace node {
 class Direction : public Node {
 public:
 
-	Direction(Node * const parent) :
-		Node(parent, parent->outputLength()+2),
-		_lastX(0.0),
-		_lastY(0.0),
-		_isFirst(true)
-	{ }
+    Direction(Node * const parent) :
+        Node(parent, parent->output().size()+2),
+        _lastX(0.0),
+        _lastY(0.0),
+        _isFirst(true)
+    {
+
+    }
+
+    Direction(Node * const parent, sbreader<double> & reader) :
+        Node(parent, reader),
+        _lastX(reader.get()),
+        _lastY(reader.get()),
+        _isFirst(reader.get())
+    {
+
+    }
+
+    virtual
+    void onExport(sbwriter<double> & writer)
+    {
+        writer.put(_lastX);
+        writer.put(_lastY);
+        writer.put(_isFirst);
+    }
 
     virtual void onStart()
     {
-    	_lastX = 0.0;
-    	_lastY = 0.0;
-    	_isFirst = true;
+        _lastX = 0.0;
+        _lastY = 0.0;
+        _isFirst = true;
     }
 
-    virtual void onFinish()
+    virtual void
+    onDigest(const Feature & input)
     {
-    	yield(feature());
+        if (input.size() < 2)
+            throw new WUPException("Feature is too short, need at least two columns");
+
+        Feature & out = output();
+
+        if (_isFirst) {
+            memcpy(out.data(), input.data(),
+                    sizeof(double) * input.size());
+
+            _isFirst = false;
+        } else {
+            direction(out[0], out[1], input[0], input[1],
+                    out[input.size()+0],
+                    out[input.size()+1]);
+            publish(out);
+
+            memcpy(out.data(), input.data(),
+                    sizeof(double) * input.size());
+        }
     }
 
-    virtual void onDigest(const Feature & input)
+    virtual void
+    onFinish()
     {
-    	if (input.size() < 2)
-    		throw new WUPException("Feature is too short, need at least two columns");
-
-		Feature & output = feature();
-
-    	if (_isFirst) {
-    		memcpy(output.data(), input.data(),
-					sizeof(double) * input.size());
-
-    		_isFirst = false;
-    	} else {
-			direction(output[0], output[1], input[0], input[1],
-					output[input.size()+0],
-					output[input.size()+1]);
-			yield(output);
-
-	    	memcpy(output.data(), input.data(),
-	    			sizeof(double) * input.size());
-    	}
+        publish(output());
     }
 
 private:
 
     void direction(const double lx, const double ly,
-    		const double x, const double y,
-			double &c, double &s) const
+            const double x, const double y,
+            double &c, double &s) const
     {
-    	const double a = x - lx;
-    	const double o = y - ly;
-    	const double h = sqrt( a*a + o*o );
-    	c = h == 0.0 ? 0.0 : a / h;
-    	s = h == 0.0 ? 0.0 : o / h;
+        const double a = x - lx;
+        const double o = y - ly;
+        const double h = sqrt( a*a + o*o );
+        c = h == 0.0 ? 0.0 : a / h;
+        s = h == 0.0 ? 0.0 : o / h;
     }
 
 private:
