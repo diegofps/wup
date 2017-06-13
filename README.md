@@ -1,2 +1,2 @@
 # wup
-Personal Weightless Repository
+Personal Weightless NN Repository
