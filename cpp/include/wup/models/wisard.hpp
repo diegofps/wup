@@ -8,8 +8,8 @@
 
 #include <wup/common/exceptions.hpp>
 #include <wup/common/sbio.hpp>
-#include <wup/models/binarydecoder.hpp>
-#include <wup/models/graydecoder.hpp>
+#include <wup/models/decoders/binarydecoder.hpp>
+#include <wup/models/decoders/graydecoder.hpp>
 #include <wup/models/pattern.hpp>
 
 namespace wup
@@ -154,7 +154,7 @@ public:
                 for (int k=0;k<numKeys;++k)
                 {
                     // Carrega o padrão para o input e atualiza a funcao de hash
-                    for (int i=0;i<decoder.size();++i)
+                    for (int i=0;i<decoder.patternSize();++i)
                         reader.get(decoder.pattern()[i]);
                     decoder.updateHash();
 
@@ -276,7 +276,7 @@ public:
                 const MultiDiscriminator &multidiscriminator = it->second;
                 
                 const Decoder & ram = it->first;
-                for (int i=0;i<ram.size();++i)
+                for (int i=0;i<ram.patternSize();++i)
                     writer.put(ram.pattern()[i]);
                 writer.put(multidiscriminator.size());
 
