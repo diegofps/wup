@@ -95,18 +95,21 @@ public:
     }
 
     BaseDecoder &
-    operator=(const BaseDecoder & other )
+    operator=(const BaseDecoder & other)
     {
         if (_patternSize != other._patternSize) {
-            delete [] _pattern;
+            if (_pattern != NULL)
+                delete [] _pattern;
             _pattern = new int[other._patternSize];
         }
 
         _inputSize = other._inputSize;
         _patternSize = other._patternSize;
-        memcpy(_pattern, other._pattern, sizeof(int) * _patternSize);
         _indexes = other._indexes;
         _hash = other._hash;
+
+        memcpy(_pattern, other._pattern, sizeof(int) * _patternSize);
+
         return *this;
     }
 

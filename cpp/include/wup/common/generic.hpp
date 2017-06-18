@@ -7,6 +7,8 @@
 #include <cmath>
 #include <sstream>
 #include <dirent.h>
+#include <stdint.h>
+#include <limits.h>
 
 #include <wup/common/exceptions.hpp>
 #include <wup/common/msgs.hpp>
@@ -28,6 +30,20 @@ typedef struct _BOX {
 inline double log2(const double value)
 { return log(value) / log(2.); }
 #endif
+
+inline uint32_t rotl32 (uint32_t n, uint c)
+{
+  const unsigned int mask = (CHAR_BIT*sizeof(n)-1);
+  c &= mask;
+  return (n<<c) | (n>>( (-c)&mask ));
+}
+
+inline uint32_t rotr32 (uint32_t n, uint c)
+{
+  const unsigned int mask = (CHAR_BIT*sizeof(n)-1);
+  c &= mask;
+  return (n>>c) | (n<<( (-c)&mask ));
+}
 
 inline long 
 factorial(long n)

@@ -36,6 +36,12 @@ public:
     Params(const int argc, char ** argv) : Params(argc, const_cast<const char **>(argv))
     { }
 
+    ~Params()
+    {
+        for (auto it : _mem)
+            delete it.second;
+    }
+
     bool has(const char * const cmd) const
     { return !misses(cmd); }
 

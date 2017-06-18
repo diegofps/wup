@@ -79,7 +79,8 @@ public:
         for (int i=0;i<_dims;++i)
             _tmp[i] = pattern[i];
 
-        for (int i=0;i<_numKernels;++i) {
+        for (int i=0;i<_numKernels;++i)
+        {
             _boxes[i].w = -wup::sdistance(_tmp, _kernels[i], _dims);
             _boxes[i].id = i;
         }
@@ -93,39 +94,54 @@ public:
         return _selections;
     }
 
-    int k() const
+    int
+    k() const
     {
         return _k;
     }
 
-    int numKernels() const
+    int
+    numKernels() const
     {
         return _numKernels;
     }
 
-    void exportTo(wup::sbwriter<double> &writer) {
+    void
+    exportTo(wup::sbwriter<double> &writer)
+    {
     	writer.put(-1.0);
         kernelgens::exportKernels(writer, _dims, _numKernels, _kernels);
         writer.put((double)_k);
         writer.put(-1.0);
     }
 
-    bool operator !=(EuclideanKernels const& other) const {
+    bool
+    operator !=(EuclideanKernels const& other) const
+    {
     	return !(*this == other);
     }
 
- 	bool operator ==(EuclideanKernels const& other) const {
- 		if (_numKernels != other._numKernels) return false;
- 		if (_dims != other._dims) return false;
- 		if (_k != other._k) return false;
+    bool
+    operator ==(EuclideanKernels const& other) const
+    {
+        if (_numKernels != other._numKernels)
+            return false;
 
- 		for (int i=0;i<_numKernels;++i) {
+        if (_dims != other._dims)
+            return false;
+
+        if (_k != other._k)
+            return false;
+
+        for (int i=0;i<_numKernels;++i)
+        {
  			auto v1 = _kernels[i];
  			auto v2 = other._kernels[i];
-			for (int j=0;j<_dims;++j) {
-				if (v1[j] != v2[j]) {
-					return false;
-				}
+
+            for (int j=0;j<_dims;++j)
+            {
+                if (v1[j] != v2[j])
+                    return false;
 			}
  		}
 
@@ -156,22 +172,24 @@ public:
 
     KernelCanvas(wup::sbreader<double> &reader) :
             _term_bits(reader.get()),
+            _levels(reader.get()),
             _kernelSpace(reader),
             _outputFreq(new int[_kernelSpace.numKernels()]),
             _freshInk(new bool[_kernelSpace.numKernels()]),
-            _outputBits(new int[_kernelSpace.numKernels() * _term_bits])
+            _outputBits(new int[_kernelSpace.numKernels() * _term_bits * _levels])
     {
         if (reader.get() != -1.0)
             throw new WUPException("Could not import kernelcanvas");
     }
 
     KernelCanvas(const int inputs, const int numKernels, const double act,
-            const int term_bits, double ** kernels) :
+            const int term_bits, double ** kernels, const int levels=1) :
         _term_bits(term_bits),
+        _levels(levels),
         _kernelSpace(numKernels, inputs, act, kernels),
         _outputFreq(new int[_kernelSpace.numKernels()]),
         _freshInk(new bool[_kernelSpace.numKernels()]),
-        _outputBits(new int[_kernelSpace.numKernels() * term_bits])
+        _outputBits(new int[_kernelSpace.numKernels() * term_bits * _levels])
     {
 
     }
@@ -186,7 +204,8 @@ public:
     void
     clear()
     {
-        for (int i=0;i<_kernelSpace.numKernels();++i) {
+        for (int i=0;i<_kernelSpace.numKernels();++i)
+        {
             _outputFreq[i] = 0;
             _freshInk[i] = false;
         }
@@ -214,30 +233,38 @@ public:
         }
 
         for (i=3*_kernelSpace.k(); i<_kernelSpace.numKernels(); ++i)
-        {
-            const int id = ids[i];
-            _freshInk[id] = false;
-        }
+            _freshInk[ids[i]] = false;
     }
 
     int * binary_output()
     {
-        int offset = -1;
-        for (int i=0;i<_kernelSpace.numKernels();++i)
-            if (_outputFreq[i] == 0)
-                for (int j=0;j<_term_bits;++j)
-                    _outputBits[++offset] = 0;
-			else
-                for (int j=0;j<_term_bits;++j)
-                    _outputBits[++offset] = 1;
+        const int len = _kernelSpace.numKernels();
+
+        for (int j=0;j<len;++j)
+        {
+            int i = 0;
+
+            const int limit = min(_outputFreq[j], _levels);
+            while (i < limit)
+                _outputBits[j * _levels + i++] = 1;
+
+            while (i < _levels)
+                _outputBits[j * _levels + i++] = 0;
+        }
+
+        for (int i=1;i<_term_bits;++i)
+            std::copy( _outputBits, _outputBits + (len * _levels), _outputBits + (i * len * _levels) );
+
         return _outputBits;
     }
 
     int * timestamp_output()
     {
         const int len = _kernelSpace.numKernels();
+
         for (int i=0;i<_term_bits;++i)
             std::copy(_outputFreq, &_outputFreq[len], &_outputBits[i * len]);
+
         return _outputBits;
     }
 
@@ -248,7 +275,7 @@ public:
 
     int binary_output_size() const
     {
-        return _kernelSpace.numKernels() * _term_bits;
+        return _kernelSpace.numKernels() * _term_bits * _levels;
     }
 
     int real_output_size() const
@@ -264,20 +291,27 @@ public:
     void exportTo(wup::sbwriter<double> &writer)
     {
         writer.put((double)_term_bits);
+        writer.put((double)_levels);
         _kernelSpace.exportTo(writer);
         writer.put(-1.0);
     }
 
     bool operator ==(wup::KernelCanvas<KernelSpace> const& other) const
     {
- 		if (_term_bits != other._term_bits) return false;
- 		if (_kernelSpace != other._kernelSpace) return false;
+        if (_term_bits != other._term_bits)
+            return false;
+
+        if (_kernelSpace != other._kernelSpace)
+            return false;
+
  		return true;
  	}
 
 private:
 
     int _term_bits;
+
+    int _levels;
 
     KernelSpace _kernelSpace;
 

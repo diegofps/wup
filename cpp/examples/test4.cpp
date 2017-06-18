@@ -10,10 +10,11 @@
 using namespace wup;
 using namespace wup::node;
 
-//const int RAM_BITS = 16;
-const int GRAY_BITS = 10;
+const int BITS = 16;
 
 const char * FILENAME = "temp.bin";
+
+#define WISARD Wisard
 
 void
 evaluateFold(const Fold &fold, ConfusionMatrix &avgConfusionMatrix, node::StreamEncoder & encoder)
@@ -24,14 +25,14 @@ evaluateFold(const Fold &fold, ConfusionMatrix &avgConfusionMatrix, node::Stream
     ConfusionMatrix confusionMatrix(fold.dataset());
 
     {
-        GrayWisard w(encoder.patternSize(), GRAY_BITS, fold.dataset().classes());
+        WISARD w(encoder.patternSize(), BITS, fold.dataset().classes());
 
         for (auto &sample : fold.trainingSamples())
         {
             const int * const pattern = encoder.encode(sample);
             const int target = sample.target();
             w.learn(pattern, target);
-            //break;
+//            break;
         }
         sbwriter<int> writer(FILENAME);
         w.exportTo(writer);
@@ -39,14 +40,14 @@ evaluateFold(const Fold &fold, ConfusionMatrix &avgConfusionMatrix, node::Stream
 
     {
         sbreader<int> reader(FILENAME);
-        GrayWisard w(reader);
+        WISARD w(reader);
 
         for (auto &sample : fold.testingSamples())
         {
             const int target = sample.target();
             const int * const pattern = encoder.encode(sample);
             confusionMatrix.add(w.readBleaching(pattern), target);
-            //break;
+//            break;
         }
     }
 
@@ -60,33 +61,22 @@ int
 main(int argc, const char **argv) {
     srand(time(NULL));
 
-    //Params params(argc, argv);
+    Params params(argc, argv);
     Dataset dataset("../../datasets/libras");
     KFold kfold(dataset, 10);
-
-//    Original chain (don't know why I did use these parameters)
-//    Node * librasEncoder = ChainBuilder(dataset.data().numCols())
-//            .add<Smooth>(0.01)
-//            .add<Direction>()
-//            .add<ZScore>()
-//            .add<Tanh>()
-//            .add<Replicate>(3)
-//            .add<node::KernelCanvas>(2048, 0.075, 20).actAsPattern()
-//            .root();
 
     const char * filename = "./chainbuilder.bin";
 
     {
         sbwriter<double> writer(filename);
-        // Libras (parameters from run_dissertacao.sh)
         StreamEncoder *preencoder = &(*new StreamEncoder(dataset.data().numCols()))
-                        .add<ZScore>(true) // Equivalente ao HighestStdNorm
+                        .add<ZScore>(true)
                         .add<Smooth4>(0.01)
                         .add<Direction>()
                         .add<ZScore>(std::initializer_list<uint>{0l, 1l}, true)
                         .add<Tanh>(std::initializer_list<uint>{0l, 1l})
                         .add<Replicate>(3)
-                        .add<node::KernelCanvas>(2048, 0.07, 20).actAsPattern()
+                        .add<node::KernelCanvas>(1024, 0.07, 20, 2).actAsPattern()
                         .exportTo(writer);
 
         delete preencoder;

@@ -12,7 +12,10 @@ namespace wup {
 class GrayDecoder : public BaseDecoder {
 public:
 
-    GrayDecoder() : BaseDecoder()
+    GrayDecoder() :
+        BaseDecoder(),
+        _hashPattern(NULL),
+        _factorials(NULL)
     {
 
     }
@@ -76,8 +79,11 @@ public:
     operator=(const GrayDecoder & other)
     {
         if (inputSize() != other.inputSize()) {
-            delete [] _hashPattern;
-            delete [] _factorials;
+            if (_hashPattern != NULL)
+                delete [] _hashPattern;
+            if (_factorials != NULL)
+                delete [] _factorials;
+
             _hashPattern = new int[other.inputSize()];
             _factorials = createFactorials(other.inputSize());
         }

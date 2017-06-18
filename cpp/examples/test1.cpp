@@ -38,7 +38,7 @@ test(const double noise)
     // Performs creation, training and exportTo
     {
         // Creates a Wisard Network with two discriminators
-        BaseWisard<BinaryInput> w(LENGTH, RAM_BITS, CLASSES);
+        Wisard w(LENGTH, RAM_BITS, CLASSES);
         
         // Perform training
         trainTime.start();
@@ -60,7 +60,7 @@ test(const double noise)
     {
         importTime.start();
         sbreader<int> reader(FILENAME);
-        BaseWisard<BinaryInput> w2(reader);
+        Wisard w2(reader);
         importTime.stop();
         
         testTime.start();

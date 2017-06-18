@@ -1,36 +1,20 @@
 #ifndef __WUP_BINARYDECODER_HPP
 #define __WUP_BINARYDECODER_HPP
 
-//#include "pattern.hpp"
-
 #include <cstring>
 #include <cstdlib>
-#include <stdint.h>   // for uint32_t
-#include <limits.h>   // for CHAR_BIT
 
+#include <wup/common/generic.hpp>
 #include <wup/common/exceptions.hpp>
 #include <wup/models/decoders/basedecoder.hpp>
-
-inline uint32_t rotl32 (uint32_t n, uint c)
-{
-  const unsigned int mask = (CHAR_BIT*sizeof(n)-1);
-  c &= mask;  // avoid undef behaviour with NDEBUG.  0 overhead for most types / compilers
-  return (n<<c) | (n>>( (-c)&mask ));
-}
-
-inline uint32_t rotr32 (uint32_t n, uint c)
-{
-  const unsigned int mask = (CHAR_BIT*sizeof(n)-1);
-  c &= mask;  // avoid undef behaviour with NDEBUG.  0 overhead for most types / compilers
-  return (n>>c) | (n<<( (-c)&mask ));
-}
 
 namespace wup {
 
 class BinaryDecoder : public BaseDecoder {
 public:
 
-    BinaryDecoder() : BaseDecoder()
+    BinaryDecoder() :
+        BaseDecoder()
     {
 
     }

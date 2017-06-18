@@ -10,6 +10,8 @@
 #include <wup/common/sbio.hpp>
 #include <wup/models/decoders/binarydecoder.hpp>
 #include <wup/models/decoders/graydecoder.hpp>
+#include <wup/models/decoders/basendecoder.hpp>
+#include <wup/models/decoders/snakedecoder.hpp>
 #include <wup/models/pattern.hpp>
 
 namespace wup
@@ -59,7 +61,8 @@ public:
         {
             const int start = i*_numRamBits;
             const int end   = min((i+1)*_numRamBits, numInputBits);
-            _decoders[i] = Decoder(&_shuffling[start], end-start);
+            Decoder d(_shuffling + start, end - start);
+            _decoders[i] = d;
         }
     }
     
@@ -83,13 +86,19 @@ public:
         reader.get(tmp);
         if (tmp != -1)
             throw WUPException("Illegal or corrupted WiSARD file");
-        
+
         // Atributos simples
         reader.get(_maxBleaching);
         reader.get(_activationsCapacity);
         reader.get(_numInputBits);
         reader.get(_numRamBits);
         reader.get(_numRams);
+
+//        LOGD("%s", cat(_maxBleaching).c_str());
+//        LOGD("%s", cat(_activationsCapacity).c_str());
+//        LOGD("%s", cat(_numInputBits).c_str());
+//        LOGD("%s", cat(_numRamBits).c_str());
+//        LOGD("%s", cat(_numRams).c_str());
 
         int thrashSize;
         int thrashItem;
@@ -99,7 +108,7 @@ public:
             reader.get(thrashItem);
             _thrash.push_back(thrashItem);
         }
-        
+
         int targetSize;
         int inner, outter;
         reader.get(targetSize);
@@ -110,7 +119,7 @@ public:
             _innerToOutter[inner] = outter;
             _outterToInner[outter] = inner;
         }
-        
+
         try 
         {
             // Aloca os vetores internos
@@ -118,8 +127,19 @@ public:
             _rams = new Ram[_numRams]();
             _shuffling = new uint[_numInputBits];
             _decoders = new Decoder[_numRams];
-            //int * tmp = new int[_ramBits];
-            
+
+            if (_activations == NULL)
+                throw new WUPException("Out of memory");
+
+            if (_rams == NULL)
+                throw new WUPException("Out of memory");
+
+            if (_shuffling == NULL)
+                throw new WUPException("Out of memory");
+
+            if (_decoders == NULL)
+                throw new WUPException("Out of memory");
+
             // Carrega o shuffling
             for (int i=0;i<_numInputBits;++i)
                 _shuffling[i] = reader.get();
@@ -127,13 +147,16 @@ public:
             // Cria as RamInputs
             for (int i=0;i<_numRams;++i)
             {
-                const int start = i*_numRamBits;
-                const int end   = min((i+1)*_numRamBits, _numInputBits);
-                _decoders[i] = Decoder(&_shuffling[start], end-start);
+                const int start = i * _numRamBits;
+                const int end   = min((i+1) * _numRamBits, _numInputBits);
+                const int len   = end-start;
+
+                Decoder d(_shuffling + start, len);
+                _decoders[i] = d;
+
             }
 
             int length, discriminator, hits;
-            //Decoder key(NULL, _ramBits);
             std::stringstream ss;
 
             // Para cada ram
@@ -148,7 +171,6 @@ public:
                 // Carrega o numero de chaves na ram
                 int numKeys;
                 reader.get(numKeys);
-                //LOGE("I: Ram %d has %d STARTED", r, keys);
             
                 // Para cada chave nesta ram
                 for (int k=0;k<numKeys;++k)
@@ -192,7 +214,6 @@ public:
 //                    LOGE("Expected %d, ram learned %d addresses", keys, omap.size());
                 //LOGE("I: Ram %d has %d ENDED", r, keys);
             }
-            
             //delete [] tmp;
             // Se algo der errado limpe os vetores
         }
@@ -211,6 +232,7 @@ public:
         reader.get(tmp);
         if (tmp != -1)
             throw WUPException("Illegal or corrupted WiSARD file");
+        //LOGE("_7");
     }
 
     ~BaseWisard()
