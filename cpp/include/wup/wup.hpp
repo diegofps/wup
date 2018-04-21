@@ -16,6 +16,7 @@
 #include <wup/common/sbio.hpp>
 #include <wup/common/seq.hpp>
 #include <wup/common/random.hpp>
+#include <wup/common/cronus.hpp>
 
 #include <wup/models/wisard.hpp>
 #include <wup/models/kernelcanvas.hpp>
@@ -23,7 +24,6 @@
 #include <wup/models/pattern.hpp>
 
 #include <wup/nodes/node.hpp>
-
 #include <wup/nodes/show.hpp>
 #include <wup/nodes/smooth4.hpp>
 #include <wup/nodes/direction.hpp>
