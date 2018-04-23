@@ -11,7 +11,8 @@ class Cronus
 {
 public:
 
-    Cronus()
+    Cronus(bool enabled_=true) :
+        enabled(enabled_)
     {
         start();
     }
@@ -26,7 +27,7 @@ public:
     {
         current = std::chrono::high_resolution_clock::now();
         int ms = std::chrono::duration_cast<std::chrono::milliseconds>(current - last).count();
-        if (msg != nullptr) print(msg, ": ", ms);
+        if (enabled && msg != nullptr) print(msg, ": ", ms);
         last = current;
         return ms;
     }
@@ -35,7 +36,7 @@ public:
     {
         current = std::chrono::high_resolution_clock::now();
         int ms = std::chrono::duration_cast<std::chrono::milliseconds>(current - begin).count();
-        if (msg != nullptr) print(msg, ": ", ms);
+        if (enabled && msg != nullptr) print(msg, ": ", ms);
         return ms;
     }
 
@@ -52,7 +53,10 @@ public:
     }
 
 private:
+
     std::chrono::time_point<std::chrono::high_resolution_clock> begin, last, current;
+
+    bool enabled;
 
 };
 
