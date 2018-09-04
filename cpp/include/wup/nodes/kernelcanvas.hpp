@@ -18,7 +18,7 @@ namespace node {
 class KernelCanvas : public Node {
 public:
 
-    KernelCanvas(Node * const parent, wup::sbreader<double> &reader) :
+    KernelCanvas(Node * const parent, ireader & reader) :
             Node(parent, reader),
             _kc(reader)
     {
@@ -73,7 +73,7 @@ public:
     }
 
 
-    virtual void onExport(sbwriter<double> & writer)
+    virtual void onExport(iwriter & writer)
     {
         _kc.exportTo(writer);
     }

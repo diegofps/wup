@@ -24,19 +24,19 @@ public:
 
     }
 
-    Smooth4(Node * const parent, sbreader<double> & reader) :
+    Smooth4(Node * const parent, ireader & reader) :
         Node(parent, reader),
-        _minDistance(reader.get()),
-        _firstFeature(reader.get())
+        _minDistance(reader.getDouble()),
+        _firstFeature(reader.getBool())
     {
 
     }
 
     virtual
-    void onExport(sbwriter<double> & writer)
+    void onExport(iwriter & writer)
     {
-        writer.put(_minDistance);
-        writer.put(_firstFeature);
+        writer.putDouble(_minDistance);
+        writer.putBool(_firstFeature);
     }
 
     ~Smooth4()

@@ -32,7 +32,7 @@ public:
 
     }
 
-    Show(Node * const parent, sbreader<double> & reader) :
+    Show(Node * const parent, ireader & reader) :
         Node(parent, reader),
         _bundle(reader.get()),
         _counter(reader.get()),
@@ -43,12 +43,12 @@ public:
     }
 
     virtual
-    void onExport(sbwriter<double> & writer)
+    void onExport(iwriter & writer)
     {
         writer.put(_bundle.numCols());
         writer.put(_counter);
-        writer.put(_eachStep);
-        writer.put(_label);
+        writer.putBool(_eachStep);
+        writer.putString(_label);
     }
 
     ~Show()

@@ -29,7 +29,7 @@ public:
         memcpy(_mem, other._mem, sizeof(double) * other.output().size());
     }
 
-    Replicate(Node * const parent, sbreader<double> & reader) :
+    Replicate(Node * const parent, ireader & reader) :
         Node(parent, reader),
         _times(reader.get()),
         _mem(new double[parent->output().size()]),
@@ -39,7 +39,7 @@ public:
     }
 
     virtual
-    void onExport(sbwriter<double> & writer)
+    void onExport(iwriter & writer)
     {
         writer.put(_times);
         writer.put(_current);

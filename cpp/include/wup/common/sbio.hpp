@@ -6,6 +6,7 @@
 #include <sstream>
 #include <cstdlib>
 #include <string>
+#include <cmath>
 
 #include <wup/common/exceptions.hpp>
 
@@ -31,7 +32,7 @@ public:
         _capacity = capacity;
     }
     
-    ~sbwriter()
+    virtual ~sbwriter()
     {
         if (_current != 0)
         {
@@ -54,13 +55,6 @@ public:
         }
     }
     
-    void put(std::string str)
-    {
-        for (int i=0;str[i] != '\0'; ++i)
-            put((double)str[i]);
-        put(0.0);
-    }
-
     bool good()
     {
         return _stream.good();
@@ -91,7 +85,7 @@ public:
         _capacity = capacity;
     }
     
-    ~sbreader()
+    virtual ~sbreader()
     {
         _stream.close();
         free(_buffer);
@@ -101,17 +95,6 @@ public:
     {
         if (_current == _content) readMore();
         t = _buffer[_current++];
-    }
-
-    std::string getString()
-    {
-        std::stringstream ss;
-
-        double tmp;
-        while ((tmp = get()) != 0.0)
-            ss << (char) tmp;
-
-        return ss.str();
     }
 
     const T & get()
@@ -145,6 +128,119 @@ private:
     uint _capacity;
     uint _current;
     uint _content;
+};
+
+class ireader : public sbreader<int>
+{
+public:
+    
+    ireader(const std::string & filename) : 
+        sbreader( filename )
+    {
+
+    }
+    
+    ireader(const std::string & filename, const int capacity) :
+        sbreader( filename, capacity )
+    {
+        
+    }
+    
+    std::string 
+    getString()
+    {
+        std::stringstream ss;
+
+        int tmp;
+        while ((tmp = get()) != 0)
+            ss << (char) tmp;
+
+        return ss.str();
+    }
+
+    double 
+    getDouble()
+    {
+        const int i = get();
+        const int j = get();
+
+        //std::cout << "Got " << i << " " << j << std::endl;
+        
+        return i * pow(10, j - 8);
+    }
+    
+    long 
+    getLong()
+    {
+        long l;
+        int * const root = (int*) & l;
+        
+        get(root[0]);
+        get(root[1]);
+        
+        return l;
+    }
+    
+    bool 
+    getBool()
+    {
+        return get() != 0;
+    }
+    
+};
+
+class iwriter : public sbwriter<int>
+{
+public:
+    
+    iwriter(const std::string & filename) : 
+        sbwriter( filename )
+    {
+
+    }
+    
+    iwriter(const std::string & filename, const int capacity) :
+        sbwriter( filename, capacity )
+    {
+        
+    }
+    
+    void 
+    putBool(const bool & b)
+    {
+        put((int) b);
+    }
+    
+    void 
+    putLong(const long & l)
+    {
+        const int * const root = (int*) & l;
+        
+        put(root[0]);
+        put(root[1]);
+    }
+    
+    void 
+    putDouble(const double & n)
+    {
+        const int j = n == 0.0 ? 0 : n < 0.0 ? floor(log10(-n)) : floor(log10(n));
+        const int i = n / pow(10, j - 8);
+        
+        //std::cout << "Saving " << i << " " << j << std::endl;
+
+        put(i);
+        put(j);
+    }
+    
+    template <typename T>
+    void 
+    putString(T & str)
+    {
+        for (int i=0; str[i]!='\0'; ++i)
+            put((int)str[i]);
+        put(0);
+    }
+
 };
 
 } /* wup */

@@ -66,7 +66,7 @@ public:
         }
     }
     
-    BaseWisard(sbreader<int> &reader) :
+    BaseWisard(ireader & reader) :
             _confidence(1.0), 
             _rams(NULL),
             _maxBleaching(1),
@@ -246,12 +246,12 @@ public:
     void
     exportTo(const char * const filepath) const
     {
-        sbwriter<int> writer(filepath, 10240);
+        iwriter writer( filepath, 10240 );
         exportTo(writer);
     }
 
     void 
-    exportTo(sbwriter<int> &writer) const
+    exportTo(iwriter & writer) const
     {
         // Número de verificação inicial
         int tmp = -1;
@@ -322,11 +322,12 @@ public:
         writer.put(tmp);
     }
     
-    const int *
-    activations() const
-    { 
-		return _activations; 
-	}
+    // The class order is not directly determined
+//    const int *
+//    activations() const
+//    { 
+//		return _activations; 
+//	}
     
     int 
     numDiscriminators() const
@@ -522,7 +523,8 @@ public:
         for (int i=0;i<_numRams;++i)
             _decoders[i].read(retina);
         
-        int bestPrediction    = 0;
+        int bestBleach       = 1;
+        int bestPrediction   = 0;
 		float bestConfidence = 0;
 
 		// Aplica o bleaching
@@ -539,16 +541,24 @@ public:
 			if (confidence > bestConfidence)
 			{
 				bestConfidence = confidence;
-                bestPrediction  = predicted;
+                bestPrediction = predicted;
+                bestBleach     = t;
 			}
 		}
 		
 		// Se nenhum deles atingiu a confiança mínima, 
 		// retorne o melhor encontrado
         //LOGI("Predicted %d", bestPredicted);
-        return bestPrediction == -1
-			? (_innerToOutter.empty() ? 0 : _innerToOutter.begin()->second)
-            : getOutterTarget(bestPrediction);
+        if (bestPrediction == -1)
+        {
+            return _innerToOutter.empty()
+                    ? 0 : _innerToOutter.begin()->second;
+        }
+        else
+        {
+            // We call read bleach again to populate the activations array
+            return getOutterTarget( readBleached( bestBleach ) );
+        }
     }
 
     template <typename Retina>
@@ -678,6 +688,33 @@ public:
  		return true;
  	}
 
+    template<typename T>
+    int
+    indexOfMax(const T & array, const int length)
+    {
+		_k1 = -1;
+		_k2 = -1;
+		_k3 = -1;
+		
+        for (int i=0;i<length;++i)
+			if (_k1 == -1 || array[i] > array[_k1] )
+				_k1 =  i;
+		
+        for (int i=0;i<length;++i)
+		    if (i != _k1 && (_k2 == -1 || array[i] > array[_k2]))
+		        _k2 = i;
+        
+        for (int i=0;i<length;++i)
+		    if (i != _k1 && i != _k2 && (_k3 == -1 || array[i] > array[_k3]))
+		        _k3 = i;
+        
+		_confidence = _k1 == -1 || _k2 == -1 
+				? 1.0 
+				: (float) (array[_k1] - array[_k2]) / (array[_k1]);
+		
+		return _k1;
+	}
+    
 private:
     
     int
@@ -721,32 +758,6 @@ private:
 		// Retorna o discriminador mais ativado, calculando a confiança 
         return indexOfMax(_activations, _activationsCapacity);
     }
-    
-    int
-    indexOfMax(const int * const array, const int length)
-    {
-		_k1 = -1;
-		_k2 = -1;
-		_k3 = -1;
-		
-        for (int i=0;i<length;++i)
-			if (_k1 == -1 || array[i] > array[_k1] )
-				_k1 =  i;
-		
-        for (int i=0;i<length;++i)
-		    if (i != _k1 && (_k2 == -1 || array[i] > array[_k2]))
-		        _k2 = i;
-        
-        for (int i=0;i<length;++i)
-		    if (i != _k1 && i != _k2 && (_k3 == -1 || array[i] > array[_k3]))
-		        _k3 = i;
-        
-		_confidence = _k1 == -1 || _k2 == -1 
-				? 1.0 
-				: (float) (array[_k1] - array[_k2]) / (array[_k1]);
-		
-		return _k1;
-	}
     
     int
 	getInnerTarget(const int outter)

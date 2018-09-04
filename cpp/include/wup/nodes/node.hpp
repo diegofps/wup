@@ -52,7 +52,7 @@ public:
             parent->addChild(this);
     }
 
-    Node(Node * const parent, sbreader<double> & reader) :
+    Node(Node * const parent, ireader & reader) :
         _parent(parent),
         _outputBuffer(NULL),
         _output(NULL, 0),
@@ -61,7 +61,7 @@ public:
         _actsAsPattern(false)
     {
         //LOGE("10");
-        if (reader.get() != -1.0)
+        if (reader.get() != -1)
             throw new WUPException("Invalid file");
 
         int outputSize = reader.get();
@@ -70,16 +70,16 @@ public:
         _outputBuffer = outputSize == 0 ? NULL : new double[outputSize];
         _output.remap(_outputBuffer, outputSize);
 
-        if (reader.get() != -1.0)
+        if (reader.get() != -1)
             throw new WUPException("Invalid file");
     }
 
-    void exportTo(sbwriter<double> & writer)
+    void exportTo(iwriter & writer)
     {
-        writer.put(-1.0);
+        writer.put(-1);
         writer.put(_output.size());
         writer.put(_actsAsPattern);
-        writer.put(-1.0);
+        writer.put(-1);
         onExport(writer);
     }
 
@@ -97,7 +97,7 @@ public:
     }
 
     virtual void
-    onExport(sbwriter<double> &)
+    onExport(iwriter & writer)
     {
         //LOGE("generic onExport");
     }

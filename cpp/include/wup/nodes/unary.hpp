@@ -36,7 +36,7 @@ public:
 
     }
 
-    Unary(Node * const parent, sbreader<double> & reader) :
+    Unary(Node * const parent, ireader & reader) :
         Node(parent, reader),
         _termBits(reader.get())
     {
@@ -44,7 +44,7 @@ public:
     }
 
     virtual
-    void onExport(sbwriter<double> & writer)
+    void onExport(iwriter & writer)
     {
         writer.put(_termBits);
     }

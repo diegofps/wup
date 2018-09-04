@@ -29,23 +29,23 @@ public:
             throw WUPException("Box2D requires an input pattern with length 2");
     }
 
-    Box2D(Node * const parent, sbreader<double> & reader) :
+    Box2D(Node * const parent, ireader & reader) :
         Node(parent, reader),
-        _left(reader.get()),
-        _right(reader.get()),
-        _top(reader.get()),
-        _bottom(reader.get())
+        _left(reader.getDouble()),
+        _right(reader.getDouble()),
+        _top(reader.getDouble()),
+        _bottom(reader.getDouble())
     {
 
     }
 
     virtual
-    void onExport(sbwriter<double> & writer)
+    void onExport(iwriter & writer)
     {
-        writer.put(_left);
-        writer.put(_right);
-        writer.put(_top);
-        writer.put(_bottom);
+        writer.putDouble(_left);
+        writer.putDouble(_right);
+        writer.putDouble(_top);
+        writer.putDouble(_bottom);
     }
 
     virtual void onStart()

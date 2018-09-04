@@ -20,7 +20,7 @@ namespace wup {
 class EuclideanKernels {
 public:
 
-    EuclideanKernels (wup::sbreader<double> &reader) :
+    EuclideanKernels (ireader & reader) :
             _numKernels(0),
             _dims(0),
             _tmp(NULL),
@@ -107,12 +107,12 @@ public:
     }
 
     void
-    exportTo(wup::sbwriter<double> &writer)
+    exportTo(wup::iwriter &writer)
     {
-    	writer.put(-1.0);
+    	writer.put(-1);
         kernelgens::exportKernels(writer, _dims, _numKernels, _kernels);
         writer.put((double)_k);
-        writer.put(-1.0);
+        writer.put(-1);
     }
 
     bool
@@ -170,7 +170,7 @@ template <typename KernelSpace=EuclideanKernels>
 class KernelCanvas {
 public:
 
-    KernelCanvas(wup::sbreader<double> &reader) :
+    KernelCanvas(ireader & reader) :
             _term_bits(reader.get()),
             _levels(reader.get()),
             _kernelSpace(reader),
@@ -178,7 +178,7 @@ public:
             _freshInk(new bool[_kernelSpace.numKernels()]),
             _outputBits(new int[_kernelSpace.numKernels() * _term_bits * _levels])
     {
-        if (reader.get() != -1.0)
+        if (reader.get() != -1)
             throw new WUPException("Could not import kernelcanvas");
     }
 
@@ -288,12 +288,12 @@ public:
         return _kernelSpace.numKernels() * _term_bits;
     }
 
-    void exportTo(wup::sbwriter<double> &writer)
+    void exportTo(wup::iwriter & writer)
     {
-        writer.put((double)_term_bits);
-        writer.put((double)_levels);
+        writer.put(_term_bits);
+        writer.put(_levels);
         _kernelSpace.exportTo(writer);
-        writer.put(-1.0);
+        writer.put(-1);
     }
 
     bool operator ==(wup::KernelCanvas<KernelSpace> const& other) const

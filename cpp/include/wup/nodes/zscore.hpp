@@ -53,10 +53,10 @@ public:
         _s2 = new double[columns.size()];
     }
 
-    ZScore(Node * const parent, sbreader<double> & reader) :
+    ZScore(Node * const parent, ireader & reader) :
         Node(parent, reader),
         _columns(reader.get()),
-        _useHighestStd(reader.get())
+        _useHighestStd(reader.getBool())
     {
         _s1 = new double[_columns.size()];
         _s2 = new double[_columns.size()];
@@ -66,10 +66,10 @@ public:
     }
 
     virtual
-    void onExport(sbwriter<double> & writer)
+    void onExport(iwriter & writer)
     {
         writer.put(_columns.size());
-        writer.put(_useHighestStd);
+        writer.putBool(_useHighestStd);
 
         for (uint i=0;i<_columns.size(); ++i)
             writer.put(_columns[i]);

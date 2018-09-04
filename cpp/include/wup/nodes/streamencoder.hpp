@@ -11,7 +11,7 @@ namespace wup {
 namespace node {
 
 template <typename NODE>
-Node * nodeReader(Node * parent, sbreader<double> & reader)
+Node * nodeReader(Node * parent, ireader & reader)
 {
     return new NODE(parent, reader);
 }
@@ -24,7 +24,7 @@ private:
 
     Node * _last;
 
-    std::map<std::string, Node *(*)(Node * parent, wup::sbreader<double> & reader)> _nodeReader;
+    std::map<std::string, Node *(*)(Node * parent, wup::ireader & reader)> _nodeReader;
 
 public:
 
@@ -35,23 +35,23 @@ public:
         registerNodeReaders();
     }
 
-    StreamEncoder(sbreader<double> & reader) :
+    StreamEncoder(ireader & reader) :
             _root(NULL),
             _last(NULL)
     {
         registerNodeReaders();
 
-        if (reader.get() != -1.0)
+        if (reader.get() != -1)
             throw new WUPException("Invalid file");
 
-        if (reader.get() == 1.0)
+        if (reader.get() == 1)
         {
             //LOGE("Has root, loading");
             _root = importNode(NULL, reader);
             _last = _root->lastDescendant();
         }
 
-        if (reader.get() != -1.0)
+        if (reader.get() != -1)
             throw new WUPException("Invalid file");
     }
 
@@ -61,21 +61,21 @@ public:
     }
 
     StreamEncoder &
-    exportTo(sbwriter<double> & writer)
+    exportTo(iwriter & writer)
     {
-        writer.put(-1.0);
+        writer.put(-1);
 
         if (_root == NULL) {
             //LOGE("Has no root :(");
-            writer.put(0.0);
+            writer.put(0);
         }
         else {
             //LOGE("Has root, exporting!");
-            writer.put(1.0);
+            writer.put(1);
             exportNode(writer, _root);
         }
 
-        writer.put(-1.0);
+        writer.put(-1);
         return *this;
     }
 
@@ -158,10 +158,10 @@ public:
 private:
 
     void
-    exportNode(sbwriter<double> & writer, Node * node)
+    exportNode(iwriter & writer, Node * node)
     {
         const char * name = typeid(*node).name();
-        writer.put(name);
+        writer.putString(name);
 
         node->exportTo(writer);
 
@@ -172,7 +172,7 @@ private:
     }
 
     Node *
-    importNode(Node * parent, sbreader<double> & reader)
+    importNode(Node * parent, ireader & reader)
     {
         const std::string nodeName = reader.getString();
         auto it = _nodeReader.find(nodeName);
@@ -181,7 +181,7 @@ private:
 
         Node * newNode = it->second(parent, reader);
 
-        const int numChildren = (int)reader.get();
+        const int numChildren = reader.get();
         //LOGE("Importing node of type %s with %d children, loading", nodeName.c_str(), numChildren);
         for (int i=0;i<numChildren;++i)
             newNode->addChild(importNode(newNode, reader));

@@ -20,7 +20,7 @@ public:
 
     }
 
-    Export(Node * const parent, sbreader<double> & reader) :
+    Export(Node * const parent, ireader & reader) :
         Node(parent, reader),
         _filename(reader.getString())
     {
@@ -28,9 +28,9 @@ public:
     }
 
     virtual
-    void onExport(sbwriter<double> & writer)
+    void onExport(iwriter & writer)
     {
-        writer.put(_filename);
+        writer.putString(_filename);
     }
 
     ~Export()

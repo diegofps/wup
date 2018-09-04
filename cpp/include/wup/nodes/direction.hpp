@@ -26,21 +26,21 @@ public:
 
     }
 
-    Direction(Node * const parent, sbreader<double> & reader) :
+    Direction(Node * const parent, ireader & reader) :
         Node(parent, reader),
-        _lastX(reader.get()),
-        _lastY(reader.get()),
-        _isFirst(reader.get())
+        _lastX(reader.getDouble()),
+        _lastY(reader.getDouble()),
+        _isFirst(reader.getBool())
     {
 
     }
 
     virtual
-    void onExport(sbwriter<double> & writer)
+    void onExport(iwriter & writer)
     {
-        writer.put(_lastX);
-        writer.put(_lastY);
-        writer.put(_isFirst);
+        writer.putDouble(_lastX);
+        writer.putDouble(_lastY);
+        writer.putBool(_isFirst);
     }
 
     virtual void onStart()

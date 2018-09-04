@@ -42,28 +42,33 @@ namespace kernelgens {
     }
 
     inline void
-    importKernels(wup::sbreader<double> &reader, int &dims, int &numKernels, double** &kernels)
+    importKernels(wup::ireader & reader, int &dims, int &numKernels, double** &kernels)
     {
         dims = reader.get();
         numKernels = reader.get();
         kernels = new double*[numKernels];
-        for (int i=0;i<numKernels;++i) {
+
+        for (int i=0;i<numKernels;++i) 
+        {
             double * v = new double[dims];
             for (int j=0;j<dims;++j)
-                v[j] = reader.get();
+                v[j] = reader.getDouble();
             kernels[i] = v;
         }
     }
 
     inline void
-    exportKernels(wup::sbwriter<double> & writer, const int dims, int numKernels, double** &kernels)
+    exportKernels(wup::iwriter & writer, const int dims, int numKernels, double** &kernels)
     {
         writer.put(dims);
         writer.put(numKernels);
-        for (int i=0;i<numKernels;++i) {
+
+        for (int i=0;i<numKernels;++i) 
+        {
             auto v = kernels[i];
+
             for (int j=0;j<dims;++j)
-                writer.put(v[j]);
+                writer.putDouble(v[j]);
         }
     }
 

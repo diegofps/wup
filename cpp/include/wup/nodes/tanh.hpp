@@ -37,7 +37,7 @@ public:
 
     }
 
-    Tanh(Node * const parent, sbreader<double> & reader) :
+    Tanh(Node * const parent, ireader & reader) :
         Node(parent, reader),
         _columns(reader.get())
     {
@@ -46,7 +46,7 @@ public:
     }
 
     virtual
-    void onExport(sbwriter<double> & writer)
+    void onExport(iwriter & writer)
     {
         writer.put(_columns.size());
         for (uint i=0;i<_columns.size(); ++i)
