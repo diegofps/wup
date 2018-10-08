@@ -112,6 +112,14 @@ printArray(const T * const src, const int length, bool indexes=false)
 	}
 }
 
+template<typename T>
+void
+printArray(const char * msg, const T * const src, const int length, bool indexes=false)
+{
+    printn(msg, ": ");
+    printArray(src, length, indexes);
+}
+
 inline void
 topkqsort(BOX * const array, const int bottom, const int top, const int k)
 {
@@ -198,8 +206,8 @@ stddev(const int n, const T s1, const T s2, T &_std)
 
 template <typename T>
 void
-meanNstd(const int n, const T s1, const T s2,
-        T &mean, T &_std)
+meanNstd(const int & n, const T s1, const T s2,
+        T & mean, T & _std)
 {
     mean = s1 / n;
     stddev(n, s1, s2, _std);
@@ -249,8 +257,9 @@ A sum(const A * const array, const int length)
 	return a;
 }
 
-inline uint *
-randperm(const uint n, uint * const indexes)
+template <typename T>
+inline T *
+randperm(const uint n, T * const indexes)
 {
     int r, t;
     //boost::random::mt19937 gen(time(NULL));
@@ -280,6 +289,13 @@ inline uint *
 randperm(const int n)
 {
     return randperm(n, new uint[n]);
+}
+
+template <typename T>
+inline T *
+randperm(const int n)
+{
+    return randperm(n, new T[n]);
 }
 
 template <typename T>

@@ -46,7 +46,7 @@ public:
         return timeToLong(current);
     }
 
-    long timeToLong(std::chrono::time_point<std::chrono::system_clock> & t)
+    long timeToLong(std::chrono::time_point<std::chrono::high_resolution_clock>  & t)
     {
         auto duration = t.time_since_epoch();
         return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
@@ -54,7 +54,11 @@ public:
 
 private:
 
-    std::chrono::time_point<std::chrono::high_resolution_clock> begin, last, current;
+    std::chrono::time_point<std::chrono::high_resolution_clock> begin;
+
+    std::chrono::time_point<std::chrono::high_resolution_clock> last;
+
+    std::chrono::time_point<std::chrono::high_resolution_clock> current;
 
     bool enabled;
 

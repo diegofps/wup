@@ -12,6 +12,10 @@
 #include <wup/common/dataset.hpp>
 #include <wup/common/msgs.hpp>
 
+#ifndef ulong
+#define ulong unsigned long
+#endif
+
 namespace wup {
 
 class KFold;

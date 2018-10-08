@@ -24,6 +24,11 @@ public:
     Bundle(const int rows, const int columns) : _columns(columns), _data(columns * rows, T())
     { }
 
+    Bundle(const int rows, const int columns, const T & initialValue) :
+        _columns(columns),
+        _data(columns * rows, initialValue)
+    { }
+
     Bundle(const std::string filename, const char delimiter='\t',
         int ignoreRows=0) : _columns(0)
     {
@@ -36,7 +41,9 @@ public:
         int rows = 0;
         std::string line;
         std::vector<std::string> cells;
-        while(!file_in.eof()) {
+
+        while(!file_in.eof())
+        {
             getline(file_in, line);
             ++rows;
 
@@ -61,26 +68,32 @@ public:
 
     T & operator()(const uint i, const uint j)
     {
+#ifndef WUP_UNSAFE
         if (j >= _columns)
             throw WUPException("Out of bounds");
-
+#endif
         const int index = i * _columns + j;
 
+#ifndef WUP_UNSAFE
         if (index >= _data.size())
             throw WUPException("Out of bounds");
-
+#endif
         return _data[index];
     }
 
     const T & operator()(const uint i, const uint j) const
     {
+#ifndef WUP_UNSAFE
         if (j >= _columns)
             throw WUPException("Out of bounds");
+#endif
 
         const uint index = i * _columns + j;
 
+#ifndef WUP_UNSAFE
         if (index >= _data.size())
             throw WUPException("Out of bounds");
+#endif
 
         return _data[index];
     }
@@ -112,8 +125,8 @@ public:
 
     void push_back(const T * const array, const uint length)
     {
-    for (uint i=0;i<length;++i)
-        _data.push_back(array[i]);
+        for (uint i=0;i<length;++i)
+            _data.push_back(array[i]);
     }
 
     void push_back(const T & t)
@@ -156,12 +169,117 @@ private:
 };
 
 template <typename T>
-std::ostream & operator<<(std::ostream &o, const wup::Bundle<T> &bundle)
+class BundleView
+{
+public:
+
+    T * data;
+
+    int rows;
+
+    int cols;
+
+    int stride;
+
+    BundleView(Bundle<T> & _bundle, const int _rows, const int _cols) :
+        data(&_bundle(0, 0)),
+        cols(_cols),
+        rows(_rows),
+        stride(_bundle.numCols())
+    {
+
+    }
+
+    BundleView(Bundle<T> & bundle, const int i1, const int j1, const int i2, const int j2) :
+        data(&bundle(i1, j1)),
+        cols(j2-j1),
+        rows(i2-i1),
+        stride(bundle.numCols())
+    {
+#ifndef WUP_UNSAFE
+        if (i1 < 0 || j1 < 0 || i2 > bundle.numRows() || j2 > bundle.numCols() || i2 <= i1 || j2 <= j1)
+            throw WUPException("Out of bounds");
+#endif
+    }
+
+    BundleView(const T * const _data, const int _rows, const int _cols, const int _stride) :
+        data(_data),
+        rows(_rows),
+        cols(_cols),
+        stride(_stride)
+    {
+
+    }
+
+    T &
+    operator()(const uint i, const uint j)
+    {
+#ifndef WUP_UNSAFE
+        if (j >= cols || i >= rows || i < 0 || j < 0)
+            throw WUPException("Out of bounds");
+#endif
+        const int index = i * stride + j;
+        return data[index];
+    }
+
+    const T &
+    operator()(const uint i, const uint j) const
+    {
+#ifndef WUP_UNSAFE
+        if (j >= cols || i >= rows || i < 0 || j < 0)
+            throw WUPException("Out of bounds");
+#endif
+
+        const uint index = i * stride + j;
+        return data[index];
+    }
+
+    const T &
+    operator[](const int index) const
+    {
+#ifndef WUP_UNSAFE
+        if (index >= cols * rows || index < 0)
+            throw WUPException("Out of bounds");
+#endif
+        const int i = index / cols;
+        const int j = index % cols;
+        return (*this)(i, j);
+    }
+
+    T &
+    operator[](const int index)
+    {
+#ifndef WUP_UNSAFE
+        if (index >= cols * rows || index < 0)
+            throw WUPException("Out of bounds");
+#endif
+        const int i = index / cols;
+        const int j = index % cols;
+        return (*this)(i, j);
+    }
+
+};
+
+template <typename T>
+std::ostream & operator<<(std::ostream & o, const wup::Bundle<T> & bundle)
 {
     for (int i=0;i<bundle.numRows();++i) {
         o << bundle(i, 0);
         for (int j=1;j<bundle.numCols();++j)
             o << "," << bundle(i, j);
+        o << "\n";
+    }
+    return o;
+}
+
+template <typename T>
+std::ostream & operator<<(std::ostream & o, const wup::BundleView<T> & view)
+{
+    for (int i=0;i<view.rows;++i)
+    {
+        o << view(i, 0);
+        for (int j=1;j<view.cols;++j)
+            o << "," << view(i, j);
         o << "\n";
     }
     return o;

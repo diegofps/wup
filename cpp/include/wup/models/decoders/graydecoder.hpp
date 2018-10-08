@@ -96,6 +96,7 @@ public:
     updateHash()
     {
         std::copy(pattern(), pattern() + inputSize(), _hashPattern);
+
         size_t h = 0;
 
         for (uint n=inputSize()-1; n!=0; --n) {

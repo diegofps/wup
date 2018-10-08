@@ -37,8 +37,20 @@ public:
         if (indexes() == NULL)
             throw WUPException();
         
+        isZero(true);
+        
         for (uint i=0;i<inputSize();++i)
-            pattern()[i] = retina[indexes()[i]] != 0;
+        {
+            if (retina[indexes()[i]] != 0)
+            {
+                pattern()[i] = 1;
+                isZero(false);
+            }
+            else
+            {
+                pattern()[i] = 0;
+            }
+        }
 
         updateHash();
     }

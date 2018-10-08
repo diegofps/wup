@@ -12,6 +12,7 @@
 #include <wup/models/decoders/graydecoder.hpp>
 #include <wup/models/decoders/basendecoder.hpp>
 #include <wup/models/decoders/snakedecoder.hpp>
+#include <wup/models/decoders/intdecoder.hpp>
 #include <wup/models/pattern.hpp>
 
 namespace wup
@@ -20,8 +21,11 @@ namespace wup
 template <typename Decoder=BinaryDecoder, bool IgnoreZeroAddress=false>
 class BaseWisard;
 
+typedef BaseWisard<IntDecoder> IntWisard;
 typedef BaseWisard<BinaryDecoder> Wisard;
 typedef BaseWisard<GrayDecoder> GrayWisard;
+typedef BaseWisard<BinaryDecoder, true> Wisardz;
+typedef BaseWisard<GrayDecoder, true> GrayWisardz;
 
 template <typename Decoder, bool IgnoreZeroAddress>
 class BaseWisard 
@@ -34,8 +38,8 @@ public:
     BaseWisard(const int inputBits, const int ramBits) :
             BaseWisard(inputBits, ramBits, 2)
     {
-		
-	}
+
+    }
     
     BaseWisard(const int numInputBits, const int numRamBits, const int numClasses) :
             _confidence(1.0), 
@@ -326,53 +330,71 @@ public:
 //    const int *
 //    activations() const
 //    { 
-//		return _activations; 
-//	}
+//        return _activations;
+//    }
     
     int 
     numDiscriminators() const
     {
-		return _outterToInner.size();
-	}
+        return _outterToInner.size();
+    }
     
     int 
     numRamBits() const
     {
         return _numRamBits;
-	}
+    }
     
     int
-	numRams() const
+    numRams() const
     {
-		return _numRams;
-	}
+        return _numRams;
+    }
 
     int
     numInputBits() const
     {
         return _numInputBits;
-	}
+    }
     
+    long 
+    numPositions() const
+    {
+        long sum = 0;
+
+        for (int r=0;r<_numRams;++r)
+        {
+            Ram &ram = _rams[r];
+            for (auto it : ram)
+                sum += it.second.size();
+        }
+
+        return sum;
+    }
+
     template <typename Retina>
     int learn(const Retina & retina, int target)
     {
-    	target = getInnerTarget(target);
+        target = getInnerTarget(target);
 
         // Redimensiona o tamanho dos vetores de classes
         if (target >= _activationsCapacity)
-		{
+        {
             _activationsCapacity = target == 0 ? 2 : target * 2;
-			delete [] _activations;
+            delete [] _activations;
             _activations = new int[_activationsCapacity];
-		}
-		
-		// Para cada RAM
-		for (int r=0;r<_numRams;++r)
-		{
+        }
+
+        // Para cada RAM
+        for (int r=0;r<_numRams;++r)
+        {
             _decoders[r].read(retina);
-		    
-            if (IgnoreZeroAddress && _decoders[r].hash() == 0)
-		        continue;
+
+            if (IgnoreZeroAddress && _decoders[r].isZero())
+            {
+                //print("Zero detected!");
+                continue;
+            }
 
 //            if (r == 0) {
 //                std::stringstream ss;
@@ -383,20 +405,20 @@ public:
 
             Ram &ram = _rams[r];
             MultiDiscriminator &multidiscriminator = ram[_decoders[r]];
-			
-			// Se a posição endereçada não foi alocada
+
+            // Se a posição endereçada não foi alocada
             if (multidiscriminator.find(target) == multidiscriminator.end())
-			{
+            {
                 multidiscriminator[target] = 1;
-			}
-			else
-			{
+            }
+            else
+            {
                 multidiscriminator[target] = multidiscriminator[target] + 1;
-			
-			    // Incrementa maxBleaching se necessario
+
+                // Incrementa maxBleaching se necessario
                 if (multidiscriminator[target] > _maxBleaching)
                     _maxBleaching = multidiscriminator[target];
-	        }
+            }
 
 //            if (r == 0) {
 //                auto it = omap.find(_decoders[r]);
@@ -410,15 +432,42 @@ public:
 
         }
 
-		return target;
+        return target;
+    }
+
+    template <typename Retina>
+    int forgetSample(const Retina & retina, int target)
+    {
+        target = getInnerTarget(target);
+
+        // Para cada RAM
+        for (int r=0;r<_numRams;++r)
+        {
+            _decoders[r].read(retina);
+
+            Ram &ram = _rams[r];
+            MultiDiscriminator &multidiscriminator = ram[_decoders[r]];
+            auto it = multidiscriminator.find(target);
+
+            // Se a posição endereçada não foi alocada
+            if (it == multidiscriminator.end())
+                continue;
+
+            if (it->second == 1)
+                multidiscriminator.erase(it);            
+            else
+                it->second = it->second -1;
+        }
+
+        return target;
     }
 
     void
-    forget(const int target)
+    forgetClass(const int target)
     {
-    	auto it = _outterToInner.find(target);
-    	if (it == _outterToInner.end())
-    		return;
+        auto it = _outterToInner.find(target);
+        if (it == _outterToInner.end())
+            return;
 
         const int innerTarget = it->second;
 
@@ -426,22 +475,22 @@ public:
         {
             Ram &ram = _rams[r];
             for (auto &pair : ram)
-			{
+            {
                 MultiDiscriminator &multidiscriminator = pair.second;
                 auto it2 = multidiscriminator.find(innerTarget);
                 if (it2 != multidiscriminator.end())
                     multidiscriminator.erase(it2);
-    		}
-    	}
+            }
+        }
 
-    	_innerToOutter.erase(it->second);
-    	_outterToInner.erase(it);
+        _innerToOutter.erase(it->second);
+        _outterToInner.erase(it);
         _thrash.push_back(innerTarget);
     }
 
-	template <typename Retina>
+    template <typename Retina>
     int readCounts(const Retina &retina)
-	{
+    {
         if (numDiscriminators() == 0)
         {
             _k1 = 0;
@@ -452,29 +501,29 @@ public:
 
         // Limpa o vetor de ativações
         for (int i=0;i<numDiscriminators();++i)
-			_activations[i] = 0;
+            _activations[i] = 0;
 
-		// Para cada RAM
+        // Para cada RAM
         for (int r=0;r<_numRams;++r)
         {
             _decoders[r].read(retina);
-		    
+
             Ram &ram = _rams[r];
             const Decoder & decoder = _decoders[r];
             
-			// Se não contém o endereço mapeado continua
+            // Se não contém o endereço mapeado continua
             if (ram.find(decoder) == ram.end())
-				continue;
+                continue;
 
             // Do contrario incrementa as ativações
             MultiDiscriminator &multidiscriminator = ram[decoder];
             for (auto it=multidiscriminator.begin(); it!= multidiscriminator.end();++it)
-				_activations[it->first] += it->second;
-		}
+                _activations[it->first] += it->second;
+        }
 
-		// Retorna o discriminador mais ativado, calculando a confiança
+        // Retorna o discriminador mais ativado, calculando a confiança
         return getOutterTarget(indexOfMax(_activations, numDiscriminators()));
-	}
+    }
 
     template <typename Retina>
     int readBinary(const Retina &retina, const int threshold=1)
@@ -525,29 +574,29 @@ public:
         
         int bestBleach       = 1;
         int bestPrediction   = 0;
-		float bestConfidence = 0;
+        float bestConfidence = 0;
 
-		// Aplica o bleaching
+        // Aplica o bleaching
         for (int t=1;t<=_maxBleaching;t+=step)
         {
             const int predicted    = readBleached(t);
-			const float confidence = getConfidence();
-			
-			// Se atingiu a confiança mínima retorne a resposta
-			if (confidence > minConfidence)
-				return getOutterTarget(predicted);
-			
-			// Se for a de maior confiança até agora guarde-a
-			if (confidence > bestConfidence)
-			{
-				bestConfidence = confidence;
+            const float confidence = getConfidence();
+
+            // Se atingiu a confiança mínima retorne a resposta
+            if (confidence > minConfidence)
+                return getOutterTarget(predicted);
+
+            // Se for a de maior confiança até agora guarde-a
+            if (confidence > bestConfidence)
+            {
+                bestConfidence = confidence;
                 bestPrediction = predicted;
                 bestBleach     = t;
-			}
-		}
-		
-		// Se nenhum deles atingiu a confiança mínima, 
-		// retorne o melhor encontrado
+            }
+        }
+
+        // Se nenhum deles atingiu a confiança mínima,
+        // retorne o melhor encontrado
         //LOGI("Predicted %d", bestPredicted);
         if (bestPrediction == -1)
         {
@@ -610,111 +659,150 @@ public:
     float 
     getConfidence() const
     {
-		return _confidence;
-	}
+        return _confidence;
+    }
     
     int
     getExcitation(const int target) const
     {
         auto it = _outterToInner.find(target);
         if (it == _outterToInner.end())
-        	return 0;
+            return 0;
             //throw WUPException("Unknown target");
         
         //return _activations[it->second] / float(_numRams);
         return _activations[it->second];
-	}
+    }
     
     int
     getFirstBestPrediction() const
     {
         return getOutterTarget(_k1);
-	}
+    }
     
     int
     getSecondBestPrediction() const
     {
-		return getOutterTarget(_k2);
-	}
+        return getOutterTarget(_k2);
+    }
     
     int
     getThirdBestPrediction() const
     {
-		return getOutterTarget(_k3);
-	}
+        return getOutterTarget(_k3);
+    }
 
     bool 
     operator !=(BaseWisard const& other) const
     {
-    	return !(*this == other);
+        return !(*this == other);
     }
 
- 	bool 
+     bool
     operator ==(BaseWisard const& other) const
     {
         if (_rams->size() != other._rams->size())
-			return false;
-			
- 		if (_maxBleaching != other._maxBleaching) 
-			return false;
-			
+            return false;
+
+         if (_maxBleaching != other._maxBleaching)
+            return false;
+
         if (_activationsCapacity != other._activationsCapacity)
-			return false;
-			
- 		if (_numRams != other._numRams) 
-			return false;
-			
+            return false;
+
+         if (_numRams != other._numRams)
+            return false;
+
         if (_numInputBits != other._numInputBits)
-			return false;
-			
+            return false;
+
         if (_numRamBits != other._numRamBits)
-			return false;
-			
- 		if (_thrash.size() != other._thrash.size()) 
-			return false;
-			
- 		if (_innerToOutter.size() != other._innerToOutter.size()) 
-			return false;
-			
- 		if (_outterToInner.size() != other._outterToInner.size()) 
-			return false;
+            return false;
+
+         if (_thrash.size() != other._thrash.size())
+            return false;
+
+         if (_innerToOutter.size() != other._innerToOutter.size())
+            return false;
+
+         if (_outterToInner.size() != other._outterToInner.size())
+            return false;
 
         for (int i=0;i<_numInputBits;++i)
- 			if (_shuffling[i] != other._shuffling[i])
- 				return false;
+             if (_shuffling[i] != other._shuffling[i])
+                 return false;
 
         // TODO: Compare each ram?
 
- 		return true;
- 	}
+         return true;
+     }
 
     template<typename T>
     int
     indexOfMax(const T & array, const int length)
     {
-		_k1 = -1;
-		_k2 = -1;
-		_k3 = -1;
-		
+        _k1 = -1;
+        _k2 = -1;
+        _k3 = -1;
+
         for (int i=0;i<length;++i)
-			if (_k1 == -1 || array[i] > array[_k1] )
-				_k1 =  i;
-		
+            if (_k1 == -1 || array[i] > array[_k1] )
+                _k1 =  i;
+
         for (int i=0;i<length;++i)
-		    if (i != _k1 && (_k2 == -1 || array[i] > array[_k2]))
-		        _k2 = i;
+            if (i != _k1 && (_k2 == -1 || array[i] > array[_k2]))
+                _k2 = i;
         
         for (int i=0;i<length;++i)
-		    if (i != _k1 && i != _k2 && (_k3 == -1 || array[i] > array[_k3]))
-		        _k3 = i;
+            if (i != _k1 && i != _k2 && (_k3 == -1 || array[i] > array[_k3]))
+                _k3 = i;
         
-		_confidence = _k1 == -1 || _k2 == -1 
-				? 1.0 
-				: (float) (array[_k1] - array[_k2]) / (array[_k1]);
-		
-		return _k1;
-	}
+        _confidence = _k1 == -1 || _k2 == -1
+                ? 1.0
+                : (float) (array[_k1] - array[_k2]) / (array[_k1]);
+
+        return _k1;
+    }
     
+    void
+    clearActivations()
+    {
+        // Limpa o vetor de ativações
+        for (int i=0;i<_activationsCapacity;++i)
+            _activations[i] = 0;
+    }
+
+    template <typename T>
+    void
+    readRamBinary(const T & pattern, const int r)
+    {
+        readRamBleach(pattern, r, 1);
+    }
+
+    template <typename T>
+    void
+    readRamBleach(const T & pattern, const int r, const int threshold)
+    {
+        Ram &ram = _rams[r];
+        const Decoder & decoder = _decoders[r];
+
+        // Se não contém o endereço mapeado continua
+        if (ram.find(decoder) == ram.end())
+            return;
+
+        // Do contrario incrementa as ativações
+        MultiDiscriminator &imap = ram[decoder];
+        for (auto it=imap.begin(); it!= imap.end();++it)
+            if (it->second >= threshold)
+                ++_activations[it->first];
+    }
+
+    const Decoder &
+    decoderAt(const int index)
+    {
+        return _decoders[index];
+    }
+
 private:
     
     int
@@ -723,68 +811,66 @@ private:
         const int r = (int) round(sqrt((float) (begin * end)));
         
         if (r == begin) 
-			return begin + 1;
-			
+            return begin + 1;
+
         if (r == end) 
-			return end - 1;
-			
+            return end - 1;
+
         return r;
     }
     
     int
     readBleached(const int threshold)
     {
-		// Limpa o vetor de ativações
-        for (int i=0;i<_activationsCapacity;++i)
-			_activations[i] = 0;
-		
-		// Para cada RAM
+        clearActivations();
+
+        // Para cada RAM
         for (int r=0;r<_numRams;++r) 
         {
             Ram &ram = _rams[r];
             const Decoder & decoder = _decoders[r];
-			
-			// Se não contém o endereço mapeado continua
+
+            // Se não contém o endereço mapeado continua
             if (ram.find(decoder) == ram.end())
-			    continue;
-		    
+                continue;
+
             // Do contrario incrementa as ativações
             MultiDiscriminator &imap = ram[decoder];
             for (auto it=imap.begin(); it!= imap.end();++it)
-			    if (it->second >= threshold)
-			        ++_activations[it->first];
-		}
-		
-		// Retorna o discriminador mais ativado, calculando a confiança 
+                if (it->second >= threshold)
+                    ++_activations[it->first];
+        }
+
+        // Retorna o discriminador mais ativado, calculando a confiança
         return indexOfMax(_activations, _activationsCapacity);
     }
     
     int
-	getInnerTarget(const int outter)
+    getInnerTarget(const int outter)
     {
-    	auto it = _outterToInner.find(outter);
-    	if (it == _outterToInner.end())
-    	{
-    		if (_thrash.empty()) 
-    		{
-    			const int result = _outterToInner.size();
-    			_outterToInner[outter] = result;
-    			_innerToOutter[result] = outter;
-    			return result;
-    		} 
-    		else 
-    		{
-    			const int result = _thrash.back();
-    			_thrash.pop_back();
-    			_outterToInner[outter] = result;
-    			_innerToOutter[result] = outter;
-    			return result;
-    		}
-    	}
-    	else
-    	{
-    		return it->second;
-    	}
+        auto it = _outterToInner.find(outter);
+        if (it == _outterToInner.end())
+        {
+            if (_thrash.empty())
+            {
+                const int result = _outterToInner.size();
+                _outterToInner[outter] = result;
+                _innerToOutter[result] = outter;
+                return result;
+            }
+            else
+            {
+                const int result = _thrash.back();
+                _thrash.pop_back();
+                _outterToInner[outter] = result;
+                _innerToOutter[result] = outter;
+                return result;
+            }
+        }
+        else
+        {
+            return it->second;
+        }
     }
 
     int getInnerTarget(const int outter) const
@@ -793,19 +879,19 @@ private:
         
         if (it == _outterToInner.end())
             throw WUPException("Unknown target");
-		
-		return it->second;    
+
+        return it->second;
     }
 
     int
-	getOutterTarget(const int inner) const
+    getOutterTarget(const int inner) const
     {
         const auto it = _innerToOutter.find(inner);
         
         if (it == _innerToOutter.end())
             throw WUPException("Internal error");
-		
-		return it->second;    
+
+        return it->second;
     }
 
 private:

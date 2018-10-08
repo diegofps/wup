@@ -16,7 +16,8 @@ public:
             _inputSize(0),
             _patternSize(0),
             _pattern(NULL),
-            _hash(0)
+            _hash(0),
+            _isZero(false)
     {
 
     }
@@ -26,7 +27,8 @@ public:
             _inputSize(inputSize),
             _patternSize(patternSize),
             _pattern(new int[_patternSize]()),
-            _hash(0)
+            _hash(0),
+            _isZero(false)
     {
 
     }
@@ -36,7 +38,8 @@ public:
             _inputSize(other._inputSize),
             _patternSize(other._patternSize),
             _pattern(new int[_patternSize]()),
-            _hash(other._hash)
+            _hash(other._hash),
+            _isZero(false)
     {
         memcpy(_pattern, other._pattern, sizeof(int) * _patternSize);
     }
@@ -125,6 +128,18 @@ public:
         _hash = h;
     }
 
+    bool 
+    isZero() const
+    {
+        return _isZero;
+    }
+    
+    void
+    isZero(const bool & b)
+    {
+        _isZero = b;
+    }
+    
 private:
 
     const uint * _indexes;
@@ -136,6 +151,8 @@ private:
     int * _pattern;
 
     size_t _hash;
+    
+    bool _isZero;
 
 };
 
