@@ -21,70 +21,72 @@ namespace wup {
 namespace kernelgens {
 
     inline double *
-    __createRandomKernel(const int dims)
+    __createRandomKernel(const uint dims)
     {
         double * kernel = new double[dims];
-        for (int j=0;j<dims;++j)
+        for (uint j=0;j!=dims;++j)
             kernel[j] = rand() / double(RAND_MAX) * 2.0 - 1.0;
         return kernel;
     }
 
     inline void
-    createRandomKernels(const int dims, int &numKernels, double** &kernels)
+    createRandomKernels(const uint dims, uint &numKernels, double** &kernels)
     {
         kernels = new double*[numKernels];
-        for (int i=0;i<numKernels;++i) {
+        for (uint i=0;i!=numKernels;++i)
+        {
             double * v = new double[dims];
-            for (int j=0;j<dims;++j)
+
+            for (uint j=0;j!=dims;++j)
                 v[j] = rand() / double(RAND_MAX) * 2.0 - 1.0;
+
             kernels[i] = v;
         }
     }
 
     inline void
-    importKernels(wup::ireader & reader, int &dims, int &numKernels, double** &kernels)
+    importKernels(wup::ireader & reader, uint &dims, uint &numKernels, double** &kernels)
     {
-        dims = reader.get();
-        numKernels = reader.get();
+        dims = reader.getUnsignedInt();
+        numKernels = reader.getUnsignedInt();
         kernels = new double*[numKernels];
 
-        for (int i=0;i<numKernels;++i) 
+        for (uint i=0; i!=numKernels; ++i)
         {
             double * v = new double[dims];
-            for (int j=0;j<dims;++j)
+            for (uint j=0; j!=dims; ++j)
                 v[j] = reader.getDouble();
             kernels[i] = v;
         }
     }
 
     inline void
-    exportKernels(wup::iwriter & writer, const int dims, int numKernels, double** &kernels)
+    exportKernels(wup::iwriter & writer, const uint dims, uint numKernels, double** &kernels)
     {
-        writer.put(dims);
-        writer.put(numKernels);
+        writer.putUnsignedInt(dims);
+        writer.putUnsignedInt(numKernels);
 
-        for (int i=0;i<numKernels;++i) 
+        for (uint i=0; i!=numKernels; ++i)
         {
             auto v = kernels[i];
-
-            for (int j=0;j<dims;++j)
+            for (uint j=0; j!=dims; ++j)
                 writer.putDouble(v[j]);
         }
     }
 
     inline double *
-    __createZeroKernel(const int dims)
+    __createZeroKernel(const uint dims)
     {
         double * kernel = new double[dims];
 
-        for (int j=0;j<dims;++j)
+        for (uint j=0; j!=dims; ++j)
             kernel[j] = 0.0;
 
         return kernel;
     }
 
     inline double *
-    __createBridsonsKernelNeighbor(const int dims, const double * const kernel,
+    __createBridsonsKernelNeighbor(const uint dims, const double * const kernel,
             const double r)
     {
         double * const candidate = new double[dims];
@@ -93,7 +95,7 @@ namespace kernelgens {
         while (true) {
             sumSquares = 0.0;
 
-            for (int j=0;j<dims;++j) {
+            for (uint j=0;j!=dims;++j) {
                 candidate[j] = rand() / double(RAND_MAX) * 2.0 - 1.0;
                 sumSquares += candidate[j] * candidate[j];
             }
@@ -104,19 +106,19 @@ namespace kernelgens {
         sumSquares = sqrt(sumSquares);
         const double newLength = r * (1.0 + rand() / double(RAND_MAX));
 
-        for (int j=0;j<dims;++j)
+        for (uint j=0;j!=dims;++j)
             candidate[j] = kernel[j] + candidate[j] / sumSquares * newLength;
 
         return candidate;
     }
 
     inline bool
-    isValidBridsonsKernel(const int dims, const double * const candidate,
+    isValidBridsonsKernel(const uint dims, const double * const candidate,
             const std::vector<double*> &actives,
             const std::vector<double*> &inactives,
             const double rSquared)
     {
-        for (int i=0;i<dims;++i)
+        for (uint i=0;i!=dims;++i)
             if (candidate[i] < -1.0 || candidate[i] > +1.0) {
     //				debug("Invalid, outside of box");
                 return false;
@@ -148,8 +150,8 @@ namespace kernelgens {
     }
 
     inline void
-    createBridsonsKernels(const int dims, const double r, const int tries,
-            const uint maxKernels, int &numKernels, double ** &kernels)
+    createBridsonsKernels(const uint dims, const double r, const uint tries,
+            const uint maxKernels, uint &numKernels, double ** &kernels)
     {
         debug("Applying bridson's algorithm");
     //	debug("r was ", r);
@@ -159,21 +161,21 @@ namespace kernelgens {
         std::vector<double*> actives;
         std::vector<double*> inactives;
         const double rSquared = r * r;
-        int t;
+        uint t;
 
         debug( "r is ", r );
         debug("rSquared is ", rSquared);
         actives.push_back(__createZeroKernel(dims));
 
         while (!actives.empty()) {
-            const int selectedId = rand() % actives.size();
+            const uint selectedId = rand() % actives.size();
             double * const selected = actives[selectedId];
 
     //    		std::cout << YELLOW << "Pivot is: ";
     //			for (int i=0;i<_dims;++i) std::cout << selected[i] << " ";
     //			std::cout << NORMAL << std::endl;
 
-            for (t=0;t<tries;++t) {
+            for (t=0; t!=tries; ++t) {
                 double *candidate = __createBridsonsKernelNeighbor(
                         dims, selected, r);
 
@@ -267,8 +269,8 @@ namespace kernelgens {
     }
 
     inline void
-    __createSpacedKernels(const int dims, const int dim,
-            const int * const dimBreaks, int &kernelId,
+    __createSpacedKernels(const uint dims, const uint dim,
+            const uint * const dimBreaks, uint &kernelId,
             double *& tmpKernel, double ** &kernels)
     {
         if (dim == dims) {
@@ -281,7 +283,7 @@ namespace kernelgens {
     //        for (int i=0;i<dims;++i) std::cout << kernel[i] << " ";
     //        print();
         } else {
-            for (int i=0;i<dimBreaks[dim];++i) {
+            for (uint i=0;i!=dimBreaks[dim];++i) {
                 const double noise = rand() / double(RAND_MAX) * 0.01 - 0.005;
                 tmpKernel[dim] = 2.0 * (i+1) / (dimBreaks[dim]+1) - 1.0 + noise;
                 __createSpacedKernels(dims, dim+1, dimBreaks, kernelId,
@@ -291,24 +293,24 @@ namespace kernelgens {
     }
 
     inline void
-    createSpacedKernels(const int dims, int &numKernels, double ** &kernels)
+    createSpacedKernels(const uint dims, uint &numKernels, double ** &kernels)
     {
         debug("Applying Nearest Grid Algorithm");
 
-        int *dimBreaks = new int[dims]();
+        uint *dimBreaks = new uint[dims]();
         double root = pow(numKernels * 2, 1.0 / dims);
 
-        dimBreaks[0] = round(root);
+        dimBreaks[0] = uint(round(root));
         if (dimBreaks[0] < 1) dimBreaks[0] = 1;
-        numKernels = dimBreaks[0];
+        numKernels = uint(dimBreaks[0]);
 
-        for (int i=1;i<dims;++i) {
-            dimBreaks[i] = round(root * (i+1)) - round(root * i);
-            if (dimBreaks[i] < 1) dimBreaks[i] = 1;
+        for (uint i=1;i!=dims;++i) {
+            dimBreaks[i] = uint(round(root * (i+1)) - round(root * i));
+            if (dimBreaks[i] == 0) dimBreaks[i] = 1;
             numKernels *= dimBreaks[i];
         }
 
-        int kernelId = 0;
+        uint kernelId = 0;
         kernels = new double*[numKernels];
         double *tmpKernel = new double[dims];
         __createSpacedKernels(dims, 0, dimBreaks, kernelId, tmpKernel, kernels);
@@ -318,65 +320,55 @@ namespace kernelgens {
     }
 
     inline void
-    createSpacedKernels2(const int dims, int &numKernels, double ** &kernels)
+    createSpacedKernels2(const int dims, uint &numKernels, double ** &kernels)
     {
-        numKernels = pow(2, ceil(log2(numKernels)));
-        int *dimBreaks = new int[dims]();
+        numKernels = uint(pow(2, ceil(log2(numKernels))));
+        uint * dimBreaks = new uint[dims]();
         double root = (log2(numKernels) / dims);
 
-        int sum = 0;
-        dimBreaks[0] = floor(root);
-        for (int i=1;i<dims;++i) {
-            dimBreaks[i] = floor((i+1)*root) - sum;
+        uint sum = 0;
+        dimBreaks[0] = uint(floor(root));
+        for (int i=1; i!=dims; ++i) {
+            dimBreaks[i] = uint(floor((i+1)*root)) - sum;
             sum += dimBreaks[i];
         }
 
         print("numKernels:", numKernels);
         print("root:", root);
         printn("dimbreaks:");
-        for (int j=0;j<dims;++j)
+        for (int j=0;j!=dims;++j)
             printn(dimBreaks[j], " ");
         print();
 
         int dimId = 0;
-        int kernelId = 0;
+        uint kernelId = 0;
         double *tmpKernel = new double[dims];
-        int *indexes = new int[dims]();
+        uint *indexes = new uint[dims]();
 
         //print(1);
         kernels = new double*[numKernels];
-        while(kernelId != numKernels) {
-    //        print("dimId:", dimId);
-    //        print("kernelId:", kernelId);
-    //        for (int j=0;j<dims;++j)
-    //            printn(indexes[j], " ");
-    //        print();
-    //        for (int j=0;j<dims;++j)
-    //            printn(tmpKernel[j], " ");
-    //        print();
-    //        getchar();
-
-            if (dimId == dims) {
-                //print(2);
-                printn("*");
-                for (int j=0;j<dims;++j)
-                    printn(tmpKernel[j], " ");
-                print();
-
+        while(kernelId != numKernels)
+        {
+            if (dimId == dims)
+            {
                 kernels[kernelId++] = tmpKernel;
                 tmpKernel = new double[dims];
                 memcpy(tmpKernel, kernels[kernelId-1], sizeof(double) * dims);
                 ++indexes[--dimId];
-            } else {
-                if (indexes[dimId] == dimBreaks[dimId]+1) {
+            }
+            else
+            {
+                if (indexes[dimId] == dimBreaks[dimId]+1)
+                {
                     //print(3);
                     indexes[dimId--] = 0;
-                    if (dimId >= 0) {
-                        //print(4);
+                    if (dimId >= 0)
+                    {
                         ++indexes[dimId];
                     }
-                } else {
-                    //print(5);
+                }
+                else
+                {
                     tmpKernel[dimId] = 2.0 * (indexes[dimId]+1) / (dimBreaks[dimId]+2) - 1.0;
                     ++dimId;
                 }
@@ -384,7 +376,6 @@ namespace kernelgens {
         }
 
         debug("Linspaced created ", numKernels, " kernels");
-        //delete [] tmpKernel;
         delete [] dimBreaks;
     }
 

@@ -180,7 +180,16 @@ public:
         
         return l;
     }
-    
+
+    uint
+    getUnsignedInt()
+    {
+        uint l;
+        int * const root = (int*) (&l);
+        get(root[0]);
+        return l;
+    }
+
     bool 
     getBool()
     {
@@ -210,16 +219,23 @@ public:
     {
         put((int) b);
     }
-    
-    void 
+
+    void
     putLong(const long & l)
     {
         const int * const root = (int*) & l;
-        
+
         put(root[0]);
         put(root[1]);
     }
-    
+
+    void
+    putUnsignedInt(const uint & ui)
+    {
+        const int * const root = (const int*) (& ui);
+        put(root[0]);
+    }
+
     void 
     putDouble(const double & n)
     {

@@ -49,9 +49,9 @@ public:
     
     WUPException(const std::string &msg) : _msg(msg)
     { }
-    
-	~WUPException() throw()
-	{ }
+
+    ~WUPException() throw()
+    { }
 	
     const char * what() const throw() 
     { return _msg.c_str(); }

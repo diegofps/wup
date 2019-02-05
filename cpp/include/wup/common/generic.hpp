@@ -13,17 +13,31 @@
 #include <wup/common/exceptions.hpp>
 #include <wup/common/msgs.hpp>
 
+using namespace std;
+
 namespace wup {
 
 typedef struct _BOX {
-    int id;
+
+    uint id;
+
     double w;
 
-    _BOX() {  }
-    _BOX(const int _id, const double _w) : id(_id), w(_w) { }
+    _BOX()
+    {
+
+    }
+
+    _BOX(const uint _id, const double _w) : id(_id), w(_w)
+    {
+
+    }
 
     bool operator<(const wup::_BOX & other)
-    { return w < other.w; }
+    {
+        return w < other.w;
+    }
+
 } BOX;
 
 #ifdef __ANDROID_API__
@@ -55,8 +69,9 @@ factorial(long n)
     return r;
 }
 
+template <typename T>
 inline double
-sdistance(const double * const v1, const double * const v2, const int cols)
+sdistance(const double * const v1, const double * const v2, const T cols)
 {
 	double ssum = 0.0;
 	for (int i=0;i<cols;++i) {
@@ -285,8 +300,9 @@ randperm(const uint n, T * const indexes)
     return indexes;
 }
 
+template <typename T>
 inline uint *
-randperm(const int n)
+randperm(const T n)
 {
     return randperm(n, new uint[n]);
 }
@@ -396,6 +412,16 @@ split(std::vector<std::string> &elems,
         elems.push_back(item);
     
     return elems;
+}
+
+inline bool
+parse_bool(const std::string &str)
+{
+    if (str.size() == 0)
+        throw ParsersException(std::string("Error while parsing bool"));
+
+    const char & firstChar = str[0];
+    return firstChar == 'y' || firstChar == 'Y' || firstChar == 's' || firstChar == 'S' || firstChar == 't' || firstChar == 'T';
 }
 
 inline double 

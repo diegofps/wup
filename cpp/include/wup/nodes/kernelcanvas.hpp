@@ -11,6 +11,8 @@
 #include <wup/nodes/node.hpp>
 #include <wup/models/kernelcanvas.hpp>
 
+//#include <wup/models/oldkernelcanvas.hpp>
+
 namespace wup {
 
 namespace node {
@@ -25,11 +27,11 @@ public:
 
     }
 
-    KernelCanvas(Node * const parent, const int numKernels,
-                 const double activation, const int bits, const int levels=1,
+    KernelCanvas(Node * const parent, const uint numKernels,
+                 const double activation, const uint termBits,
                  double ** kernels=NULL) :
         Node(parent),
-        _kc(parent->output().size(), numKernels, activation, bits, kernels, levels)
+        _kc(parent->output().size(), numKernels, activation, termBits, kernels)
     {
 
     }
@@ -40,10 +42,10 @@ public:
         _kc.clear();
     }
 
-    virtual void
-    onStart()
+    virtual
+    void onStart(const int & sampleId)
     {
-        _kc.clearInk();
+        //_kc.clearInk();
     }
 
     virtual void
@@ -66,7 +68,7 @@ public:
 //                sizeof(int) * _kc.timestap_output_size());
     }
 
-    virtual int patternSize()
+    virtual uint patternSize()
     {
         return _kc.binary_output_size();
 //        return _kc.timestap_output_size();
@@ -85,7 +87,8 @@ public:
 
 private:
 
-    wup::KernelCanvas<EuclideanKernels> _kc;
+    wup::KernelCanvas<EuclidianKernels> _kc;
+    //legacy::KernelCanvas _kc;
 
 };
 

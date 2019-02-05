@@ -40,7 +40,8 @@ public:
         cosNsin(degrees, _c, _s);
     }
 
-    virtual void onStart()
+    virtual
+    void onStart(const int & sampleId)
     {
 
     }

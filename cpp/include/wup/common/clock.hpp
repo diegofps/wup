@@ -8,12 +8,18 @@ namespace wup
 
 class Clock {
 public:
+
     Clock () : _last(0)
-	{ start(); }
+    {
+        start();
+    }
 
     void start()
-    { gettimeofday(&_begin, NULL); }
+    {
+        gettimeofday(&_begin, NULL);
+    }
 
+    // Stops counting and returns the ellapsed time in microseconds
     long stop()
     {
         gettimeofday(&_end, NULL);
@@ -22,15 +28,24 @@ public:
         return _last = end - begin;
     }
 
+    // Returns the ellapsed time in microseconds
     long ellapsed() const
-    { return _last; }
+    {
+        return _last;
+    }
     
+    // Returns the ellapsed time in seconds
     double ellapsed_seconds() const
-    { return _last / 1000000.0; }
+    {
+        return _last / 1000000.0;
+    }
 
 private:
+
     struct timeval _begin, _end;
+
     long _last;
+
 };
 
 }; /* wup */

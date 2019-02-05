@@ -13,54 +13,78 @@ namespace wup {
 
 class Feature {
 public:
-    Feature(double * const mem, const int columns) :
+
+    Feature(double * const mem, const uint columns) :
         _size(columns),
         _mem(mem)
-    { }
+    {
+
+    }
     
     Feature(Bundle<double> &data) : Feature(data, 0)
-    { }
+    {
+
+    }
     
-    Feature(Bundle<double> &data, const int row) :
+    Feature(Bundle<double> &data, const uint row) :
         _size(data.numCols()),
         _mem(&data(row, 0))
-    { }
+    {
+
+    }
     
     Feature(const Feature & other) :
         _size(other._size),
         _mem(other._mem)
-    { }
+    {
+
+    }
     
-    void remap(double * const mem, const int columns)
+    void remap(double * const mem, const uint columns)
     {
         _size = columns;
         _mem = mem;
     }
 
     double * data()
-    { return _mem; }
+    {
+        return _mem;
+    }
     
     const double * data() const
-	{ return _mem; }
+    {
+        return _mem;
+    }
+
+    void
+    copyTo(double * const dst) const
+    {
+        memcpy(dst, _mem, sizeof(double) * _size);
+    }
 
     uint size() const
-    { return _size; }
+    {
+        return _size;
+    }
     
     double & operator[](const uint index)
     {
-        if (index >= _size) throw WUPException("Out of range");
+        if (index >= _size)
+            throw WUPException("Out of range");
         return _mem[index];
     }
     
-    double operator[](const uint index) const
+    double & operator[](const uint index) const
     {
-        if (index >= _size) throw WUPException("Out of range");
+        if (index >= _size)
+            throw WUPException("Out of range");
         return _mem[index];
     }
     
     Feature & operator=(const Feature & other)
     {
-        if (other._size != _size) throw WUPException("Features size differ");
+        if (other._size != _size)
+            throw WUPException("Features size differ");
         memcpy(_mem, other._mem, sizeof(double) * _size);
         return *this;
     }
@@ -68,7 +92,7 @@ public:
     template <typename T>
     Feature & operator=(const T & value)
     {
-        for (uint i=0;i<_size;++i)
+        for (uint i=0; i!=_size; ++i)
     		_mem[i] = value;
     	return *this;
     }
@@ -88,26 +112,30 @@ operator<<(std::ostream &o, const wup::Feature &feature)
         return o;
 
 	o << feature[0];
-    for (uint i=1;i<feature.size();++i)
+    for (uint i=1; i!=feature.size(); ++i)
 		o << "," << feature[i];
+
 	return o;
 }
 
 class Sample : public ref_vector<Feature> {
 public:
+
     Sample(const int id, const int target, const int subtarget, const int group, 
             Bundle<double> &data) :
         Sample(id, target, subtarget, group, data, 0, data.numRows()) 
-    { }
+    {
+
+    }
     
     Sample(const int id, const int target, const int subtarget, const int group, 
-            Bundle<double> &data, const int start, const int end) : 
+            Bundle<double> &data, const uint start, const uint end) :
         _id(id),
         _target(target),
         _subtarget(subtarget),
         _group(group)
     {
-        for (int i=start;i<end;++i)
+        for (uint i=start; i!=end; ++i)
             push_back(new Feature(data, i));
     }
     
@@ -128,16 +156,24 @@ public:
     }
     
     int id() const
-    { return _id; }
+    {
+        return _id;
+    }
     
     int target() const
-    { return _target; }
+    {
+        return _target;
+    }
     
     int subtarget() const
-    { return _subtarget; }
+    {
+        return _subtarget;
+    }
     
     int group() const
-    { return _group; }
+    {
+        return _group;
+    }
 
     void exportTo( const std::string &filename) const
     {
@@ -221,22 +257,34 @@ public:
     }
 
     const Bundle<double> & data()
-    { return _data; }
+    {
+        return _data;
+    }
 
     const Bundle<double> & attr()
-    { return _attr; }
+    {
+        return _attr;
+    }
 
     const Bundle<double> & data() const
-    { return _data; }
+    {
+        return _data;
+    }
 
     const Bundle<double> & attr() const
-    { return _attr; }
+    {
+        return _attr;
+    }
 
     int numFeatures() const
-    { return _data.numCols(); }
+    {
+        return _data.numCols();
+    }
 
     int classes() const
-    { return _classes; }
+    {
+        return _classes;
+    }
 
 private:
     Bundle<double> _data;

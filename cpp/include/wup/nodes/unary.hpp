@@ -54,7 +54,8 @@ public:
 
     }
 
-    virtual void onStart()
+    virtual
+    void onStart(const int & sampleId)
     {
 
     }
@@ -80,7 +81,7 @@ public:
             dst[i] = (int) round(f[i]);
     }
 
-    virtual int patternSize()
+    virtual uint patternSize()
     {
         return output().size();
     }

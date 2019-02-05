@@ -20,7 +20,7 @@ public:
 
     }
 
-    seq(const int * list, const int length) :
+    seq(const int * list, const uint length) :
         seq(length)
     {
         std::copy(list, list + length, _mem);
@@ -46,10 +46,10 @@ public:
             delete [] _mem;
     }
 
-    void resize(const int size)
+    void resize(const uint size)
     {
-        if (size < 0)
-            throw WUPException("Negative size for seq");
+        if (size == 0)
+            throw WUPException("seq size must be bigger than 0");
 
         if (size == 0) {
             if (_mem != NULL)
@@ -83,16 +83,16 @@ public:
         return *this;
     }
 
-    const T & operator[](const int index) const
+    const T & operator[](const uint index) const
     {
-        if (_mem==NULL || index<0 || index >=_size)
+        if (_mem==NULL || index >=_size)
             throw WUPException("Out of bounds");
         return _mem[index];
     }
 
-    T & operator[](const int index)
+    T & operator[](const uint index)
     {
-        if (_mem == NULL || index<0 || index >=_size)
+        if (_mem == NULL || index >=_size)
             throw WUPException("Out of bounds");
         return _mem[index];
     }
@@ -113,21 +113,25 @@ public:
     }
 
 private:
-    int _size;
+    uint _size;
     T * _mem;
 };
 
 template <typename T>
 std::ostream & operator<<(std::ostream & o, const seq<T> & l)
 {
-    if (l.size() == 0) {
+    if (l.size() == 0)
+    {
         o << "[]";
-    } else {
+    }
+    else
+    {
         o << '[' << l[0];
-        for (int i=1;i<l.size();++i)
+        for (uint i=1; i!=l.size(); ++i)
             o << ',' << l[i];
         o << ']';
     }
+
     return o;
 }
 

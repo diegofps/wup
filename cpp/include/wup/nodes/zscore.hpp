@@ -68,11 +68,11 @@ public:
     virtual
     void onExport(iwriter & writer)
     {
-        writer.put(_columns.size());
+        writer.putUnsignedInt(_columns.size());
         writer.putBool(_useHighestStd);
 
-        for (uint i=0;i<_columns.size(); ++i)
-            writer.put(_columns[i]);
+        for (uint i=0; i!=_columns.size(); ++i)
+            writer.putUnsignedInt(_columns[i]);
     }
 
     virtual ~ZScore()
@@ -81,8 +81,8 @@ public:
         delete [] _s2;
     }
 
-    virtual void
-    onStart()
+    virtual
+    void onStart(const int & sampleId)
     {
         _cache.clear();
     }
@@ -99,10 +99,10 @@ public:
     {
         Feature & f = output();
 
-        for (uint j=0;j<_columns.size();++j)
+        for (uint j=0; j!=_columns.size(); ++j)
             _s1[j] = _s2[j] = 0.0;
 
-        for (ulong i=0; i < _cache.size(); i+= f.size())
+        for (ulong i=0; i<_cache.size(); i+=f.size())
         {
             for (uint j=0;j<_columns.size();++j)
             {

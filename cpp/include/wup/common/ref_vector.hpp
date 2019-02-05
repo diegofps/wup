@@ -14,10 +14,10 @@ class ref_vector : public std::vector<T*>
 {
 public:
 
-    T & operator[](const int i)
+    T & operator[](const uint i)
     { return *std::vector<T*>::operator[](i); }
 
-    const T & operator[](const int i) const
+    const T & operator[](const uint i) const
     { return *std::vector<T*>::operator[](i); }
 
     //void push_back(T & value)
@@ -56,7 +56,7 @@ std::ostream & operator<<(std::ostream & o, const ref_vector<T> & rv)
         return o << "ref_vector: []";
 
     o << "ref_vector: [" << rv[0];
-    for (uint i=1; i<rv.size(); ++i)
+    for (uint i=1; i!=rv.size(); ++i)
         o << ", " << rv[i];
 
     return o << "]";

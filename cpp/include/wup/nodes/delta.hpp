@@ -29,7 +29,8 @@ public:
         delete [] _mem;
     }
 
-    virtual void onStart()
+    virtual
+    void onStart(const int & sampleId)
     {
 
     }

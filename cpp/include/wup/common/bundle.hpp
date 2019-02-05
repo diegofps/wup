@@ -18,13 +18,14 @@ public:
     Bundle() : _columns(1)
     { }
 
-    Bundle(const int columns) : _columns(columns)
+    Bundle(const uint columns) : _columns(columns)
     { }
 
-    Bundle(const int rows, const int columns) : _columns(columns), _data(columns * rows, T())
+    Bundle(const uint rows, const uint columns) :
+        _columns(columns), _data(columns * rows, T())
     { }
 
-    Bundle(const int rows, const int columns, const T & initialValue) :
+    Bundle(const uint rows, const uint columns, const T & initialValue) :
         _columns(columns),
         _data(columns * rows, initialValue)
     { }
@@ -175,13 +176,13 @@ public:
 
     T * data;
 
-    int rows;
+    uint rows;
 
-    int cols;
+    uint cols;
 
-    int stride;
+    uint stride;
 
-    BundleView(Bundle<T> & _bundle, const int _rows, const int _cols) :
+    BundleView(Bundle<T> & _bundle, const uint _rows, const uint _cols) :
         data(&_bundle(0, 0)),
         cols(_cols),
         rows(_rows),
@@ -190,7 +191,7 @@ public:
 
     }
 
-    BundleView(Bundle<T> & bundle, const int i1, const int j1, const int i2, const int j2) :
+    BundleView(Bundle<T> & bundle, const uint i1, const uint j1, const uint i2, const uint j2) :
         data(&bundle(i1, j1)),
         cols(j2-j1),
         rows(i2-i1),
@@ -202,7 +203,7 @@ public:
 #endif
     }
 
-    BundleView(const T * const _data, const int _rows, const int _cols, const int _stride) :
+    BundleView(const T * const _data, const uint _rows, const uint _cols, const uint _stride) :
         data(_data),
         rows(_rows),
         cols(_cols),
@@ -235,26 +236,26 @@ public:
     }
 
     const T &
-    operator[](const int index) const
+    operator[](const uint index) const
     {
 #ifndef WUP_UNSAFE
         if (index >= cols * rows || index < 0)
             throw WUPException("Out of bounds");
 #endif
-        const int i = index / cols;
-        const int j = index % cols;
+        const uint i = index / cols;
+        const uint j = index % cols;
         return (*this)(i, j);
     }
 
     T &
-    operator[](const int index)
+    operator[](const uint index)
     {
 #ifndef WUP_UNSAFE
         if (index >= cols * rows || index < 0)
             throw WUPException("Out of bounds");
 #endif
-        const int i = index / cols;
-        const int j = index % cols;
+        const uint i = index / cols;
+        const uint j = index % cols;
         return (*this)(i, j);
     }
 
@@ -263,23 +264,29 @@ public:
 template <typename T>
 std::ostream & operator<<(std::ostream & o, const wup::Bundle<T> & bundle)
 {
-    for (int i=0;i<bundle.numRows();++i) {
+    for (uint i=0; i<bundle.numRows(); ++i)
+    {
         o << bundle(i, 0);
-        for (int j=1;j<bundle.numCols();++j)
+
+        for (uint j=1; j<bundle.numCols(); ++j)
             o << "," << bundle(i, j);
+
         o << "\n";
     }
+
     return o;
 }
 
 template <typename T>
 std::ostream & operator<<(std::ostream & o, const wup::BundleView<T> & view)
 {
-    for (int i=0;i<view.rows;++i)
+    for (uint i=0; i<view.rows; ++i)
     {
         o << view(i, 0);
-        for (int j=1;j<view.cols;++j)
+
+        for (uint j=1; j<view.cols; ++j)
             o << "," << view(i, j);
+
         o << "\n";
     }
     return o;

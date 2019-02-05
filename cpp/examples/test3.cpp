@@ -43,11 +43,14 @@ main() {
 
     print();
 
-    for (int c=0;c<dataset.classes();++c) {
+    for (int c=0;c<dataset.classes();++c)
+    {
         print("Testing...");
         int hits=0, misses=0;
         Clock testTime;
-        for (int i=threshold;i<length;++i) {
+
+        for (int i=threshold;i<length;++i)
+        {
             if (i%10==0) printn("\r",i-threshold,"/",length-threshold);
             Sample & sample = dataset[indexes[i]];
             if (w.readBleaching(root.digest(sample)) == sample.target())
@@ -55,6 +58,7 @@ main() {
             else
                 ++misses;
         }
+
         testTime.stop();
         print(", UnitTestTime(ms): ", testTime.ellapsed() / double(length-threshold) / 1000.0);
 

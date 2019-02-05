@@ -37,8 +37,9 @@ public:
     {
 
     }
-    
-    virtual void onStart()
+
+    virtual
+    void onStart(const int & sampleId)
     {
         _firstFeature = true;
     }

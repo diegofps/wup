@@ -48,7 +48,8 @@ public:
         writer.putDouble(_bottom);
     }
 
-    virtual void onStart()
+    virtual
+    void onStart(const int & sampleId)
     {
 
     }

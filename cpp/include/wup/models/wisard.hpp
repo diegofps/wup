@@ -547,7 +547,7 @@ public:
     template <typename Retina>
     int readBleaching(const Retina &retina)
     {
-        return readBleaching(retina, 1, 0.1);
+        return readBleaching(retina, 1, 0.0);
     }
     
     template <typename Retina>

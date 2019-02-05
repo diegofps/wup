@@ -53,7 +53,8 @@ public:
             writer.put(_columns[i]);
     }
 
-    virtual void onStart()
+    virtual
+    void onStart(const int & sampleId)
     {
 
     }

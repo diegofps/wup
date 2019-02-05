@@ -1,6 +1,7 @@
 #ifndef __WUP__COMMON__PARAMS
 #define __WUP__COMMON__PARAMS
 
+#include <wup/common/generic.hpp>
 #include <vector>
 #include <string>
 #include <map>
@@ -106,6 +107,18 @@ public:
     int getInt(const char * const &cmd, const int default_value) const
     { return parseValue(cmd, default_value, wup::parse_int); }
 
+    // getBools
+    bool getBoolAt(const char * const cmd, const int index) const
+    { return parseValueAt(cmd, index, wup::parse_bool); }
+
+    bool getBoolAt(const char * const cmd, const int index, const bool default_value) const
+    { return parseValueAt(cmd, index, default_value, wup::parse_bool); }
+
+    bool getBool(const char * const &cmd) const
+    { return parseValue(cmd, wup::parse_bool); }
+
+    bool getBool(const char * const &cmd, const bool default_value) const
+    { return parseValue(cmd, default_value, wup::parse_bool); }
 
     // getDoubles
     double getDoubleAt(const char * const cmd, const int index) const
@@ -132,8 +145,10 @@ public:
     template <typename T> T
 	parseValueAt(const char * const cmd, const int index, const T &default_value, T (*parseFunc)(const std::string &)) const
     {
-    	if (misses(cmd, index)) return default_value;
-		return parseFunc( _mem.at(cmd)->operator[]( index ) );
+        if (misses(cmd, index))
+            return default_value;
+        else
+            return parseFunc( _mem.at(cmd)->operator[]( index ) );
     }
     
     template <typename T> T

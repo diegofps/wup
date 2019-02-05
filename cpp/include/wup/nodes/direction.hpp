@@ -43,7 +43,8 @@ public:
         writer.putBool(_isFirst);
     }
 
-    virtual void onStart()
+    virtual
+    void onStart(const int & sampleId)
     {
         _lastX = 0.0;
         _lastY = 0.0;
@@ -53,17 +54,22 @@ public:
     virtual void
     onDigest(const Feature & input)
     {
+#ifndef WUP_UNSAFE
         if (input.size() < 2)
             throw new WUPException("Feature is too short, need at least two columns");
+#endif
 
         Feature & out = output();
 
-        if (_isFirst) {
+        if (_isFirst)
+        {
             memcpy(out.data(), input.data(),
                     sizeof(double) * input.size());
 
             _isFirst = false;
-        } else {
+        }
+        else
+        {
             direction(out[0], out[1], input[0], input[1],
                     out[input.size()+0],
                     out[input.size()+1]);
@@ -89,8 +95,18 @@ private:
         const double a = x - lx;
         const double o = y - ly;
         const double h = sqrt( a*a + o*o );
-        c = h == 0.0 ? 0.0 : a / h;
-        s = h == 0.0 ? 0.0 : o / h;
+
+        if (h == 0.0)
+        {
+            warn("H is zero");
+            c = 0.0;
+            s = 0.0;
+        }
+        else
+        {
+            c = a / h;
+            s = o / h;
+        }
     }
 
 private:

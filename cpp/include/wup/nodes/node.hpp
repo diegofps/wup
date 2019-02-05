@@ -25,9 +25,13 @@ private:
 
     ref_vector<Node> _emitters;
 
-    int _patternLength;
+    uint _patternLength;
+
+    uint _realPatternLength;
 
     int * _patternOutput;
+
+    double * _realPatternOutput;
 
     bool _actsAsPattern;
 
@@ -36,38 +40,40 @@ public:
     Node(Node * const parent) :
         Node(parent, parent->output().size())
     {
-//        LOGE("12");
+
     }
 
-    Node(Node * const parent, const int outputSize) :
+    Node(Node * const parent, const uint outputSize) :
         _parent(parent),
-        _outputBuffer(outputSize==0?NULL:new double[outputSize]),
+        _outputBuffer(outputSize==0 ? nullptr : new double[outputSize]),
         _output(_outputBuffer, outputSize),
         _patternLength(0),
-        _patternOutput(NULL),
+        _realPatternLength(0),
+        _patternOutput(nullptr),
+        _realPatternOutput(nullptr),
         _actsAsPattern(false)
     {
-        //LOGE("11");
-        if (parent != NULL)
+        if (parent != nullptr)
             parent->addChild(this);
     }
 
     Node(Node * const parent, ireader & reader) :
         _parent(parent),
-        _outputBuffer(NULL),
-        _output(NULL, 0),
+        _outputBuffer(nullptr),
+        _output(nullptr, 0),
         _patternLength(0),
-        _patternOutput(NULL),
+        _realPatternLength(0),
+        _patternOutput(nullptr),
+        _realPatternOutput(nullptr),
         _actsAsPattern(false)
     {
-        //LOGE("10");
         if (reader.get() != -1)
             throw new WUPException("Invalid file");
 
-        int outputSize = reader.get();
+        uint outputSize = reader.getUnsignedInt();
         _actsAsPattern = reader.get();
 
-        _outputBuffer = outputSize == 0 ? NULL : new double[outputSize];
+        _outputBuffer = outputSize == 0 ? nullptr : new double[outputSize];
         _output.remap(_outputBuffer, outputSize);
 
         if (reader.get() != -1)
@@ -77,7 +83,7 @@ public:
     void exportTo(iwriter & writer)
     {
         writer.put(-1);
-        writer.put(_output.size());
+        writer.putUnsignedInt(_output.size());
         writer.put(_actsAsPattern);
         writer.put(-1);
         onExport(writer);
@@ -86,10 +92,13 @@ public:
     virtual
     ~Node()
     {
-        if (_patternOutput != NULL)
+        if (_patternOutput != nullptr)
             delete [] _patternOutput;
 
-        if (_outputBuffer != NULL)
+        if (_realPatternOutput != nullptr)
+            delete [] _realPatternOutput;
+
+        if (_outputBuffer != nullptr)
             delete [] _outputBuffer;
 
         for (auto &child : _children)
@@ -112,7 +121,7 @@ public:
     root()
     {
         Node * result = this;
-        while(result->_parent != NULL)
+        while(result->_parent != nullptr)
             result = result->_parent;
         return result;
     }
@@ -149,7 +158,7 @@ public:
         if (_children.size() == 0)
             return this;
         else
-            return _children[_children.size()-1].lastDescendant();
+            return _children[_children.size() - 1].lastDescendant();
     }
 
     void
@@ -161,17 +170,16 @@ public:
     }
 
     void
-    start()
+    start(const int & sampleId)
     {
-        onStart();
+        onStart(sampleId);
         for (auto &node : _children)
-            node.start();
+            node.start(sampleId);
     }
 
     void
     digest(const Feature & feature)
     {
-        //LOGE("Calling onDigest for an object of name: %s", typeid(*this).name());
         this->onDigest(feature);
     }
 
@@ -186,7 +194,6 @@ public:
     void
     publish(const Feature & feature)
     {
-        //LOGE("Publishing feature");
         for (Node & node : _children)
             node.digest(feature);
     }
@@ -198,7 +205,7 @@ public:
     }
 
     virtual void
-    onStart()
+    onStart(const int & sampleId)
     {
 
     }
@@ -206,7 +213,6 @@ public:
     virtual void
     onDigest(const Feature & input)
     {
-        //LOGE("Running default onDigest");
         publish(input);
     }
 
@@ -221,11 +227,17 @@ public:
     {
         throw new WUPException("This class may not be used as a pattern member");
     }
-    
-    virtual int
+
+    virtual uint
     patternSize()
     {
         return _patternLength;
+    }
+
+    virtual uint
+    realPatternSize()
+    {
+        return _realPatternLength;
     }
 
     void
@@ -240,10 +252,18 @@ public:
     {
         _emitters.push_back(&node);
         _patternLength += node.patternSize();
+        _realPatternLength += node.output().size();
 
-        if (_patternOutput != NULL) {
+        if (_patternOutput != nullptr)
+        {
             delete [] _patternOutput;
-            _patternOutput = NULL;
+            _patternOutput = nullptr;
+        }
+
+        if (_realPatternOutput != nullptr)
+        {
+            delete [] _realPatternOutput;
+            _realPatternOutput = nullptr;
         }
     }
 
@@ -251,21 +271,40 @@ public:
     encode(const Sample &sample)
     {
         clear();
-        start();
-        for (auto &feature : sample) {
+        start(sample.id());
+
+        for (auto &feature : sample)
+        {
             const std::vector<Node*> &cs = children();
             for (auto &node : cs)
                 node->digest(feature);
         }
-        finish();
 
+        finish();
         return pattern();
+    }
+
+    double *
+    encodeReal(const Sample &sample)
+    {
+        clear();
+        start(sample.id());
+
+        for (auto &feature : sample)
+        {
+            const std::vector<Node*> &cs = children();
+            for (auto &node : cs)
+                node->digest(feature);
+        }
+
+        finish();
+        return realPattern();
     }
 
     int *
     pattern()
     {
-        if (_patternOutput == NULL)
+        if (_patternOutput == nullptr)
             _patternOutput = new int[_patternLength];
 
         int current = 0;
@@ -275,6 +314,22 @@ public:
         }
 
         return _patternOutput;
+    }
+
+    double *
+    realPattern()
+    {
+        if (_realPatternOutput == nullptr)
+            _realPatternOutput = new double[_realPatternLength];
+
+        double * current = _realPatternOutput;
+        for (auto & node : _emitters)
+        {
+            node.output().copyTo(current);
+            current += node.output().size();
+        }
+
+        return _realPatternOutput;
     }
 
 //    virtual void exportTo(wup::writer<double> &writer) {

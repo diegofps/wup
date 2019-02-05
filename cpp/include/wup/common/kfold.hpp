@@ -103,10 +103,10 @@ private:
             "This file is not a KFold file or it is compatible with this dataset";
 
     void
-    createFolds(const int numFolds)
+    createFolds(const uint numFolds)
     {
         _folds = new Fold[numFolds];
-        for (int i=0; i<numFolds; ++i)
+        for (uint i=0; i<numFolds; ++i)
         {
             _folds[i].id(i);
             _folds[i].dataset(*_ds);
@@ -158,6 +158,70 @@ private:
     }
 
     void
+    loadOldStyleFromStream(const Dataset &ds, std::istream &stream)
+    {
+        // Load the ids
+        int numFolds;
+        stream >> numFolds;
+        print(numFolds);
+        std::vector<std::vector<uint>> foldIds(numFolds);
+        print(numFolds);
+
+        for (int f=0;f!=numFolds;++f)
+        {
+            int numEltos;
+            stream >> numEltos;
+            print(numEltos);
+
+            for (int e=0;e!=numEltos;++e)
+            {
+                int id;
+                stream >> id;
+                foldIds[f].push_back(id);
+            }
+        }
+
+        // Create the folds
+        _numFolds = foldIds.size();
+        createFolds(_numFolds);
+
+        // Divide groups in folds
+        for (uint current=0; current!=_numFolds; ++current)
+        {
+            for (uint f=0; f!=_numFolds; ++f)
+            {
+                // This is the current test fold
+                if (f == current)
+                {
+                    for (uint id : foldIds[f])
+                    {
+#ifndef WUP_UNSAFE
+                        if (id >= ds.size())
+                            throw WUPException(INCOMPATIBLE_FILE_MESSAGE);
+#endif
+                        _folds[current].addTestingSample(ds[id]);
+                    }
+                }
+
+                // This is another training fold
+                else
+                {
+                    for (uint id : foldIds[f])
+                    {
+#ifndef WUP_UNSAFE
+                        if (id >= ds.size())
+                            throw WUPException(INCOMPATIBLE_FILE_MESSAGE);
+#endif
+
+                        _folds[current].addTrainingSample(ds[id]);
+                    }
+                }
+            }
+        }
+
+    }
+
+    void
     createKFold(const Dataset &ds, const int numFolds)
     {
         _numFolds = numFolds;
@@ -202,21 +266,33 @@ private:
 
 public:
 
-    KFold(const Dataset &ds, const int numFolds) : _ds(&ds),
+    KFold(const Dataset &ds, const uint numFolds) : _ds(&ds),
         _numFolds(numFolds), _folds(NULL)
     {
         createKFold(ds, numFolds);
     }
 
-    KFold(const Dataset &ds, std::istream &file_in) : _ds(&ds)
+    KFold(const Dataset &ds, std::istream &file_in, bool oldStyle=false) : _ds(&ds)
     {
-        loadFromStream(ds, file_in);
+        if (oldStyle)
+            loadOldStyleFromStream(ds, file_in);
+        else
+            loadFromStream(ds, file_in);
     }
 
-    KFold(const Dataset &ds, const std::string filePath) : _ds(&ds)
+    KFold(const Dataset &ds, const std::string filePath, bool oldStyle=false) : _ds(&ds)
     {
         std::ifstream file_in( filePath );
-        loadFromStream(ds, file_in);
+
+        if (!file_in.good())
+            throw new WUPException("Could not open kfold file");
+
+        else if (oldStyle)
+            loadOldStyleFromStream(ds, file_in);
+
+        else
+            loadFromStream(ds, file_in);
+
         file_in.close();
     }
 
@@ -233,12 +309,17 @@ public:
         }
     }
 
-    KFold(const Dataset &ds, const std::string filePath, const int numFolds) : _ds(&ds)
+    KFold(const Dataset &ds, const std::string filePath, const int numFolds, bool oldStyle=false) :
+        _ds(&ds)
     {
         try
         {
             std::ifstream file_in(filePath);
-            loadFromStream(ds, file_in);
+            if (!file_in.good())
+                throw WUPException();
+
+            if (oldStyle) loadOldStyleFromStream(ds, file_in);
+            else loadFromStream(ds, file_in);
             file_in.close();
         }
         catch (WUPException e)
@@ -308,7 +389,13 @@ public:
         return &_folds[_numFolds];
     }
 
-    int
+    Fold &
+    fold(const uint id) const
+    {
+        return _folds[id];
+    }
+
+    uint
     numFolds() const
     {
         return _numFolds;
@@ -342,6 +429,14 @@ public:
     }
 
 };
+
+std::ostream & operator<<(std::ostream & o, const KFold & k)
+{
+    o << "NumFolds: " << k.numFolds() << std::endl;
+    for (uint i=0;i<k.numFolds();++i)
+        o << "Fold " << i << " has (" << k.fold(i).trainingSamples().size() << "," << k.fold(i).testingSamples().size() << ")" << std::endl;
+    return o;
+}
 
 }
 

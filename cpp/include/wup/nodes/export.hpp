@@ -48,7 +48,8 @@ public:
         _filename = filename;
     }
 
-    virtual void onStart()
+    virtual
+    void onStart(const int & sampleId)
     {
 
     }

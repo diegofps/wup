@@ -1,14 +1,16 @@
 #ifndef STREAMENCODER_H
 #define STREAMENCODER_H
 
-#include <wup/wup.hpp>
+#include <wup/nodes/all.hpp>
 #include <typeinfo>
 #include <string>
 #include <map>
 
-namespace wup {
+namespace wup
+{
 
-namespace node {
+namespace node
+{
 
 template <typename NODE>
 Node * nodeReader(Node * parent, ireader & reader)
@@ -28,16 +30,16 @@ private:
 
 public:
 
-    StreamEncoder(const int columns) :
-        _root(new Node(NULL, columns)),
+    StreamEncoder(const uint columns) :
+        _root(new Node(nullptr, columns)),
         _last(_root)
     {
         registerNodeReaders();
     }
 
     StreamEncoder(ireader & reader) :
-            _root(NULL),
-            _last(NULL)
+            _root(nullptr),
+            _last(nullptr)
     {
         registerNodeReaders();
 
@@ -47,7 +49,7 @@ public:
         if (reader.get() == 1)
         {
             //LOGE("Has root, loading");
-            _root = importNode(NULL, reader);
+            _root = importNode(nullptr, reader);
             _last = _root->lastDescendant();
         }
 
@@ -65,7 +67,7 @@ public:
     {
         writer.put(-1);
 
-        if (_root == NULL) {
+        if (_root == nullptr) {
             //LOGE("Has no root :(");
             writer.put(0);
         }
@@ -120,9 +122,9 @@ public:
     }
 
     void
-    start()
+    start(const int & sampleId)
     {
-        _root->start();
+        _root->start(sampleId);
     }
 
     void
@@ -137,16 +139,28 @@ public:
         _root->finish();
     }
 
-    int
+    uint
     patternSize()
     {
         return _root->patternSize();
+    }
+
+    uint
+    realPatternSize()
+    {
+        return _root->realPatternSize();
     }
 
     int *
     encode(const Sample &sample)
     {
         return _root->encode(sample);
+    }
+
+    double *
+    encodeReal(const Sample &sample)
+    {
+        return _root->encodeReal(sample);
     }
 
     int *
@@ -197,6 +211,7 @@ private:
         addNodeReader<node::Direction>();
         addNodeReader<node::ZScore>();
         addNodeReader<node::Replicate>();
+        addNodeReader<node::Shuffler>();
         addNodeReader<node::KernelCanvas>();
         addNodeReader<node::Tanh>();
         addNodeReader<node::Rotate>();
@@ -205,6 +220,7 @@ private:
         addNodeReader<node::Box2D>();
         addNodeReader<node::Steps>();
         addNodeReader<node::Smooth4>();
+        addNodeReader<node::MultiKernelCanvas>();
     }
 
 };
