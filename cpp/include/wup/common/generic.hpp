@@ -81,6 +81,12 @@ sdistance(const double * const v1, const double * const v2, const T cols)
 	return ssum;
 }
 
+void
+createPath(const std::string & folderpath)
+{
+    system(cat("mkdir -p ", folderpath).c_str());
+}
+
 inline double
 distance(const double * const v1, const double * const v2, const int cols)
 { return sqrt( sdistance(v1, v2, cols) ); }
