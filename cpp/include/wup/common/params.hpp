@@ -12,6 +12,11 @@ namespace wup
 class Params {
 public:
 
+    Params()
+    {
+        _mem["_"] = new std::vector<std::string>();
+    }
+
     Params(const int argc, const char ** argv)
     {
         std::vector<std::string> *list;
@@ -41,6 +46,23 @@ public:
     {
         for (auto it : _mem)
             delete it.second;
+    }
+
+    template <typename T>
+    void
+    put(const char * const cmd, T data)
+    {
+        auto it = _mem.find(cmd);
+        if (it == _mem.end())
+        {
+            std::vector<string> *list = new std::vector<std::string>();
+            list->push_back(cat(data));
+            _mem[cmd] = list;
+        }
+        else
+        {
+            it->second->push_back(cat(data));
+        }
     }
 
     bool has(const char * const cmd) const

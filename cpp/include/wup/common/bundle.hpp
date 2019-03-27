@@ -67,7 +67,7 @@ public:
         file_in.close();
     }
 
-    T & operator()(const uint i, const uint j)
+    T & operator()(const int i, const int j)
     {
 #ifndef WUP_UNSAFE
         if (j >= _columns)
@@ -82,7 +82,7 @@ public:
         return _data[index];
     }
 
-    const T & operator()(const uint i, const uint j) const
+    const T & operator()(const int i, const int j) const
     {
 #ifndef WUP_UNSAFE
         if (j >= _columns)
@@ -112,13 +112,24 @@ public:
         return *this;
     }
 
-    uint numCols() const
+    void reshape(const int rows, const int cols)
+    {
+        const int newSize = rows * cols;
+
+        if (cols == _columns && newSize <= _data.size())
+            return;
+
+        _columns = cols;
+        _data.resize(newSize);
+    }
+
+    int numCols() const
     { return _columns; }
 
-    uint numRows() const
+    int numRows() const
     { return ceil(_data.size() / double(_columns)); }
 
-    uint numItms() const
+    int numItms() const
     { return _data.size(); }
 
     void clear()

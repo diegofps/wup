@@ -11,6 +11,7 @@
 #include <wup/common/topk.hpp>
 #include <wup/common/kfold.hpp>
 #include <wup/common/bundle.hpp>
+#include <wup/common/bundle3d.hpp>
 #include <wup/common/confusionmatrix.hpp>
 #include <wup/common/iterators.hpp>
 #include <wup/common/sbio.hpp>
