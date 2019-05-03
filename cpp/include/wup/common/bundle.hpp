@@ -15,14 +15,19 @@ template <typename T>
 class Bundle {
 public:
 
-    Bundle() : _columns(1)
+    Bundle() :
+        _columns(1),
+        _data(_columns, T())
     { }
 
-    Bundle(const uint columns) : _columns(columns)
+    Bundle(const uint columns) :
+        _columns(columns),
+        _data(columns, T())
     { }
 
     Bundle(const uint rows, const uint columns) :
-        _columns(columns), _data(columns * rows, T())
+        _columns(columns),
+        _data(columns * rows, T())
     { }
 
     Bundle(const uint rows, const uint columns, const T & initialValue) :
@@ -100,7 +105,9 @@ public:
     }
 
     T & operator()(const uint j)
-    { return (*this)(0l, j); }
+    {
+        return (*this)(0l, j);
+    }
 
     const T & operator()(const uint j) const
     { return (*this)(0l, j); }
