@@ -16,24 +16,50 @@ class Bundle {
 public:
 
     Bundle() :
-        _columns(1),
-        _data(_columns, T())
-    { }
+        Bundle(1, 1)
+    {
+
+    }
 
     Bundle(const uint columns) :
-        _columns(columns),
-        _data(columns, T())
-    { }
+        Bundle(1, columns)
+    {
+
+    }
+
+    Bundle(const uint rows, const uint columns, const T & initialValue) :
+        Bundle(rows, columns)
+    {
+        T * cur = _data;
+        const T * const end = _data + rows * columns;
+
+        while (cur != end)
+        {
+            *cur = initialValue;
+            ++cur;
+        }
+
+    }
 
     Bundle(const uint rows, const uint columns) :
         _columns(columns),
-        _data(columns * rows, T())
-    { }
+        _capacity(columns * rows),
+        _size(_capacity),
+        _data(new T[_capacity]),
+        _ownerOfData(true)
+    {
 
-    Bundle(const uint rows, const uint columns, const T & initialValue) :
+    }
+
+    Bundle(T * const data, const int columns, const int size) :
         _columns(columns),
-        _data(columns * rows, initialValue)
-    { }
+        _data(data),
+        _size(size),
+        _capacity(size),
+        _ownerOfData(false)
+    {
+
+    }
 
     Bundle(const std::string filename, const char delimiter='\t',
         int ignoreRows=0) : _columns(0)
@@ -66,10 +92,18 @@ public:
 
             // Guarda os dados
             for (uint i=0;i<cells.size();++i)
-                _data.push_back( parse_double(cells[i]) );
+                push_back( parse_double(cells[i]) );
         }
 
         file_in.close();
+    }
+
+    ~Bundle()
+    {
+        if (_ownerOfData)
+        {
+            delete [] _data;
+        }
     }
 
     T & operator()(const int i, const int j)
@@ -81,7 +115,7 @@ public:
         const int index = i * _columns + j;
 
 #ifndef WUP_UNSAFE
-        if (index >= _data.size())
+        if (index >= _size)
             throw WUPException("Out of bounds");
 #endif
         return _data[index];
@@ -97,7 +131,7 @@ public:
         const uint index = i * _columns + j;
 
 #ifndef WUP_UNSAFE
-        if (index >= _data.size())
+        if (index >= _size)
             throw WUPException("Out of bounds");
 #endif
 
@@ -114,7 +148,7 @@ public:
 
     const Bundle<T> & operator=(const T & value)
     {
-        for (uint i=0; i<_data.size(); ++i)
+        for (uint i=0; i<_size; ++i)
             _data[i] = value;
         return *this;
     }
@@ -123,45 +157,73 @@ public:
     {
         const int newSize = rows * cols;
 
-        if (cols == _columns && newSize <= _data.size())
+        _columns = cols;
+        _size = newSize;
+
+        if (newSize <= _capacity)
             return;
 
-        _columns = cols;
-        _data.resize(newSize);
+        _capacity = newSize;
+        auto newData = new T [newSize];
+        delete [] _data;
+
+        _data = newData;
     }
 
     int numCols() const
-    { return _columns; }
+    {
+        return _columns;
+    }
 
     int numRows() const
-    { return ceil(_data.size() / double(_columns)); }
+    {
+        return ceil(_size / double(_columns));
+    }
 
     int numItms() const
-    { return _data.size(); }
+    {
+        return _size();
+    }
 
     void clear()
-    { _data.clear(); }
+    {
+        _size = 0;
+    }
 
     void push_back(const T * const array, const uint length)
     {
+        require(length);
+
         for (uint i=0;i<length;++i)
-            _data.push_back(array[i]);
+            _data[_size++] = array[i];
     }
 
     void push_back(const T & t)
-    { _data.push_back(t); }
+    {
+        require(1);
 
-    typename std::vector<T>::const_iterator begin() const
-    { return _data.begin(); }
+        _data[_size++] = t;
+    }
 
-    typename std::vector<T>::const_iterator end() const
-    { return _data.end(); }
+    T * begin() const
+    {
+        return _data;
+    }
 
-    typename std::vector<T>::iterator begin()
-    { return _data.begin(); }
+    T * end() const
+    {
+        return _data + _size;
+    }
 
-    typename std::vector<T>::iterator end()
-    { return _data.end(); }
+    T * begin()
+    {
+        return _data;
+    }
+
+    T * end()
+    {
+        return _data + _size;
+    }
 
     void exportTo(const std::string filename) const
     {
@@ -170,20 +232,51 @@ public:
         fout << *this;
     }
 
-    std::vector<T> & data()
-    { return _data; }
+    T * data()
+    {
+        return _data;
+    }
 
-    const std::vector<T> & data() const
-    { return _data; }
+    const T * data() const
+    {
+        return _data;
+    }
 
     uint size() const
-    { return _data.size(); }
+    {
+        return _size;
+    }
 
 private:
 
+    void
+    require(const int quantity)
+    {
+        if (_size + quantity <= _capacity)
+            return;
+
+        if (!_ownerOfData)
+            throw WUPException("This Bundle can't be resized. It does not own the data");
+
+        int newCap = max(_capacity + quantity, _capacity * 2);
+        T * newData = new T[newCap];
+
+        copy(_data, _data + _size, newData);
+
+        delete [] _data;
+        _capacity = newCap;
+        _data = newData;
+    }
+
     uint _columns;
 
-    std::vector<T> _data;
+    int _capacity;
+
+    int _size;
+
+    T * _data;
+
+    bool _ownerOfData;
 
 };
 
