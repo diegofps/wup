@@ -53,9 +53,9 @@ public:
 
     Bundle(T * const data, const int columns, const int size) :
         _columns(columns),
-        _data(data),
-        _size(size),
         _capacity(size),
+        _size(size),
+        _data(data),
         _ownerOfData(false)
     {
 
