@@ -1,7 +1,8 @@
 #ifndef __WUP__CLOCK
 #define __WUP__CLOCK
 
-#include <sys/time.h> 
+#include <sys/time.h>
+#include <ctime>
 
 namespace wup
 {
@@ -16,13 +17,67 @@ public:
 
     void start()
     {
-        gettimeofday(&_begin, NULL);
+        clock_gettime(clock_id, &_begin);
+    }
+
+    // Stops counting and returns the ellapsed time in microseconds
+    Clock & stop()
+    {
+        clock_gettime(clock_id, &_end);
+        const long begin = (_begin.tv_nsec + 1000000000l * _begin.tv_sec);
+        const long end   = (_end.tv_nsec   + 1000000000l * _end.tv_sec  );
+        _last = end - begin;
+        return *this;
+    }
+
+    // Returns the ellapsed time in seconds
+    double ellapsed_seconds() const
+    {
+        return _last / 1000000000.0;
+    }
+
+    double ellapsed_milli() const
+    {
+        return _last / 1000000.0;
+    }
+
+    double ellapsed_micro() const
+    {
+        return _last / 1000.0;
+    }
+
+    double ellapsed_nano() const
+    {
+        return _last;
+    }
+
+private:
+
+    const int clock_id = CLOCK_REALTIME;
+
+    struct timespec _begin, _end;
+
+    long _last;
+
+};
+
+class Clock2 {
+public:
+
+    Clock2() : _last(0)
+    {
+        start();
+    }
+
+    void start()
+    {
+        gettimeofday(&_begin, nullptr);
     }
 
     // Stops counting and returns the ellapsed time in microseconds
     long stop()
     {
-        gettimeofday(&_end, NULL);
+        gettimeofday(&_end, nullptr);
         const long begin = (_begin.tv_usec + 1000000l * _begin.tv_sec);
         const long end   = (_end.tv_usec   + 1000000l * _end.tv_sec  );
         return _last = end - begin;
