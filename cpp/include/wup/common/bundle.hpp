@@ -51,7 +51,7 @@ public:
 
     }
 
-    Bundle(T * const data, const int columns, const int size) :
+    Bundle(T * const data, const uint columns, const uint size) :
         _columns(columns),
         _capacity(size),
         _size(size),
@@ -106,13 +106,13 @@ public:
         }
     }
 
-    T & operator()(const int i, const int j)
+    T & operator()(const uint i, const uint j)
     {
 #ifndef WUP_UNSAFE
         if (j >= _columns)
             throw WUPException("Out of bounds");
 #endif
-        const int index = i * _columns + j;
+        const uint index = i * _columns + j;
 
 #ifndef WUP_UNSAFE
         if (index >= _size)
@@ -121,7 +121,7 @@ public:
         return _data[index];
     }
 
-    const T & operator()(const int i, const int j) const
+    const T & operator()(const uint i, const uint j) const
     {
 #ifndef WUP_UNSAFE
         if (j >= _columns)
@@ -144,7 +144,9 @@ public:
     }
 
     const T & operator()(const uint j) const
-    { return (*this)(0l, j); }
+    {
+        return (*this)(0l, j);
+    }
 
     const Bundle<T> & operator=(const T & value)
     {
@@ -153,7 +155,7 @@ public:
         return *this;
     }
 
-    void reshape(const int rows, const int cols)
+    void reshape(const uint rows, const uint cols)
     {
         const int newSize = rows * cols;
 
@@ -170,19 +172,14 @@ public:
         _data = newData;
     }
 
-    int numCols() const
+    uint numCols() const
     {
         return _columns;
     }
 
-    int numRows() const
+    uint numRows() const
     {
         return ceil(_size / double(_columns));
-    }
-
-    int numItms() const
-    {
-        return _size();
     }
 
     void clear()
@@ -270,9 +267,9 @@ private:
 
     uint _columns;
 
-    int _capacity;
+    uint _capacity;
 
-    int _size;
+    uint _size;
 
     T * _data;
 

@@ -53,7 +53,7 @@ public:
 
 private:
 
-    const int clock_id = CLOCK_REALTIME;
+    const int clock_id = CLOCK_MONOTONIC;
 
     struct timespec _begin, _end;
 
