@@ -10,7 +10,7 @@ namespace wup
 class Clock {
 public:
 
-    Clock () : _last(0)
+    Clock () : _delta_sec(0), _delta_nsec(0)
     {
         start();
     }
@@ -24,31 +24,32 @@ public:
     Clock & stop()
     {
         clock_gettime(clock_id, &_end);
-        const long begin = (_begin.tv_nsec + 1000000000l * _begin.tv_sec);
-        const long end   = (_end.tv_nsec   + 1000000000l * _end.tv_sec  );
-        _last = end - begin;
+//        const long begin = (_begin.tv_nsec + 1000000000l * _begin.tv_sec);
+//        const long end   = (_end.tv_nsec   + 1000000000l * _end.tv_sec  );
+        _delta_nsec = _end.tv_nsec - _begin.tv_nsec;
+        _delta_sec = _end.tv_sec - _begin.tv_sec;
         return *this;
     }
 
     // Returns the ellapsed time in seconds
     double ellapsed_seconds() const
     {
-        return _last / 1000000000.0;
+        return _delta_sec + _delta_nsec / 1000000000.0;
     }
 
     double ellapsed_milli() const
     {
-        return _last / 1000000.0;
+        return _delta_sec * 1000.0 + _delta_nsec / 1000000.0;
     }
 
     double ellapsed_micro() const
     {
-        return _last / 1000.0;
+        return _delta_sec * 1000000.0 + _delta_nsec / 1000.0;
     }
 
     double ellapsed_nano() const
     {
-        return _last;
+        return _delta_sec * 1000000000.0 + _delta_nsec;
     }
 
 private:
@@ -57,7 +58,9 @@ private:
 
     struct timespec _begin, _end;
 
-    long _last;
+    long _delta_sec;
+
+    long _delta_nsec;
 
 };
 
