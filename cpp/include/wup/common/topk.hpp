@@ -24,35 +24,35 @@ public:
 
 
     class Node {
-	public:
-	
+    public:
+
         Node() { }
         
         Node(const W w, const T d) : weight(w), data(d) { }
         
         void dumpTo(ostream &file_out)
         {
-        	file_out << " " << weight;
-        	file_out << " " << data;
+            file_out << " " << weight;
+            file_out << " " << data;
         }
         
         void loadFrom(istream &file_in)
         {
-        	file_in >> weight;
-        	file_in >> data;
+            file_in >> weight;
+            file_in >> data;
         }
         
         bool operator != (const Node &other) const
         {
-        	return !((*this) == other);
+            return !((*this) == other);
         }
         
-    	bool operator == (const Node &other) const
-    	{
-    		if (weight != other.weight) return false;
-    		if (data != other.data) return false;
-    		return true;
-    	}
+        bool operator == (const Node &other) const
+        {
+            if (weight != other.weight) return false;
+            if (data != other.data) return false;
+            return true;
+        }
     
     public:
     
@@ -63,43 +63,43 @@ public:
 
     
     class iterator {
-	public:
-		iterator(const Node * const mem, const int pos)
-			: _mem(mem), _pos(pos) { }
-		
-		const T operator*() const 
-		{
-			return _mem[_pos].data;
-		}
-		
-		void operator++()
-		{
-			++_pos;
-		}
-		
-		bool operator!=(const iterator &other) const
-		{
-			return _pos != other._pos;
-		}
-		
-	private:
-		const Node * const _mem;
-		int _pos;
+    public:
+        iterator(const Node * const mem, const int pos)
+            : _mem(mem), _pos(pos) { }
+
+        const T operator*() const
+        {
+            return _mem[_pos].data;
+        }
+
+        void operator++()
+        {
+            ++_pos;
+        }
+
+        bool operator!=(const iterator &other) const
+        {
+            return _pos != other._pos;
+        }
+
+    private:
+        const Node * const _mem;
+        int _pos;
     };
     
 public:
 
-	TopK(istream &file_in)
-	{
-		file_in >> _k;
-		file_in >> _eltos;
-		
-		_mem = new Node[_k];
-		
-		for (int i=0;i<_eltos;++i)
-			_mem[i].loadFrom(file_in);
-	}
-	    
+    TopK(istream &file_in)
+    {
+        file_in >> _k;
+        file_in >> _eltos;
+
+        _mem = new Node[_k];
+
+        for (int i=0;i<_eltos;++i)
+            _mem[i].loadFrom(file_in);
+    }
+
     TopK(const int k) : _k(k), _eltos(0), _mem(new Node[k])
     {
 
@@ -130,13 +130,13 @@ public:
     
     T pop()
     {
-    	W tmp;
+        W tmp;
         return pop(tmp);
     }
     
     T pop(W &weight)
     {
-    	if (_eltos == 0)
+        if (_eltos == 0)
             throw TopKException("TopK is empty.");
         
         weight = _mem[0].weight;
@@ -159,7 +159,7 @@ public:
     
     bool isFull() const
     {
-    	return _eltos == _k;
+        return _eltos == _k;
     }
     
     int k() const
@@ -169,7 +169,7 @@ public:
     
     void clear()
     {
-    	_eltos = 0;
+        _eltos = 0;
     }
     
     W base_weight() const
@@ -190,39 +190,39 @@ public:
     
     void dumpTo(ostream &file_out)
     {
-    	file_out << " " << _k;
-		file_out << " " << _eltos;
-		
-		for (int i=0;i<_eltos;++i)
-			_mem[i].dumpTo(file_out);
+        file_out << " " << _k;
+        file_out << " " << _eltos;
+
+        for (int i=0;i<_eltos;++i)
+            _mem[i].dumpTo(file_out);
     }
     
     
     bool operator != (const TopK<W, T> &other) const
     {
-    	return !((*this) == other);
+        return !((*this) == other);
     }
     
     bool operator == (const TopK<W, T> &other) const
     {
-    	if (_k != other._k) return false;
-    	if (_eltos != other._eltos) return false;
-    	
-    	for (int i=0;i<_eltos;++i)
-    		if (_mem[i] != other._mem[i])
-    			return false;
-		
-		return true;
+        if (_k != other._k) return false;
+        if (_eltos != other._eltos) return false;
+
+        for (int i=0;i<_eltos;++i)
+            if (_mem[i] != other._mem[i])
+                return false;
+
+        return true;
     }
     
     iterator begin() const
     {
-    	return iterator(_mem, 0);
+        return iterator(_mem, 0);
     }
     
     iterator end() const
     {
-    	return iterator(_mem, _eltos);
+        return iterator(_mem, _eltos);
     }
 
 private:
@@ -245,12 +245,12 @@ private:
     {
         Node temp;
         for (;;) {
-        	Node &current = _mem[i];
-        	 
+            Node &current = _mem[i];
+
             if (hasRight(i)) {
-            	Node &leftSon = _mem[left(i)];
-            	Node &rightSon = _mem[right(i)];
-            	 
+                Node &leftSon = _mem[left(i)];
+                Node &rightSon = _mem[right(i)];
+
                 if (leftSon.weight < rightSon.weight) {
                     if (leftSon.weight < current.weight) {
                         temp = current;
@@ -267,8 +267,8 @@ private:
                     } else break;
                 }
             } else if (hasLeft(i)) {
-            	Node &leftSon = _mem[left(i)];
-            	
+                Node &leftSon = _mem[left(i)];
+
                 if (leftSon.weight < current.weight) {
                     temp = current;
                     current = leftSon;
