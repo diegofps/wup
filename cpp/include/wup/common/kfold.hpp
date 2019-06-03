@@ -302,7 +302,7 @@ public:
         {
             loadFromStream(ds, file_in);
         }
-        catch (WUPException e)
+        catch (WUPException & e)
         {
             print("Invalid KFold, creating new");
             createKFold(ds, numFolds);
@@ -322,7 +322,7 @@ public:
             else loadFromStream(ds, file_in);
             file_in.close();
         }
-        catch (WUPException e)
+        catch (WUPException & e)
         {
             print("Invalid KFold, creating new");
             createKFold(ds, numFolds);
