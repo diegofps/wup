@@ -109,13 +109,13 @@ public:
     T & operator()(const uint i, const uint j)
     {
 #ifndef WUP_UNSAFE
-        if (j >= _columns)
+        if (j > _columns)
             throw WUPException("Out of bounds");
 #endif
         const uint index = i * _columns + j;
 
 #ifndef WUP_UNSAFE
-        if (index >= _size)
+        if (index > _size)
             throw WUPException("Out of bounds");
 #endif
         return _data[index];
@@ -124,14 +124,14 @@ public:
     const T & operator()(const uint i, const uint j) const
     {
 #ifndef WUP_UNSAFE
-        if (j >= _columns)
+        if (j > _columns)
             throw WUPException("Out of bounds");
 #endif
 
         const uint index = i * _columns + j;
 
 #ifndef WUP_UNSAFE
-        if (index >= _size)
+        if (index > _size)
             throw WUPException("Out of bounds");
 #endif
 

@@ -93,8 +93,8 @@ public:
     Feature & operator=(const T & value)
     {
         for (uint i=0; i!=_size; ++i)
-    		_mem[i] = value;
-    	return *this;
+            _mem[i] = value;
+        return *this;
     }
 
 private:
@@ -111,11 +111,11 @@ operator<<(std::ostream &o, const wup::Feature &feature)
     if (feature.size() == 0)
         return o;
 
-	o << feature[0];
+    o << feature[0];
     for (uint i=1; i!=feature.size(); ++i)
-		o << "," << feature[i];
+        o << "," << feature[i];
 
-	return o;
+    return o;
 }
 
 class Sample : public ref_vector<Feature> {
@@ -177,10 +177,10 @@ public:
 
     void exportTo( const std::string &filename) const
     {
-    	std::ofstream fout;
-    	fout.open(filename.c_str(), std::ios::out);
-    	for (auto point : *this)
-    		fout << point << "\n";
+        std::ofstream fout;
+        fout.open(filename.c_str(), std::ios::out);
+        for (auto point : *this)
+            fout << point << "\n";
     }
 
 private:
@@ -199,18 +199,18 @@ operator<<(std::ostream &o, const wup::Sample &sample)
 class Dataset : public ref_vector<Sample> {
 public:
     
-	/*
-	 * Accepted dataset format:
-	 *
-	 * Data file: tab separated csv with L lines and C columns
-	 * Attr file: tab separated csv where each row corresponds to a sample. Attributes:
-	 *
-	 *     Target (Mandatory)                  : A number indicating its class
-	 *     Length (Optional, default=1)        : Length of the time series
-	 *     Group  (Optional, default 0)        : Defines a subgroup in case you have a predefined division
-	 *     Subtarget (Otional, default=target) : A more specific target, e.g., to differentiate lowercase vs uppercase
-	 *
-	 * */
+    /*
+     * Accepted dataset format:
+     *
+     * Data file: tab separated csv with L lines and C columns
+     * Attr file: tab separated csv where each row corresponds to a sample. Attributes:
+     *
+     *     Target (Mandatory)                  : A number indicating its class
+     *     Length (Optional, default=1)        : Length of the time series
+     *     Group  (Optional, default 0)        : Defines a subgroup in case you have a predefined division
+     *     Subtarget (Otional, default=target) : A more specific target, e.g., to differentiate lowercase vs uppercase
+     *
+     * */
 
     Dataset(const std::string prefix) :
         _data(prefix + "_data"),
@@ -231,7 +231,7 @@ public:
             push_back(newSample);
 
             if (target > _classes)
-				_classes = target;
+                _classes = target;
 
             start = end;
         }
@@ -242,7 +242,7 @@ public:
     Dataset(const Dataset & other) :
         _data(other._data),
         _attr(other._attr),
-		_classes(other._classes)
+        _classes(other._classes)
     {
         for (auto &sample : other) {
             Sample * newSample = new Sample(sample);
@@ -295,8 +295,8 @@ private:
 inline std::ostream &
 operator<<(std::ostream &o, const wup::Dataset &dataset)
 {
-	for (auto &sample : dataset) o << sample;
-	return o;
+    for (auto &sample : dataset) o << sample;
+    return o;
 }
 
 inline double sdistance(const wup::Feature & f1, const wup::Feature & f2)
