@@ -73,12 +73,12 @@ template <typename T>
 inline double
 sdistance(const double * const v1, const double * const v2, const T cols)
 {
-	double ssum = 0.0;
-	for (int i=0;i<cols;++i) {
-		const double v = v1[i] - v2[i];
-		ssum += v * v;
-	}
-	return ssum;
+    double ssum = 0.0;
+    for (int i=0;i<cols;++i) {
+        const double v = v1[i] - v2[i];
+        ssum += v * v;
+    }
+    return ssum;
 }
 
 void
@@ -113,24 +113,24 @@ template<typename T>
 T *
 cloneArray(const T * const src, const int length)
 {
-	T * dst = new T[length];
-	memcpy(dst, src, sizeof(T) * length);
-	return dst;
+    T * dst = new T[length];
+    memcpy(dst, src, sizeof(T) * length);
+    return dst;
 }
 
 template<typename T>
 void
 printArray(const T * const src, const int length, bool indexes=false)
 {
-	if (indexes) {
-		for (int i=0;i<length;++i)
-			printn("<", i, ":", src[i], "> ");
-		print();
-	} else {
-		for (int i=0;i<length;++i)
-			printn(src[i], " ");
-		print();
-	}
+    if (indexes) {
+        for (int i=0;i<length;++i)
+            printn("<", i, ":", src[i], "> ");
+        print();
+    } else {
+        for (int i=0;i<length;++i)
+            printn(src[i], " ");
+        print();
+    }
 }
 
 template<typename T>
@@ -144,7 +144,7 @@ printArray(const char * msg, const T * const src, const int length, bool indexes
 inline void
 topkqsort(BOX * const array, const int bottom, const int top, const int k)
 {
-	BOX y;
+    BOX y;
     int i = bottom;
     int j = top;
 
@@ -152,10 +152,10 @@ topkqsort(BOX * const array, const int bottom, const int top, const int k)
 
     while (i <= j) {
         while (array[i].w > x && i < top)
-        	++i;
+            ++i;
 
         while (array[j].w < x && j > bottom)
-        	--j;
+            --j;
 
         if (i <= j) {
             y = array[i];
@@ -166,17 +166,17 @@ topkqsort(BOX * const array, const int bottom, const int top, const int k)
         }
     }
 
-	if (j > bottom && j >= k)
-		topkqsort(array, bottom, j, k);
+    if (j > bottom && j >= k)
+        topkqsort(array, bottom, j, k);
 
-	if (i < top && i <= k)
+    if (i < top && i <= k)
         topkqsort(array,  i, top, k);
 }
 
 inline void
 halfqsort(BOX * const array, const int bottom, const int top, const int k)
 {
-	BOX y;
+    BOX y;
     int i = bottom;
     int j = top;
 
@@ -184,10 +184,10 @@ halfqsort(BOX * const array, const int bottom, const int top, const int k)
         const double x = array[(bottom + top) / 2].w;
 
         while (array[i].w > x && i < top)
-        	++i;
+            ++i;
 
         while (array[j].w < x && j > bottom)
-        	--j;
+            --j;
 
         if (i <= j) {
             y = array[i];
@@ -199,11 +199,11 @@ halfqsort(BOX * const array, const int bottom, const int top, const int k)
     }
 
     // TODO Needs tunning
-	if (j > bottom)
-		halfqsort(array, bottom, j, k);
+    if (j > bottom)
+        halfqsort(array, bottom, j, k);
 
-	if (i < top && i <= k)
-		halfqsort(array,  i, top, k);
+    if (i < top && i <= k)
+        halfqsort(array,  i, top, k);
 }
 
 inline void
@@ -239,15 +239,15 @@ void
 meanNstd(const T * signal, const int length,
         double &mean, double &_std)
 {
-	double s1 = 0.0;
-	double s2 = 0.0;
+    double s1 = 0.0;
+    double s2 = 0.0;
 
-	for (int i=0;i<length;++i) {
-		s1 += signal[i];
-		s2 += signal[i] * signal[i];
-	}
+    for (int i=0;i<length;++i) {
+        s1 += signal[i];
+        s2 += signal[i] * signal[i];
+    }
 
-	meanNstd(length, s1, s2, mean, _std);
+    meanNstd(length, s1, s2, mean, _std);
 }
 
 
@@ -272,10 +272,10 @@ A max(const A &a, const B &b)
 template <typename A>
 A sum(const A * const array, const int length)
 {
-	A a = (A) 0;
-	for (int i=0;i<length;++i)
-		a += array[i];
-	return a;
+    A a = (A) 0;
+    for (int i=0;i<length;++i)
+        a += array[i];
+    return a;
 }
 
 template <typename T>
@@ -293,8 +293,8 @@ randperm(const uint n, T * const indexes)
 //    std::random_shuffle(indexes, &indexes[n-1]);
 
     for (uint i=0; i<n; ++i) {
-//    	r = (int)(rand() / (float) RAND_MAX * (n - i));
-//    	if (r == (n - i)) --r;
+//        r = (int)(rand() / (float) RAND_MAX * (n - i));
+//        if (r == (n - i)) --r;
 
         r = rand() % (n - i);
 //        r = floor(dist(gen) * (n - i));
@@ -340,7 +340,7 @@ template <typename T>
 int indexOfMax(const T * const mem, const int length, int &times)
 {
     int index = -1;
-	times = 1;
+    times = 1;
     T bigger;
 
     for (int i=0;i<length;++i) {
@@ -359,15 +359,15 @@ int indexOfMax(const T * const mem, const int length, int &times)
 template <typename A>
 A arrayMax(const A * const array, const int length)
 {
-	return array[indexOfMax(array, length)];
+    return array[indexOfMax(array, length)];
 }
 
 template <typename A>
 double arrayMean(const A * const array, const int length)
 {
-	A tmp = array[0];
-	for (int i=1;i<length;++i) tmp += array[i];
-	return tmp / double(length);
+    A tmp = array[0];
+    for (int i=1;i<length;++i) tmp += array[i];
+    return tmp / double(length);
 }
 
 inline std::vector<int>
@@ -427,54 +427,65 @@ parse_bool(const std::string &str)
         throw ParsersException(std::string("Error while parsing bool"));
 
     const char & firstChar = str[0];
-    return firstChar == 'y' || firstChar == 'Y' || firstChar == 's' || firstChar == 'S' || firstChar == 't' || firstChar == 'T';
+    return firstChar == 'y' || firstChar == 'Y' || firstChar == 's' || firstChar == 'S' || firstChar == 't' || firstChar == 'T' || firstChar == '1';
 }
 
-inline double 
-parse_double(const std::string &str)
+template <typename T>
+T parse_basic_type(const std::string & str)
 {
-	std::stringstream ss(str);
-	double n;
-	ss >> n;
-	
-	if ((ss.rdstate() & std::ifstream::failbit)
-			|| (ss.rdstate() & std::ifstream::badbit)) {
-		std::cout << str << std::endl;
-		throw ParsersException(std::string("Error while parsing double"));
-	} else 
-		return n;
+    std::stringstream ss(str);
+    T n;
+    ss >> n;
+
+    if ((ss.rdstate() & std::ifstream::failbit) || (ss.rdstate() & std::ifstream::badbit))
+    {
+        std::cout << str << std::endl;
+        throw ParsersException(std::string("Error while parsing double"));
+    }
+    else
+    {
+        return n;
+    }
 }
 
-inline int 
-parse_int(const std::string &str)
+template <typename T>
+T parse_basic_type(const char * const str)
 {
-	std::stringstream ss(str);
-	int n;
-	ss >> n;
-	
-	if ((ss.rdstate() & std::ifstream::failbit)
-			|| (ss.rdstate() & std::ifstream::badbit))
-		throw ParsersException(std::string("Error while parsing int"));
-	else
-		return n;
+    return parse_basic_type<T>(std::string(str));
 }
 
-inline int
-parse_int(const char * const str)
-{ return parse_int(std::string(str)); }
+inline double parse_double(const std::string &str) { return parse_basic_type<double>(str); }
+inline double parse_double(const char * const str) { return parse_basic_type<double>(str); }
 
-inline double
-parse_double(const char * const str)
-{ return parse_double(std::string(str)); }
+inline long parse_long(const std::string &str) { return parse_basic_type<long>(str); }
+inline long parse_long(const char * const str) { return parse_basic_type<long>(str); }
+
+inline ulong parse_ulong(const std::string &str) { return parse_basic_type<ulong>(str); }
+inline ulong parse_ulong(const char * const str) { return parse_basic_type<ulong>(str); }
+
+inline int parse_int(const std::string &str) { return parse_basic_type<int>(str); }
+inline int parse_int(const char * const str) { return parse_basic_type<int>(str); }
+
+inline uint parse_uint(const std::string &str) { return parse_basic_type<uint>(str); }
+inline uint parse_uint(const char * const str) { return parse_basic_type<uint>(str); }
+
+inline float parse_float(const std::string &str) { return parse_basic_type<float>(str); }
+inline float parse_float(const char * const str) { return parse_basic_type<float>(str); }
+
+inline short parse_short(const std::string &str) { return parse_basic_type<short>(str); }
+inline short parse_short(const char * const str) { return parse_basic_type<short>(str); }
+
+inline ushort parse_ushort(const std::string &str) { return parse_basic_type<ushort>(str); }
+inline ushort parse_ushort(const char * const str) { return parse_basic_type<ushort>(str); }
 
 template <typename T> inline void
 export_vector(std::string filename,
-		const std::vector<T> & path)
+        const std::vector<T> & path)
 {
-	std::ofstream fout;
-	fout.open(filename.c_str(), std::ios::out);
-	for (auto point : path)
-		fout << point << "\n";
+    std::ofstream fout;
+    fout.open(filename.c_str(), std::ios::out);
+    for (auto point : path)
+        fout << point << "\n";
 }
 
 inline std::vector<std::string> &

@@ -40,7 +40,9 @@ public:
     }
 
     Params(const int argc, char ** argv) : Params(argc, const_cast<const char **>(argv))
-    { }
+    {
+
+    }
 
     ~Params()
     {
@@ -76,8 +78,8 @@ public:
 
     bool misses(const char * const cmd, const int index) const
     {
-    	if (misses(cmd)) return true;
-		return _mem.at(cmd)->size() <= index;
+        if (misses(cmd)) return true;
+        return _mem.at(cmd)->size() <= index;
     }
     
     // length
@@ -89,24 +91,24 @@ public:
     
     // getAll
     const std::vector<std::string> &
-	all(const char * const cmd) const
+    all(const char * const cmd) const
     {
         if (misses(cmd)) missingCommand(cmd);
         return *(_mem.at(cmd));
     }
 
 
-	// getStrings
+    // getStrings
     const char * getStringAt(const char * const cmd, const int index) const
     {
-    	if (misses(cmd, index)) missingCommand( cmd );
-		return _mem.at(cmd)->operator[]( index ).c_str();
+        if (misses(cmd, index)) missingCommand( cmd );
+        return _mem.at(cmd)->operator[]( index ).c_str();
     }
 
     const char * getStringAt(const char * const cmd, const int index, const char * const default_value) const
     {
-    	if (misses(cmd, index)) return default_value;
-		return _mem.at(cmd)->operator[]( index ).c_str();
+        if (misses(cmd, index)) return default_value;
+        return _mem.at(cmd)->operator[]( index ).c_str();
     }
 
     const char * getString(const char * const cmd) const
@@ -116,7 +118,35 @@ public:
     { return getStringAt(cmd, 0, default_value); }
 
 
-    // getIntegers
+    // get long
+    long getLongAt(const char * const cmd, const int index) const
+    { return parseValueAt(cmd, index, wup::parse_long); }
+
+    long getLongAt(const char * const cmd, const int index, const long default_value) const
+    { return parseValueAt(cmd, index, default_value, wup::parse_long); }
+
+    long getLong(const char * const &cmd) const
+    { return parseValue(cmd, wup::parse_long); }
+
+    long getLong(const char * const &cmd, const long default_value) const
+    { return parseValue(cmd, default_value, wup::parse_long); }
+
+
+    // get ulong
+    ulong getULongAt(const char * const cmd, const int index) const
+    { return parseValueAt(cmd, index, wup::parse_ulong); }
+
+    ulong getULongAt(const char * const cmd, const int index, const ulong default_value) const
+    { return parseValueAt(cmd, index, default_value, wup::parse_ulong); }
+
+    ulong getULong(const char * const &cmd) const
+    { return parseValue(cmd, wup::parse_ulong); }
+
+    ulong getULong(const char * const &cmd, const ulong default_value) const
+    { return parseValue(cmd, default_value, wup::parse_ulong); }
+
+
+    // get int
     int getIntAt(const char * const cmd, const int index) const
     { return parseValueAt(cmd, index, wup::parse_int); }
 
@@ -128,6 +158,49 @@ public:
 
     int getInt(const char * const &cmd, const int default_value) const
     { return parseValue(cmd, default_value, wup::parse_int); }
+
+
+    // get uint
+    uint getUIntAt(const char * const cmd, const int index) const
+    { return parseValueAt(cmd, index, wup::parse_uint); }
+
+    uint getUIntAt(const char * const cmd, const int index, const uint default_value) const
+    { return parseValueAt(cmd, index, default_value, wup::parse_uint); }
+
+    uint getUInt(const char * const &cmd) const
+    { return parseValue(cmd, wup::parse_uint); }
+
+    uint getUInt(const char * const &cmd, const uint default_value) const
+    { return parseValue(cmd, default_value, wup::parse_uint); }
+
+
+    // get short
+    short getShortAt(const char * const cmd, const int index) const
+    { return parseValueAt(cmd, index, wup::parse_short); }
+
+    short getShortAt(const char * const cmd, const int index, const short default_value) const
+    { return parseValueAt(cmd, index, default_value, wup::parse_short); }
+
+    short getShort(const char * const &cmd) const
+    { return parseValue(cmd, wup::parse_short); }
+
+    short getShort(const char * const &cmd, const short default_value) const
+    { return parseValue(cmd, default_value, wup::parse_short); }
+
+
+    // get ushort
+    ushort getUShortAt(const char * const cmd, const int index) const
+    { return parseValueAt(cmd, index, wup::parse_ushort); }
+
+    ushort getUShortAt(const char * const cmd, const int index, const ushort default_value) const
+    { return parseValueAt(cmd, index, default_value, wup::parse_ushort); }
+
+    ushort getUShort(const char * const &cmd) const
+    { return parseValue(cmd, wup::parse_ushort); }
+
+    ushort getUShort(const char * const &cmd, const ushort default_value) const
+    { return parseValue(cmd, default_value, wup::parse_ushort); }
+
 
     // getBools
     bool getBoolAt(const char * const cmd, const int index) const
@@ -142,7 +215,8 @@ public:
     bool getBool(const char * const &cmd, const bool default_value) const
     { return parseValue(cmd, default_value, wup::parse_bool); }
 
-    // getDoubles
+
+    // get double
     double getDoubleAt(const char * const cmd, const int index) const
     { return parseValueAt(cmd, index, parse_double); }
 
@@ -156,16 +230,30 @@ public:
     { return parseValue(cmd, default_value, wup::parse_double); }
 
 
+    // get float
+    float getFloatAt(const char * const cmd, const int index) const
+    { return parseValueAt(cmd, index, parse_float); }
+
+    float getFloatAt(const char * const cmd, const int index, const float default_value) const
+    { return parseValueAt(cmd, index, default_value, wup::parse_float); }
+
+    float getFloat(const char * const cmd) const
+    { return parseValue(cmd, parse_float); }
+
+    float getFloat(const char * const cmd, const float default_value) const
+    { return parseValue(cmd, default_value, wup::parse_float); }
+
+
     // parseValues
     template <typename T> T
-	parseValueAt(const char * const cmd, const int index, T (*parseFunc)(const std::string &)) const
+    parseValueAt(const char * const cmd, const int index, T (*parseFunc)(const std::string &)) const
     {
-    	if (misses(cmd, index)) missingParameter( cmd );
-		return parseFunc( _mem.at(cmd)->operator[]( index ) );
+        if (misses(cmd, index)) missingParameter( cmd );
+        return parseFunc( _mem.at(cmd)->operator[]( index ) );
     }
 
     template <typename T> T
-	parseValueAt(const char * const cmd, const int index, const T &default_value, T (*parseFunc)(const std::string &)) const
+    parseValueAt(const char * const cmd, const int index, const T &default_value, T (*parseFunc)(const std::string &)) const
     {
         if (misses(cmd, index))
             return default_value;
@@ -174,11 +262,11 @@ public:
     }
     
     template <typename T> T
-	parseValue(const char * const cmd, T (*parseFunc)(const std::string &)) const
+    parseValue(const char * const cmd, T (*parseFunc)(const std::string &)) const
     { return parseValueAt( cmd, 0, parseFunc ); }
 
     template <typename T> T
-	parseValue(const char * const cmd, const T & default_value, T (*parseFunc)(const std::string &)) const
+    parseValue(const char * const cmd, const T & default_value, T (*parseFunc)(const std::string &)) const
     { return parseValueAt( cmd, 0, default_value, parseFunc ); }
 
 private:
