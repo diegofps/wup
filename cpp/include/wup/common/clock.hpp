@@ -15,7 +15,8 @@ public:
         start();
     }
 
-    void start()
+    void 
+    start()
     {
         clock_gettime(clock_id, &_begin);
     }
@@ -24,30 +25,28 @@ public:
     Clock & stop()
     {
         clock_gettime(clock_id, &_end);
-//        const long begin = (_begin.tv_nsec + 1000000000l * _begin.tv_sec);
-//        const long end   = (_end.tv_nsec   + 1000000000l * _end.tv_sec  );
         _delta_nsec = _end.tv_nsec - _begin.tv_nsec;
         _delta_sec = _end.tv_sec - _begin.tv_sec;
         return *this;
     }
 
     // Returns the ellapsed time in seconds
-    double ellapsed_seconds() const
+    long double ellapsed_seconds() const
     {
         return _delta_sec + _delta_nsec / 1000000000.0;
     }
 
-    double ellapsed_milli() const
+    long double ellapsed_milli() const
     {
         return _delta_sec * 1000.0 + _delta_nsec / 1000000.0;
     }
 
-    double ellapsed_micro() const
+    long double ellapsed_micro() const
     {
         return _delta_sec * 1000000.0 + _delta_nsec / 1000.0;
     }
 
-    double ellapsed_nano() const
+    long double ellapsed_nano() const
     {
         return _delta_sec * 1000000000.0 + _delta_nsec;
     }
@@ -58,9 +57,9 @@ private:
 
     struct timespec _begin, _end;
 
-    long _delta_sec;
+    long double _delta_sec;
 
-    long _delta_nsec;
+    long double _delta_nsec;
 
 };
 
