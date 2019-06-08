@@ -173,11 +173,16 @@ public:
     getLong()
     {
         long l;
-        int * const root = (int*) & l;
+
+        int * start = (int*)( &l );
+        int * const end = (int*)( (&l) + 1 );
         
-        get(root[0]);
-        get(root[1]);
-        
+        while(start != end)
+        {
+            get(*start);
+            start += 1;
+        }
+
         return l;
     }
 
@@ -197,6 +202,7 @@ public:
     }
     
 };
+
 
 class iwriter : public sbwriter<int>
 {
@@ -223,10 +229,14 @@ public:
     void
     putLong(const long & l)
     {
-        const int * const root = (int*) & l;
+        const int * start = (int*)( &l );
+        const int * const end = (int*)( (&l) + 1 );
 
-        put(root[0]);
-        put(root[1]);
+        while(start != end)
+        {
+            put(*start);
+            start += 1;
+        }
     }
 
     void
@@ -241,8 +251,6 @@ public:
     {
         const int j = n == 0.0 ? 0 : n < 0.0 ? floor(log10(-n)) : floor(log10(n));
         const int i = n / pow(10, j - 8);
-        
-        //std::cout << "Saving " << i << " " << j << std::endl;
 
         put(i);
         put(j);
