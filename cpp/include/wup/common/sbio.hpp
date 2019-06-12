@@ -24,7 +24,7 @@ public:
 
     }
     
-    sbwriter(const std::string &filename, const uint capacity) :
+    sbwriter(const std::string &filename, const uint64_t capacity) :
         _stream(filename.c_str(), std::ios::binary | std::ios::trunc)
     {
         _buffer = (T*) malloc(sizeof(T) * capacity);
@@ -63,8 +63,8 @@ public:
 private:
     ofstream _stream;
     T * _buffer;
-    uint _capacity;
-    uint _current;
+    uint64_t _capacity;
+    uint64_t _current;
 };
 
 template <typename T>
@@ -76,7 +76,7 @@ public:
 
     }
     
-    sbreader(const std::string &filename, const int capacity) :
+    sbreader(const std::string &filename, const uint64_t capacity) :
         _stream(filename.c_str(), std::ios::binary | std::ios::in)
     {
         _buffer = (T*) malloc(sizeof(T) * capacity);
@@ -125,12 +125,12 @@ private:
 private:
     ifstream _stream;
     T * _buffer;
-    uint _capacity;
-    uint _current;
-    uint _content;
+    uint64_t _capacity;
+    uint64_t _current;
+    uint64_t _content;
 };
 
-class ireader : public sbreader<int>
+class ireader : public sbreader<int32_t>
 {
 public:
     
@@ -140,7 +140,7 @@ public:
 
     }
     
-    ireader(const std::string & filename, const int capacity) :
+    ireader(const std::string & filename, const uint64_t capacity) :
         sbreader( filename, capacity )
     {
         
@@ -151,7 +151,7 @@ public:
     {
         std::stringstream ss;
 
-        int tmp;
+        int32_t tmp;
         while ((tmp = get()) != 0)
             ss << (char) tmp;
 
@@ -161,8 +161,8 @@ public:
     double 
     getDouble()
     {
-        const int i = get();
-        const int j = get();
+        const int32_t i = get();
+        const int32_t j = get();
 
         //std::cout << "Got " << i << " " << j << std::endl;
         
@@ -174,8 +174,8 @@ public:
     {
         long l;
 
-        int * start = (int*)( &l );
-        int * const end = (int*)( (&l) + 1 );
+        int32_t * start = (int32_t*)( &l );
+        int32_t * const end = (int32_t*)( (&l) + 1 );
         
         while(start != end)
         {
@@ -186,11 +186,37 @@ public:
         return l;
     }
 
+    int64_t
+    getInt64()
+    {
+        int64_t tmp;
+
+        int32_t * root = (int32_t*) (&tmp);
+
+        get(root[0]);
+        get(root[1]);
+
+        return tmp;
+    }
+
+    uint64_t
+    getUInt64()
+    {
+        uint64_t tmp;
+
+        int32_t * root = (int32_t*) (&tmp);
+
+        get(root[0]);
+        get(root[1]);
+
+        return tmp;
+    }
+
     uint
     getUnsignedInt()
     {
         uint l;
-        int * const root = (int*) (&l);
+        int32_t * const root = (int32_t*) (&l);
         get(root[0]);
         return l;
     }
@@ -204,7 +230,7 @@ public:
 };
 
 
-class iwriter : public sbwriter<int>
+class iwriter : public sbwriter<int32_t>
 {
 public:
     
@@ -224,6 +250,24 @@ public:
     putBool(const bool & b)
     {
         put((int) b);
+    }
+
+    void
+    putInt64(const int64_t & l)
+    {
+        const int32_t * root = (int32_t*)( &l );
+
+        put(root[0]);
+        put(root[1]);
+    }
+
+    void
+    putUInt64(const uint64_t & l)
+    {
+        const uint32_t * root = (uint32_t*)( &l );
+
+        put(root[0]);
+        put(root[1]);
     }
 
     void
