@@ -46,19 +46,38 @@ class WUPException : public std::exception {
 public:
     WUPException() : _msg("")
     { }
-    
+
     WUPException(const std::string &msg) : _msg(msg)
     { }
 
     ~WUPException() throw()
     { }
-	
-    const char * what() const throw() 
+
+    const char * what() const throw()
     { return _msg.c_str(); }
 
 private:
     std::string _msg;
-    
+
+};
+
+class WUPNotImplemented : public std::exception
+{
+
+public:
+
+    WUPNotImplemented() : _msg("") { }
+
+    WUPNotImplemented(const std::string &msg) : _msg(msg) { }
+
+    ~WUPNotImplemented() throw() { }
+
+    const char * what() const throw() { return _msg.c_str(); }
+
+private:
+
+    std::string _msg;
+
 };
 
 }; /* wup */

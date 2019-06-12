@@ -9,6 +9,7 @@
 #include <cmath>
 
 #include <wup/common/exceptions.hpp>
+#include <wup/common/generic.hpp>
 
 using std::ofstream;
 using std::ifstream;
@@ -19,17 +20,21 @@ template <typename T>
 class sbwriter {
 public:
     
-    sbwriter(const std::string &filename) : sbwriter(filename, 10240)
+    sbwriter(const std::string &filename, bool abortOnOpenFail=true) :
+        sbwriter(filename, 10240, abortOnOpenFail)
     {
 
     }
     
-    sbwriter(const std::string &filename, const uint64_t capacity) :
+    sbwriter(const std::string &filename, const uint64_t capacity, bool abortOnOpenFail=true) :
         _stream(filename.c_str(), std::ios::binary | std::ios::trunc)
     {
         _buffer = (T*) malloc(sizeof(T) * capacity);
         _current = 0l;
         _capacity = capacity;
+
+        if (abortOnOpenFail && !good())
+            throw WUPException(cat("Failed to open ", filename, " for writing"));
     }
     
     virtual ~sbwriter()
@@ -71,18 +76,22 @@ template <typename T>
 class sbreader {
 public:
     
-    sbreader(const std::string &filename) : sbreader(filename, 10240)
+    sbreader(const std::string &filename, bool abortOnOpenFail=true) :
+        sbreader(filename, 10240, abortOnOpenFail)
     {
 
     }
     
-    sbreader(const std::string &filename, const uint64_t capacity) :
+    sbreader(const std::string &filename, const uint64_t capacity, bool abortOnOpenFail=true) :
         _stream(filename.c_str(), std::ios::binary | std::ios::in)
     {
         _buffer = (T*) malloc(sizeof(T) * capacity);
         _content = 0;
         _current = 0;
         _capacity = capacity;
+
+        if (abortOnOpenFail && !good())
+            throw WUPException(cat("Failed to open ", filename, " for reading"));
     }
     
     virtual ~sbreader()
@@ -134,14 +143,14 @@ class ireader : public sbreader<int32_t>
 {
 public:
     
-    ireader(const std::string & filename) : 
-        sbreader( filename )
+    ireader(const std::string & filename, bool abortOnOpenFail=true) :
+        sbreader( filename, abortOnOpenFail )
     {
 
     }
     
-    ireader(const std::string & filename, const uint64_t capacity) :
-        sbreader( filename, capacity )
+    ireader(const std::string & filename, const uint64_t capacity, bool abortOnOpenFail=true) :
+        sbreader( filename, capacity, abortOnOpenFail )
     {
         
     }
@@ -234,14 +243,14 @@ class iwriter : public sbwriter<int32_t>
 {
 public:
     
-    iwriter(const std::string & filename) : 
-        sbwriter( filename )
+    iwriter(const std::string & filename, bool abortOnOpenFail=true) :
+        sbwriter( filename, abortOnOpenFail )
     {
 
     }
     
-    iwriter(const std::string & filename, const int capacity) :
-        sbwriter( filename, capacity )
+    iwriter(const std::string & filename, const int capacity, bool abortOnOpenFail=true) :
+        sbwriter( filename, capacity, abortOnOpenFail )
     {
         
     }
