@@ -430,7 +430,8 @@ public:
 
 };
 
-std::ostream & operator<<(std::ostream & o, const KFold & k)
+inline std::ostream &
+operator<<(std::ostream & o, const KFold & k)
 {
     o << "NumFolds: " << k.numFolds() << std::endl;
     for (uint i=0;i<k.numFolds();++i)

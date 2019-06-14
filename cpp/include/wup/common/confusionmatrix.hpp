@@ -154,7 +154,8 @@ public:
 };
 
 #ifndef JNI_H_
-std::ostream & operator << (std::ostream &o, ConfusionMatrix & confusion)
+inline std::ostream &
+operator << (std::ostream &o, ConfusionMatrix & confusion)
 {
     o << YELLOW;
     for (int j=0; j<confusion.classes(); ++j)

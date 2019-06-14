@@ -3,8 +3,6 @@
 
 #include <wup/wup.hpp>
 
-using namespace wup;
-
 //typedef struct
 //{
 //    double w;
@@ -26,12 +24,12 @@ public:
         _boxes(nullptr)
     {
         if (_kernels == nullptr) {
-            warn("Generating random kernels");
-            kernelgens::createRandomKernels(_dims, _numKernels, _kernels);
+            wup::warn("Generating random kernels");
+            wup::kernelgens::createRandomKernels(_dims, _numKernels, _kernels);
         }
 
         _k = int(ceil(_numKernels * act));
-        _boxes = new BOX[_numKernels];
+        _boxes = new wup::BOX[_numKernels];
         _selections = new int[_k];
     }
 
@@ -42,15 +40,15 @@ public:
         _kernels(nullptr),
         _selections(nullptr),
         _k(other._k),
-        _boxes(new BOX[_numKernels])
+        _boxes(new wup::BOX[_numKernels])
     {
-        error( "Unimplemented copy constructor in EuclidianKernels" );
+        wup::error( "Unimplemented copy constructor in EuclidianKernels" );
     }
 
     virtual
     ~EuclidianKernels ()
     {
-        for (int i=0;i<_numKernels;++i)
+        for (uint i=0;i<_numKernels;++i)
             delete _kernels[i];
 
         delete [] _selections;
@@ -65,8 +63,8 @@ public:
         for (int i=0;i<_dims;++i)
             _tmp[i] = pattern[i];
 
-        for (int i=0;i<_numKernels;++i) {
-            _boxes[i].w = -sdistance(_tmp, _kernels[i], _dims);
+        for (uint i=0;i<_numKernels;++i) {
+            _boxes[i].w = -wup::sdistance(_tmp, _kernels[i], _dims);
             _boxes[i].id = i;
         }
 
@@ -84,8 +82,8 @@ public:
         for (int i=0;i<_dims;++i)
             _tmp[i] = tanh(pattern[i]);
 
-        for (int i=0;i<_numKernels;++i) {
-            _boxes[i].w = -sdistance(_tmp, _kernels[i], _dims);
+        for (uint i=0;i<_numKernels;++i) {
+            _boxes[i].w = -wup::sdistance(_tmp, _kernels[i], _dims);
             _boxes[i].id = i;
         }
 
@@ -124,7 +122,7 @@ private:
 
     int _k;
 
-    BOX * _boxes;
+    wup::BOX * _boxes;
 
 };
 
@@ -139,18 +137,18 @@ public:
         _outputFreq(new int[_kernelSpace.numKernels()]),
         _outputBits(new int[_kernelSpace.numKernels() * term_bits])
     {
-        print(inputs, " ", kernels, " ", act, " ", term_bits);
+        wup::print(inputs, " ", kernels, " ", act, " ", term_bits);
     }
 
     BaseKernelCanvas(const BaseKernelCanvas &other)
     {
-        error( "Unimplemented copy constructor in KernelCanvas" );
+        wup::error( "Unimplemented copy constructor in KernelCanvas" );
     }
 
-    BaseKernelCanvas(ireader & reader) :
+    BaseKernelCanvas(wup::ireader & reader) :
         _kernelSpace(9, 9, 0, nullptr)
     {
-        error("Not implemented");
+        wup::error("Not implemented");
     }
 
     ~BaseKernelCanvas()
@@ -205,7 +203,7 @@ public:
     }
 
     void
-    exportTo(iwriter & writer)
+    exportTo(wup::iwriter & writer)
     {
 
     }

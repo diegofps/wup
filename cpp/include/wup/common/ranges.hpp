@@ -2,6 +2,7 @@
 #define __WUP_RANGES
 
 #include <wup/common/msgs.hpp>
+#include <vector>
 
 namespace wup
 {

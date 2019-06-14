@@ -299,14 +299,18 @@ operator<<(std::ostream &o, const wup::Dataset &dataset)
     return o;
 }
 
-inline double sdistance(const wup::Feature & f1, const wup::Feature & f2)
+inline double
+sdistance(const wup::Feature & f1, const wup::Feature & f2)
 {
     if (f1.size() != f2.size()) throw wup::WUPException("Features size differ");
     return sdistance(f1.data(), f2.data(), f1.size());
 }
 
-inline double distance(const wup::Feature & f1, const wup::Feature & f2)
-{ return sqrt(sdistance(f1, f2)); }
+inline double
+distance(const wup::Feature & f1, const wup::Feature & f2)
+{
+    return sqrt(sdistance(f1, f2));
+}
 
 } /* wup */
 

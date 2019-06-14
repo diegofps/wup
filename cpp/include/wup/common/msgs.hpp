@@ -44,7 +44,8 @@ std::string cat(const Args&... args)
     return _cat(ss, args...).str();
 }
 
-inline void print()
+inline void
+print()
 {
     std::cout << std::endl;
 }

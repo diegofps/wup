@@ -1,6 +1,9 @@
 #ifndef __WUP_INTDECODER_HPP
 #define __WUP_INTDECODER_HPP
 
+#include <cstdlib>
+#include <functional>
+
 namespace wup 
 {
 
@@ -71,14 +74,13 @@ public:
 namespace std 
 {
 
-    struct std::hash<long> h;
+//    class std::hash<long> h;
 
-    template <>
-    struct hash<wup::IntDecoder> 
+    template <> class hash<wup::IntDecoder>
     {
         std::size_t operator()(const wup::IntDecoder & k) const
         {
-            return h.operator()(k._address);
+            return hash<long>().operator()(k._address);
         }
     };
 

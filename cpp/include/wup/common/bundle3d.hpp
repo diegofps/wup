@@ -5,8 +5,6 @@
 #include <vector>
 #include <cstdlib>
 
-using namespace std;
-
 namespace wup {
 
 template <typename T>
@@ -19,7 +17,7 @@ public:
 
     int _depth;
 
-    vector<T> _data;
+    std::vector<T> _data;
 
     Bundle3D() : Bundle3D(1, 1, 1)
     {
