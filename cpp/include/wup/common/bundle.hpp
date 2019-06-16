@@ -30,15 +30,7 @@ public:
     Bundle(const uint rows, const uint columns, const T & initialValue) :
         Bundle(rows, columns)
     {
-        T * cur = _data;
-        const T * const end = _data + rows * columns;
-
-        while (cur != end)
-        {
-            *cur = initialValue;
-            ++cur;
-        }
-
+        this->operator=(initialValue);
     }
 
     Bundle(const uint rows, const uint columns) :
@@ -148,16 +140,45 @@ public:
         return (*this)(0l, j);
     }
 
+    T &
+    at(const uint32_t index)
+    {
+#ifndef WUP_UNSAFE
+        if (index > _size)
+            throw WUPException("Out of bounds");
+#endif
+
+        return _data[index];
+    }
+
+    const T &
+    at(const uint32_t index) const
+    {
+#ifndef WUP_UNSAFE
+        if (index > _size)
+            throw WUPException("Out of bounds");
+#endif
+
+        return _data[index];
+    }
+
     const Bundle<T> & operator=(const T & value)
     {
-        for (uint i=0; i<_size; ++i)
-            _data[i] = value;
+        T * cur = _data;
+        const T * const end = _data + _size;
+
+        while (cur != end)
+        {
+            *cur = value;
+            ++cur;
+        }
+
         return *this;
     }
 
     void reshape(const uint rows, const uint cols)
     {
-        const int newSize = rows * cols;
+        const uint newSize = rows * cols;
 
         _columns = cols;
         _size = newSize;
@@ -398,6 +419,30 @@ std::ostream & operator<<(std::ostream & o, const wup::BundleView<T> & view)
         o << "\n";
     }
     return o;
+}
+
+template <typename T>
+T
+min(const Bundle<T> & data)
+{
+    T r = data(0,0);
+    for (uint i=1;i!=data.size();++i)
+        if (data.at(i) < r)
+            r = data.at(i);
+    return r;
+}
+
+template <typename T>
+T
+max(const Bundle<T> & data)
+{
+    T r = data(0,0);
+
+    for (uint i=1;i!=data.size();++i)
+        if (data.at(i) > r)
+            r = data.at(i);
+
+    return r;
 }
 
 }
