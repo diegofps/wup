@@ -25,8 +25,8 @@ private:
 
 public:
 
-    ConfusionMatrix(const Dataset &ds) :
-        _matrix(ds.classes()+1, ds.classes()+1),
+    ConfusionMatrix(const uint numClasses) :
+        _matrix(numClasses+1, numClasses+1),
         _requiresUpdate(true)
     {
 
@@ -38,14 +38,14 @@ public:
         if (classes() != other.classes())
             throw WUPException("Can not digest a ConfusionMatrix with different size");
 
-        for (int i=0;i<classes();++i)
-            for (int j=0;j<classes();++j)
+        for (uint i=0;i!=classes();++i)
+            for (uint j=0;j!=classes();++j)
                 _matrix(i, j) += other(i, j);
 
         _requiresUpdate = true;
     }
 
-    int
+    uint
     classes() const
     {
         return _matrix.numCols() - 1;
@@ -58,17 +58,17 @@ public:
         _requiresUpdate = true;
     }
 
-    int
-    predictionsFor(const int row) const
+    uint64_t
+    predictionsFor(const uint row) const
     {
-        int sum = 0;
+        uint64_t sum = 0;
         for (uint j=0;j<_matrix.numCols()-1;++j)
             sum += _matrix(row, j);
         return sum;
     }
 
     int
-    targetsFor(const int col) const
+    targetsFor(const uint col) const
     {
         int sum = 0;
         for (uint i=0;i<_matrix.numRows()-1;++i)
@@ -76,17 +76,17 @@ public:
         return sum;
     }
 
-    ulong
+    uint64_t
     total() const
     {
-        ulong sum = 0;
+        uint64_t sum = 0;
         for (uint i=0;i<_matrix.numRows()-1;++i)
             sum += predictionsFor(i);
         return sum;
     }
 
     void
-    add(const int predicted, const int target)
+    add(const uint predicted, const uint target)
     {
         ++_matrix(predicted, target);
         _requiresUpdate = true;
@@ -96,7 +96,7 @@ public:
     accuracy()
     {
         checkUpdate();
-        const int len = _matrix.numCols()-1;
+        const uint len = _matrix.numCols()-1;
         return _matrix(len, len);
     }
 
@@ -104,9 +104,12 @@ public:
     max() const
     {
         int max = -1;
-        for (int i=0;i<classes();++i) {
-            for (int j=0;j<classes();++i) {
-                const int value = _matrix(i,j);
+        for (uint i=0;i!=classes();++i)
+        {
+            for (uint j=0;j!=classes();++i)
+            {
+                const int value = static_cast<int>(_matrix(i,j));
+
                 if (value > max)
                     max = value;
             }
@@ -118,13 +121,13 @@ public:
     diagonal() const
     {
         int sum = 0;
-        for (int k=0;k<classes();++k)
+        for (uint k=0;k!=classes();++k)
             sum += _matrix(k, k);
         return sum;
     }
 
     double
-    operator()(const int i, const int j)
+    operator()(const uint i, const uint j)
     {
         checkUpdate();
         return _matrix(i, j);
@@ -133,19 +136,19 @@ public:
     void
     update()
     {
-        const int len = _matrix.numCols()-1;
+        const uint len = _matrix.numCols()-1;
 
-        for (int k=0;k<len;++k)
+        for (uint k=0;k!=len;++k)
         {
             const double current = _matrix(k, k);
             const double rowSum = predictionsFor(k);
             const double colSum = targetsFor(k);
 
-            _matrix(len, k) = colSum == 0 ? 1.0 : current / colSum;
-            _matrix(k, len) = rowSum == 0 ? 1.0 : current / rowSum;
+            _matrix(len, k) = colSum < 0.0001 ? 1.0 : current / colSum;
+            _matrix(k, len) = rowSum < 0.0001 ? 1.0 : current / rowSum;
         }
 
-        const ulong sum = total();
+        const uint64_t sum = total();
         const double diag = diagonal();
         _matrix(len, len) = sum == 0 ? 1.0 : diag / sum;
         _requiresUpdate = false;
@@ -158,24 +161,27 @@ inline std::ostream &
 operator << (std::ostream &o, ConfusionMatrix & confusion)
 {
     o << YELLOW;
-    for (int j=0; j<confusion.classes(); ++j)
+    for (uint j=0; j!=confusion.classes(); ++j)
         o << '\t' << j;
     o << std::endl;
 
-    for (int i=0;i<confusion.classes();++i) {
-        o << BLUE << i << '\t' << (i==0?GREEN:confusion(i, 0)==0?NORMAL:RED) << confusion(i, 0);
+    for (uint i=0;i!=confusion.classes();++i) {
+        o << BLUE << i << '\t' << (i==0?GREEN:confusion(i, 0)<0.0001?NORMAL:RED) << confusion(i, 0);
 
-        for (int j=1;j<confusion.classes();++j)
-            o << '\t' << (i==j?GREEN:confusion(i, j)==0?NORMAL:RED) << confusion(i, j);
+        for (uint j=1;j!=confusion.classes();++j)
+            o << '\t' << (i==j?GREEN:confusion(i, j)<0.0001?NORMAL:RED) << confusion(i, j);
 
         o << std::fixed << std::setprecision(3);
+
         const double value = confusion(i, confusion.classes());
+
         o << '\t' << (value == 1.0 ? GREEN : value < .5 ? RED : BLUE) << value << std::endl;
         o << std::defaultfloat;
     }
 
     o << BLUE << std::fixed << std::setprecision(3);
-    for (int j=0; j<=confusion.classes(); ++j) {
+
+    for (uint j=0; j!=confusion.classes(); ++j) {
         const double value = confusion(confusion.classes(), j);
         o << '\t' << (value == 1.0 ? GREEN : value < .5 ? RED : BLUE) << value;
     }

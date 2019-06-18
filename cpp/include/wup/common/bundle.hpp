@@ -176,6 +176,11 @@ public:
         return *this;
     }
 
+    void reshape(const uint cols)
+    {
+        reshape(1, cols);
+    }
+
     void reshape(const uint rows, const uint cols)
     {
         const uint newSize = rows * cols;
