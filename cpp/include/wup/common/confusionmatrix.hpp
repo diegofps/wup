@@ -29,7 +29,7 @@ public:
         _matrix(numClasses+1, numClasses+1),
         _requiresUpdate(true)
     {
-
+        _matrix = 0;
     }
 
     void
@@ -86,7 +86,7 @@ public:
     }
 
     void
-    add(const uint predicted, const uint target)
+    add(const int64_t predicted, const int64_t target)
     {
         ++_matrix(predicted, target);
         _requiresUpdate = true;

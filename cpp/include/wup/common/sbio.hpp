@@ -142,14 +142,8 @@ private:
 class ireader : public sbreader<int32_t>
 {
 public:
-    
-    ireader(const std::string & filename, bool abortOnOpenFail=true) :
-        sbreader( filename, abortOnOpenFail )
-    {
 
-    }
-    
-    ireader(const std::string & filename, const uint64_t capacity, bool abortOnOpenFail=true) :
+    ireader(const std::string & filename, const uint64_t capacity=1024*1024, bool abortOnOpenFail=true) :
         sbreader( filename, capacity, abortOnOpenFail )
     {
         
@@ -242,14 +236,8 @@ public:
 class iwriter : public sbwriter<int32_t>
 {
 public:
-    
-    iwriter(const std::string & filename, bool abortOnOpenFail=true) :
-        sbwriter( filename, abortOnOpenFail )
-    {
 
-    }
-    
-    iwriter(const std::string & filename, const int capacity, bool abortOnOpenFail=true) :
+    iwriter(const std::string & filename, const int capacity=1024*1024, bool abortOnOpenFail=true) :
         sbwriter( filename, capacity, abortOnOpenFail )
     {
         
