@@ -76,7 +76,7 @@ namespace std
 
 //    class std::hash<long> h;
 
-    template <> class hash<wup::IntDecoder>
+    template <> struct hash<wup::IntDecoder>
     {
         std::size_t operator()(const wup::IntDecoder & k) const
         {
