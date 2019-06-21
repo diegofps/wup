@@ -29,7 +29,7 @@ public:
             throw WUPException("Box2D requires an input pattern with length 2");
     }
 
-    Box2D(Node * const parent, ireader & reader) :
+    Box2D(Node * const parent, IntReader & reader) :
         Node(parent, reader),
         _left(reader.getDouble()),
         _right(reader.getDouble()),
@@ -40,7 +40,7 @@ public:
     }
 
     virtual
-    void onExport(iwriter & writer)
+    void onExport(IntWriter & writer)
     {
         writer.putDouble(_left);
         writer.putDouble(_right);

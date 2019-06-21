@@ -20,7 +20,7 @@ namespace node {
 class KernelCanvas : public Node {
 public:
 
-    KernelCanvas(Node * const parent, ireader & reader) :
+    KernelCanvas(Node * const parent, IntReader & reader) :
             Node(parent, reader),
             _kc(reader)
     {
@@ -75,7 +75,7 @@ public:
     }
 
 
-    virtual void onExport(iwriter & writer)
+    virtual void onExport(IntWriter & writer)
     {
         _kc.exportTo(writer);
     }

@@ -16,73 +16,127 @@ using std::ifstream;
 
 namespace wup {
 
+/////////////////////////////////////////////////////////////////////////////////
+
 template <typename T>
-class sbwriter {
+class Source
+{
 public:
-    
-    sbwriter(const std::string &filename, bool abortOnOpenFail=true) :
-        sbwriter(filename, 10240, abortOnOpenFail)
-    {
-
-    }
-    
-    sbwriter(const std::string &filename, const uint64_t capacity, bool abortOnOpenFail=true) :
-        _stream(filename.c_str(), std::ios::binary | std::ios::trunc)
-    {
-        _buffer = (T*) malloc(sizeof(T) * capacity);
-        _current = 0l;
-        _capacity = capacity;
-
-        if (abortOnOpenFail && !good())
-            throw WUPException(cat("Failed to open ", filename, " for writing"));
-    }
-    
-    virtual ~sbwriter()
-    {
-        if (_current != 0)
-        {
-            _stream.write((char*) _buffer, sizeof(T) * _current);
-        }
-
-        _stream.flush();
-        _stream.close();        
-        free(_buffer);
-    }
-    
-    void put(const T &t)
-    {
-        _buffer[_current++] = t;
-        
-        if (_current == _capacity)
-        {
-            _stream.write((char*) _buffer, sizeof(T) * _current);
-            _current = 0;
-        }
-    }
-    
-    bool good()
-    {
-        return _stream.good();
-    }
-    
-private:
-    ofstream _stream;
-    T * _buffer;
-    uint64_t _capacity;
-    uint64_t _current;
+    virtual void get(T &t) = 0;
+    virtual const T & get() = 0;
+    virtual bool good() = 0;
 };
 
 template <typename T>
-class sbreader {
+class Sink
+{
+public:
+    virtual void put(const T &t) = 0;
+    virtual bool good() = 0;
+};
+
+/////////////////////////////////////////////////////////////////////////////////
+
+template <typename T>
+class MemSource : public Source<T>
+{
+    const T * const data;
+
+    uint64_t pos;
+
+    uint64_t size;
+
+public:
+
+    MemSource(const T * const data, const uint64_t size) :
+        data(data),
+        pos(0),
+        size(size)
+    {
+
+    }
+
+    void
+    get(T &t)
+    {
+        if (pos == size)
+            throw wup::WUPException();
+
+        t = data[pos];
+        ++pos;
+    }
+
+    const T &
+    get()
+    {
+        if (pos == size)
+            throw wup::WUPException();
+
+        const T & r = data[pos];
+        ++pos;
+        return r;
+    }
+
+    bool
+    good()
+    {
+        return true;
+    }
+
+};
+
+template <typename T>
+class MemSink : public Sink<T>
+{
+public:
+
+    uint64_t capacity;
+
+    uint64_t size;
+
+    T * data;
+
+    MemSink(const uint64_t initialCapacity) :
+        capacity(initialCapacity ? initialCapacity : 1),
+        size(0),
+        data((T*) malloc(capacity * sizeof(T)))
+    {
+
+    }
+
+    void
+    put(const T &t)
+    {
+        if (size == capacity)
+        {
+            capacity *= 2;
+            data = (T*) realloc(data, capacity);
+        }
+
+        data[size] = t;
+        ++size;
+    }
+
+    bool
+    good()
+    {
+        true;
+    }
+
+};
+
+template <typename T>
+class FileSource : public Source<T>
+{
 public:
     
-    sbreader(const std::string &filename, bool abortOnOpenFail=true) :
-        sbreader(filename, 10240, abortOnOpenFail)
+    FileSource(const std::string &filename, bool abortOnOpenFail=true) :
+        FileSource(filename, 10240, abortOnOpenFail)
     {
 
     }
     
-    sbreader(const std::string &filename, const uint64_t capacity, bool abortOnOpenFail=true) :
+    FileSource(const std::string &filename, const uint64_t capacity, bool abortOnOpenFail=true) :
         _stream(filename.c_str(), std::ios::binary | std::ios::in)
     {
         _buffer = (T*) malloc(sizeof(T) * capacity);
@@ -94,7 +148,7 @@ public:
             throw WUPException(cat("Failed to open ", filename, " for reading"));
     }
     
-    virtual ~sbreader()
+    virtual ~FileSource()
     {
         _stream.close();
         free(_buffer);
@@ -139,50 +193,127 @@ private:
     uint64_t _content;
 };
 
-class ireader : public sbreader<int32_t>
+template <typename T>
+class FileSink : public Sink<T>
 {
 public:
 
-    ireader(const std::string & filename, const uint64_t capacity=1024*1024, bool abortOnOpenFail=true) :
-        sbreader( filename, capacity, abortOnOpenFail )
+    FileSink(const std::string &filename, bool abortOnOpenFail=true) :
+        FileSink(filename, 10240, abortOnOpenFail)
     {
-        
+
     }
-    
-    std::string 
+
+    FileSink(const std::string &filename, const uint64_t capacity, bool abortOnOpenFail=true) :
+        _stream(filename.c_str(), std::ios::binary | std::ios::trunc)
+    {
+        _buffer = (T*) malloc(sizeof(T) * capacity);
+        _current = 0l;
+        _capacity = capacity;
+
+        if (abortOnOpenFail && !good())
+            throw WUPException(cat("Failed to open ", filename, " for writing"));
+    }
+
+    virtual ~FileSink()
+    {
+        if (_current != 0)
+        {
+            _stream.write((char*) _buffer, sizeof(T) * _current);
+        }
+
+        _stream.flush();
+        _stream.close();
+        free(_buffer);
+    }
+
+    void put(const T &t)
+    {
+        _buffer[_current++] = t;
+
+        if (_current == _capacity)
+        {
+            _stream.write((char*) _buffer, sizeof(T) * _current);
+            _current = 0;
+        }
+    }
+
+    bool good()
+    {
+        return _stream.good();
+    }
+
+private:
+    ofstream _stream;
+    T * _buffer;
+    uint64_t _capacity;
+    uint64_t _current;
+};
+
+/////////////////////////////////////////////////////////////////////////////////
+
+class IntReader
+{
+public:
+
+    Source<int32_t> & src;
+
+public:
+
+    IntReader(Source<int32_t> & src) : src(src)
+    {
+
+    }
+
+    bool
+    good()
+    {
+        return src.good();
+    }
+
+    void
+    get(int32_t & v)
+    {
+        src.get(v);
+    }
+
+    int32_t
+    get()
+    {
+        return src.get();
+    }
+
+    std::string
     getString()
     {
         std::stringstream ss;
 
         int32_t tmp;
-        while ((tmp = get()) != 0)
+        while ((tmp = src.get()) != 0)
             ss << (char) tmp;
 
         return ss.str();
     }
 
-    double 
+    double
     getDouble()
     {
-        const int32_t i = get();
-        const int32_t j = get();
-
-        //std::cout << "Got " << i << " " << j << std::endl;
-        
+        const int32_t & i = src.get();
+        const int32_t & j = src.get();
         return i * pow(10, j - 8);
     }
-    
-    long 
+
+    long
     getLong()
     {
         long l;
 
         int32_t * start = (int32_t*)( &l );
         int32_t * const end = (int32_t*)( (&l) + 1 );
-        
+
         while(start != end)
         {
-            get(*start);
+            src.get(*start);
             start += 1;
         }
 
@@ -196,8 +327,8 @@ public:
 
         int32_t * root = (int32_t*) (&tmp);
 
-        get(root[0]);
-        get(root[1]);
+        src.get(root[0]);
+        src.get(root[1]);
 
         return tmp;
     }
@@ -209,8 +340,8 @@ public:
 
         int32_t * root = (int32_t*) (&tmp);
 
-        get(root[0]);
-        get(root[1]);
+        src.get(root[0]);
+        src.get(root[1]);
 
         return tmp;
     }
@@ -220,62 +351,78 @@ public:
     {
         uint l;
         int32_t * const root = (int32_t*) (&l);
-        get(root[0]);
+        src.get(root[0]);
         return l;
     }
 
-    bool 
+    bool
     getBool()
     {
-        return get() != 0;
+        return src.get() != 0;
     }
-    
+
 };
 
-
-class iwriter : public sbwriter<int32_t>
+class IntWriter
 {
 public:
 
-    iwriter(const std::string & filename, const int capacity=1024*1024, bool abortOnOpenFail=true) :
-        sbwriter( filename, capacity, abortOnOpenFail )
+    Sink<int32_t> & snk;
+
+public:
+
+    IntWriter(Sink<int32_t> & snk) :
+        snk(snk)
     {
-        
+
     }
-    
-    void 
+
+    bool
+    good()
+    {
+        return snk.good();
+    }
+
+    void
+    put(const int32_t & v)
+    {
+        snk.put(v);
+    }
+
+    void
     putBool(const bool & b)
     {
-        put((int) b);
+        const int tmp(b);
+        snk.put(tmp);
     }
 
     void
     putInt64(const int64_t & l)
     {
-        const int32_t * root = (int32_t*)( &l );
+        const int32_t * root = (const int32_t*)( &l );
 
-        put(root[0]);
-        put(root[1]);
+        snk.put(root[0]);
+        snk.put(root[1]);
     }
 
     void
     putUInt64(const uint64_t & l)
     {
-        const uint32_t * root = (uint32_t*)( &l );
+        const int32_t * root = (const int32_t*)( &l );
 
-        put(root[0]);
-        put(root[1]);
+        snk.put(root[0]);
+        snk.put(root[1]);
     }
 
     void
     putLong(const long & l)
     {
-        const int * start = (int*)( &l );
-        const int * const end = (int*)( (&l) + 1 );
+        const int32_t * start = (const int32_t*)( &l );
+        const int32_t * const end = (const int32_t*)( (&l) + 1 );
 
         while(start != end)
         {
-            put(*start);
+            snk.put(*start);
             start += 1;
         }
     }
@@ -283,28 +430,82 @@ public:
     void
     putUnsignedInt(const uint & ui)
     {
-        const int * const root = (const int*) (& ui);
-        put(root[0]);
+        const int32_t * const root = (const int*) (& ui);
+        snk.put(root[0]);
     }
 
-    void 
+    void
     putDouble(const double & n)
     {
-        const int j = n == 0.0 ? 0 : n < 0.0 ? floor(log10(-n)) : floor(log10(n));
-        const int i = n / pow(10, j - 8);
+        const int32_t j = n == 0.0 ? 0 : n < 0.0 ? floor(log10(-n)) : floor(log10(n));
+        const int32_t i = n / pow(10, j - 8);
 
-        put(i);
-        put(j);
+        snk.put(i);
+        snk.put(j);
     }
-    
+
     template <typename T>
-    void 
+    void
     putString(T & str)
     {
         for (int i=0; str[i]!='\0'; ++i)
-            put((int)str[i]);
-        put(0);
+            snk.put((int32_t)str[i]);
+        snk.put(0);
     }
+
+};
+
+/////////////////////////////////////////////////////////////////////////////////
+
+class IntFileReader : public IntReader
+{
+public:
+
+    FileSource<int32_t> src;
+
+    IntFileReader(const std::string & filename, const uint64_t capacity=1024*1024, bool abortOnOpenFail=true) :
+        src( filename, capacity, abortOnOpenFail ),
+        IntReader(src)
+    { }
+
+};
+
+class IntFileWriter : public IntWriter
+{
+public:
+
+    FileSink<int32_t> snk;
+
+    IntFileWriter(const std::string & filename, const uint64_t capacity=1024*1024, bool abortOnOpenFail=true) :
+        snk( filename, capacity, abortOnOpenFail ),
+        IntWriter(snk)
+    { }
+
+};
+
+class IntMemReader : public IntReader
+{
+public:
+
+    MemSource<int32_t> src;
+
+    IntMemReader(const int32_t * data, const uint64_t size) :
+        src( data, size ),
+        IntReader(src)
+    { }
+
+};
+
+class IntMemWriter : public IntWriter
+{
+public:
+
+    MemSink<int32_t> snk;
+
+    IntMemWriter(const uint64_t initialCapacity) :
+        snk( initialCapacity ),
+        IntWriter(snk)
+    { }
 
 };
 

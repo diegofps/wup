@@ -70,7 +70,7 @@ public:
         }
     }
     
-    BaseWisard(ireader & reader) :
+    BaseWisard(IntReader & reader) :
             _confidence(1.0), 
             _rams(NULL),
             _maxBleaching(1),
@@ -250,12 +250,12 @@ public:
     void
     exportTo(const char * const filepath) const
     {
-        iwriter writer( filepath, 10240 );
+        IntWriter writer( filepath, 10240 );
         exportTo(writer);
     }
 
     void 
-    exportTo(iwriter & writer) const
+    exportTo(IntWriter & writer) const
     {
         // Número de verificação inicial
         int tmp = -1;

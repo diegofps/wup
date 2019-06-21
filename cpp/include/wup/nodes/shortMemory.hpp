@@ -29,7 +29,7 @@ public:
         memcpy(_mem, other._mem, sizeof(double) * other.output().size());
     }
 
-    ShortMemory(Node * const parent, ireader & reader) :
+    ShortMemory(Node * const parent, IntReader & reader) :
         Node(parent, reader),
         _times(reader.getUnsignedInt()),
         _mem(new double[parent->output().size()]),
@@ -44,7 +44,7 @@ public:
     }
 
     virtual
-    void onExport(iwriter & writer)
+    void onExport(IntWriter & writer)
     {
         writer.putUnsignedInt(_times);
         writer.put(_current);

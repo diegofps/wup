@@ -53,7 +53,7 @@ public:
         _s2 = new double[columns.size()];
     }
 
-    ZScore(Node * const parent, ireader & reader) :
+    ZScore(Node * const parent, IntReader & reader) :
         Node(parent, reader),
         _columns(reader.get()),
         _useHighestStd(reader.getBool())
@@ -66,7 +66,7 @@ public:
     }
 
     virtual
-    void onExport(iwriter & writer)
+    void onExport(IntWriter & writer)
     {
         writer.putUnsignedInt(_columns.size());
         writer.putBool(_useHighestStd);

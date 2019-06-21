@@ -13,7 +13,7 @@ class Replicate : public Node {
 
 public:
 
-    Replicate(Node * const parent, ireader & reader) :
+    Replicate(Node * const parent, IntReader & reader) :
             Node(parent, reader)
     {
         _times = reader.getUnsignedInt();
@@ -39,7 +39,7 @@ public:
         publish(output());
     }
 
-    virtual void onExport(iwriter & writer)
+    virtual void onExport(IntWriter & writer)
     {
         writer.putUnsignedInt(_times);
     }

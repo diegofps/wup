@@ -39,7 +39,7 @@ public:
 
     }
 
-    Show(Node * const parent, ireader & reader) :
+    Show(Node * const parent, IntReader & reader) :
         Node(parent, reader),
         _bundle(reader.getUnsignedInt()),
         _counter(reader.get()),
@@ -52,7 +52,7 @@ public:
     }
 
     virtual
-    void onExport(iwriter & writer)
+    void onExport(IntWriter & writer)
     {
         writer.putUnsignedInt(_bundle.numCols());
         writer.put(_counter);

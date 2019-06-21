@@ -13,7 +13,7 @@ namespace node
 {
 
 template <typename NODE>
-Node * nodeReader(Node * parent, ireader & reader)
+Node * nodeReader(Node * parent, IntReader & reader)
 {
     return new NODE(parent, reader);
 }
@@ -26,7 +26,7 @@ private:
 
     Node * _last;
 
-    std::map<std::string, Node *(*)(Node * parent, wup::ireader & reader)> _nodeReader;
+    std::map<std::string, Node *(*)(Node * parent, wup::IntReader & reader)> _nodeReader;
 
 public:
 
@@ -37,7 +37,7 @@ public:
         registerNodeReaders();
     }
 
-    StreamEncoder(ireader & reader) :
+    StreamEncoder(IntReader & reader) :
             _root(nullptr),
             _last(nullptr)
     {
@@ -63,7 +63,7 @@ public:
     }
 
     StreamEncoder &
-    exportTo(iwriter & writer)
+    exportTo(IntWriter & writer)
     {
         writer.put(-1);
 
@@ -172,7 +172,7 @@ public:
 private:
 
     void
-    exportNode(iwriter & writer, Node * node)
+    exportNode(IntWriter & writer, Node * node)
     {
         const char * name = typeid(*node).name();
         writer.putString(name);
@@ -186,7 +186,7 @@ private:
     }
 
     Node *
-    importNode(Node * parent, ireader & reader)
+    importNode(Node * parent, IntReader & reader)
     {
         const std::string nodeName = reader.getString();
         auto it = _nodeReader.find(nodeName);

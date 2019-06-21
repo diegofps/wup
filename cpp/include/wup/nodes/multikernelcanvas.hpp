@@ -26,7 +26,7 @@ private:
 
 public:
 
-    MultiKernelCanvas(Node * const parent, ireader & reader) :
+    MultiKernelCanvas(Node * const parent, IntReader & reader) :
             Node(parent, reader),
             _kcs()
     {
@@ -100,7 +100,7 @@ public:
     }
 
 
-    virtual void onExport(iwriter & writer)
+    virtual void onExport(IntWriter & writer)
     {
         writer.put(int(_kcs.size()));
 

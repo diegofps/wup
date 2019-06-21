@@ -26,7 +26,7 @@ public:
 
     }
 
-    Direction(Node * const parent, ireader & reader) :
+    Direction(Node * const parent, IntReader & reader) :
         Node(parent, reader),
         _lastX(reader.getDouble()),
         _lastY(reader.getDouble()),
@@ -36,7 +36,7 @@ public:
     }
 
     virtual
-    void onExport(iwriter & writer)
+    void onExport(IntWriter & writer)
     {
         writer.putDouble(_lastX);
         writer.putDouble(_lastY);

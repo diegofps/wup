@@ -23,14 +23,14 @@ public:
         cosNsin(0.0, _c, _s);
     }
 
-    Rotate(Node * const parent, ireader & reader) :
+    Rotate(Node * const parent, IntReader & reader) :
         Node(parent, reader)
     {
 
     }
 
     virtual
-    void onExport(iwriter &)
+    void onExport(IntWriter &)
     {
 
     }

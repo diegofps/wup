@@ -16,7 +16,7 @@ class Shuffler : public Node {
 
 public:
 
-    Shuffler(Node * const parent, ireader & reader) :
+    Shuffler(Node * const parent, IntReader & reader) :
             Node(parent, reader)
     {
         _numIndexes = reader.getUnsignedInt();
@@ -47,7 +47,7 @@ public:
         publish(out);
     }
 
-    virtual void onExport(iwriter & writer)
+    virtual void onExport(IntWriter & writer)
     {
         writer.putUnsignedInt(_numIndexes);
         for (uint i=0; i!=_numIndexes; ++i)

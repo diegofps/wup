@@ -45,7 +45,7 @@ namespace kernelgens {
     }
 
     inline void
-    importKernels(wup::ireader & reader, uint &dims, uint &numKernels, double** &kernels)
+    importKernels(wup::IntReader & reader, uint &dims, uint &numKernels, double** &kernels)
     {
         dims = reader.getUnsignedInt();
         numKernels = reader.getUnsignedInt();
@@ -61,7 +61,7 @@ namespace kernelgens {
     }
 
     inline void
-    exportKernels(wup::iwriter & writer, const uint dims, uint numKernels, double** &kernels)
+    exportKernels(wup::IntWriter & writer, const uint dims, uint numKernels, double** &kernels)
     {
         writer.putUnsignedInt(dims);
         writer.putUnsignedInt(numKernels);

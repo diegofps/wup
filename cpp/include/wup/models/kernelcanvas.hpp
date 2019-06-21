@@ -21,7 +21,7 @@ class EuclidianKernels
 {
 public:
 
-    EuclidianKernels (ireader & reader) :
+    EuclidianKernels (IntReader & reader) :
             _numKernels(0),
             _dims(0),
             _tmp(nullptr),
@@ -116,7 +116,7 @@ public:
     }
 
     void
-    exportTo(wup::iwriter &writer)
+    exportTo(wup::IntWriter &writer)
     {
     	writer.put(-1);
         kernelgens::exportKernels(writer, _dims, _numKernels, _kernels);
@@ -179,7 +179,7 @@ template <typename KernelSpace=EuclidianKernels>
 class KernelCanvas {
 public:
 
-    KernelCanvas(ireader & reader) :
+    KernelCanvas(IntReader & reader) :
             _term_bits(reader.getUnsignedInt()),
             _kernelSpace(reader),
             _outputFreq(new int[_kernelSpace.numKernels()]),
@@ -248,7 +248,7 @@ public:
         return _kernelSpace.numKernels();
     }
 
-    void exportTo(wup::iwriter & writer)
+    void exportTo(wup::IntWriter & writer)
     {
         writer.put(_term_bits);
         _kernelSpace.exportTo(writer);

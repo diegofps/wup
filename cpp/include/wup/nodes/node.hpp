@@ -57,7 +57,7 @@ public:
             parent->addChild(this);
     }
 
-    Node(Node * const parent, ireader & reader) :
+    Node(Node * const parent, IntReader & reader) :
         _parent(parent),
         _outputBuffer(nullptr),
         _output(nullptr, 0),
@@ -80,7 +80,7 @@ public:
             throw new WUPException("Invalid file");
     }
 
-    void exportTo(iwriter & writer)
+    void exportTo(IntWriter & writer)
     {
         writer.put(-1);
         writer.putUnsignedInt(_output.size());
@@ -106,7 +106,7 @@ public:
     }
 
     virtual void
-    onExport(iwriter & writer)
+    onExport(IntWriter & writer)
     {
         //LOGE("generic onExport");
     }
