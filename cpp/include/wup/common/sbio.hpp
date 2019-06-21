@@ -22,6 +22,7 @@ template <typename T>
 class Source
 {
 public:
+    virtual ~Source() { }
     virtual void get(T &t) = 0;
     virtual const T & get() = 0;
     virtual bool good() = 0;
@@ -31,6 +32,7 @@ template <typename T>
 class Sink
 {
 public:
+    virtual ~Sink() { }
     virtual void put(const T &t) = 0;
     virtual bool good() = 0;
 };
@@ -52,6 +54,11 @@ public:
         data(data),
         pos(0),
         size(size)
+    {
+
+    }
+
+    virtual ~MemSource()
     {
 
     }
@@ -102,6 +109,11 @@ public:
         data((T*) malloc(capacity * sizeof(T)))
     {
 
+    }
+
+    virtual ~MemSink()
+    {
+        free(data);
     }
 
     void
@@ -265,6 +277,11 @@ public:
 
     }
 
+    virtual ~IntReader()
+    {
+
+    }
+
     bool
     good()
     {
@@ -377,6 +394,11 @@ public:
 
     }
 
+    virtual ~IntWriter()
+    {
+
+    }
+
     bool
     good()
     {
@@ -468,6 +490,8 @@ public:
         src( filename, capacity, abortOnOpenFail )
     { }
 
+    virtual ~IntFileReader()
+    { }
 };
 
 class IntFileWriter : public IntWriter
@@ -481,6 +505,9 @@ public:
         snk( filename, capacity, abortOnOpenFail )
     { }
 
+
+    virtual ~IntFileWriter()
+    { }
 };
 
 class IntMemReader : public IntReader
@@ -494,6 +521,8 @@ public:
         src( data, size )
     { }
 
+    virtual ~IntMemReader()
+    { }
 };
 
 class IntMemWriter : public IntWriter
@@ -507,6 +536,8 @@ public:
         snk( initialCapacity )
     { }
 
+    virtual ~IntMemWriter()
+    { }
 };
 
 } /* wup */
