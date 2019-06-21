@@ -8,16 +8,22 @@
 namespace wup
 {
 
+/// Compresses a sequence of bytes.
+///
+/// buffer - Pointer to the sequence of bytes to be compresses.
+/// bufferSize - Size of the buffer to be compressed (in bytes).
+/// compressedBuffer - Pointer to the compressed buffer (will be allocated by the function with new[]).
+/// compressedSize - Size of the compressed buffer (in bytes).
 template <typename A, typename B>
 void
-zip(const A * const buffer, const uint64_t LENGTH, B *& compressedBuffer, uint64_t & compressedSize)
+zip(const A * const buffer, const uint64_t bufferLength, B *& compressedBuffer, uint64_t & compressedSize)
 {
-    uLongf boundSize = sizeof(uint64_t) + compressBound(LENGTH);
+    uLongf boundSize = sizeof(uint64_t) + compressBound(bufferLength);
 
     Bytef *dest = new Bytef[boundSize];
     uLongf *destLen = (uLongf*)dest;
     const Bytef *source = buffer;
-    uLong sourceLen = LENGTH;
+    uLong sourceLen = bufferLength;
 
     *destLen = boundSize;
 
@@ -27,7 +33,7 @@ zip(const A * const buffer, const uint64_t LENGTH, B *& compressedBuffer, uint64
 
     compressedBuffer = dest;
     compressedSize = *destLen;
-    *destLen = LENGTH;
+    *destLen = bufferLength;
 
     if (result == Z_OK)
         return;
@@ -42,6 +48,12 @@ zip(const A * const buffer, const uint64_t LENGTH, B *& compressedBuffer, uint64
         throw wup::WUPException("unknown error");
 }
 
+/// Uncompresses a sequence of bytes.
+///
+/// compressedBuffer - Pointer to the compressed sequence of bytes.
+/// compressedSize - Size of the compressed buffer (in bytes).
+/// uncompressedBuffer - Pointer to the uncompressed buffer (will be allocated by the function with new[]).
+/// uncompressedSize - Size of the uncompressed buffer (in bytes).
 template <typename A, typename B>
 void
 unzip(const A * const compressedBuffer, const uint64_t compressedSize,

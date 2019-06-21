@@ -14,7 +14,103 @@
 using std::ofstream;
 using std::ifstream;
 
-namespace wup {
+namespace wup
+{
+
+/////////////////////////////////////////////////////////////////////////////////
+
+/// Saves a sequence of bytes into a file.
+///
+/// filename - Path to the file that will receive the content
+/// data - Pointer to the data to be saved
+/// size - Number of bytes to be saved (this is not the number of elements)
+template <typename T>
+void
+saveBytes(const string filename,
+          const T * const data,
+          const uint64_t size)
+{
+    FILE * f = fopen(filename.c_str(), "wb");
+
+    if (!f)
+        throw WUPException(cat("Could not write bytes to file: ", filename));
+
+    fwrite(data, 1, size, f);
+    fclose(f);
+}
+
+/// Loads a sequence of bytes from a file.
+///
+/// filename - Path to the file that holds the content to be read
+/// data - Pointer that will hold the data (will be allocated by the function with new[])
+/// size - Number of bytes read (this is not the number of elements)
+template <typename T>
+void
+loadBytes(const string filename,
+          T *& data,
+          uint64_t & size)
+{
+    FILE * f = fopen(filename.c_str(), "rb");
+
+    if (!f)
+        throw WUPException(cat("Could not read bytes from file: ", filename));
+
+    fseek(f, 0, SEEK_END);
+    long tmp = ftell(f);
+    fseek(f, 0, SEEK_SET);
+
+    uint8_t * tmpData;
+
+    if (tmp)
+    {
+        uint64_t bufferSize = 512*1024;
+        uint8_t * buffer = new uint8_t[bufferSize];
+
+        uint64_t capacity = bufferSize;
+        tmpData = new uint8_t[capacity];
+
+        size = 0;
+        uint64_t read;
+        while((read = fread(buffer, 1, bufferSize, f)) > 0)
+        {
+            if (size + read > capacity)
+            {
+                uint64_t newCapacity = (size + read) * 2;
+                uint8_t * newData = new uint8_t[newCapacity];
+
+                copy(tmpData, tmpData + size, newData);
+
+                delete [] tmpData;
+
+                capacity = newCapacity;
+                tmpData = newData;
+            }
+
+            copy(buffer, buffer + read, tmpData + size);
+            size += read;
+        }
+
+        if (size != capacity)
+        {
+            uint8_t * newData = new uint8_t[size];
+            copy(tmpData, tmpData+size, newData);
+            delete [] tmpData;
+            tmpData = newData;
+        }
+
+        delete [] buffer;
+    }
+    else
+    {
+        size = uint64_t(tmp);
+        tmpData = new uint8_t[size];
+        fread(tmpData, 1, size, f);
+    }
+
+    fclose(f);
+
+    data = (T*)tmpData;
+}
 
 /////////////////////////////////////////////////////////////////////////////////
 
