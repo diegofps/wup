@@ -250,7 +250,7 @@ public:
     void
     exportTo(const char * const filepath) const
     {
-        IntWriter writer( filepath, 10240 );
+        IntFileWriter writer( filepath, 10240 );
         exportTo(writer);
     }
 

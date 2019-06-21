@@ -120,7 +120,7 @@ public:
     bool
     good()
     {
-        true;
+        return true;
     }
 
 };
@@ -464,8 +464,8 @@ public:
     FileSource<int32_t> src;
 
     IntFileReader(const std::string & filename, const uint64_t capacity=1024*1024, bool abortOnOpenFail=true) :
-        src( filename, capacity, abortOnOpenFail ),
-        IntReader(src)
+        IntReader(src),
+        src( filename, capacity, abortOnOpenFail )
     { }
 
 };
@@ -477,8 +477,8 @@ public:
     FileSink<int32_t> snk;
 
     IntFileWriter(const std::string & filename, const uint64_t capacity=1024*1024, bool abortOnOpenFail=true) :
-        snk( filename, capacity, abortOnOpenFail ),
-        IntWriter(snk)
+        IntWriter(snk),
+        snk( filename, capacity, abortOnOpenFail )
     { }
 
 };
@@ -490,8 +490,8 @@ public:
     MemSource<int32_t> src;
 
     IntMemReader(const int32_t * data, const uint64_t size) :
-        src( data, size ),
-        IntReader(src)
+        IntReader(src),
+        src( data, size )
     { }
 
 };
@@ -503,8 +503,8 @@ public:
     MemSink<int32_t> snk;
 
     IntMemWriter(const uint64_t initialCapacity) :
-        snk( initialCapacity ),
-        IntWriter(snk)
+        IntWriter(snk),
+        snk( initialCapacity )
     { }
 
 };
