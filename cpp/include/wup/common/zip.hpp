@@ -17,38 +17,22 @@ namespace wup
 /// compressedSize - Size of the compressed buffer (in bytes).
 template <typename A, typename B>
 void
-zip(const A * const buffer, const uint64_t bufferLength, B *& compressedBuffer, uint64_t & compressedSize)
+zip(const A * const buffer, const uint64_t bufferLength, B *& compressedBuffer, uint64_t & compressedSize, int compressionLevel=Z_DEFAULT_COMPRESSION)
 {
     uLongf boundSize = sizeof(uint64_t) + compressBound(bufferLength);
 
-    if (compressedBuffer == nullptr)
-    {
-        print("creating new area for zip");
-        compressedBuffer = new Bytef[boundSize];
-    }
-    else if (compressedSize < boundSize)
-    {
-        print("expanding area for zip");
-        delete [] compressedBuffer;
-        compressedBuffer = new Bytef[boundSize];
-    }
-    else
-    {
-        print("reusing for zip");
-    }
-
-    Bytef *dest = compressedBuffer;
+    Bytef *dest = new Bytef[boundSize];
     uLongf *destLen = (uLongf*)dest;
-    const Bytef *source = buffer;
+    const Bytef *source = (const Bytef*)buffer;
     uLong sourceLen = bufferLength;
 
     *destLen = boundSize;
 
-    int result = compress(dest+sizeof(uint64_t), destLen, source, sourceLen);
+    int result = compress2(dest+sizeof(uint64_t), destLen, source, sourceLen, compressionLevel);
 
     *destLen += sizeof(uint64_t);
 
-    //compressedBuffer = dest;
+    compressedBuffer = dest;
     compressedSize = *destLen;
     *destLen = bufferLength;
 
@@ -78,29 +62,13 @@ unzip(const A * const compressedBuffer, const uint64_t compressedSize,
 {
     uLongf & tmp = *((uLongf*) compressedBuffer);
 
-    if (uncompressedBuffer == nullptr)
-    {
-        print("creating new area for unzip");
-        uncompressedBuffer = new Bytef[tmp];
-    }
-    else if (uncompressedSize < tmp)
-    {
-        print("expanding area for unzip");
-        delete [] uncompressedBuffer;
-        uncompressedBuffer = new Bytef[tmp];
-    }
-    else
-    {
-        print("reusing for zip");
-    }
-
-    Bytef * src = (Bytef*) compressedBuffer;
-    Bytef * dst = uncompressedBuffer;
+    Bytef * src = (Bytef *) compressedBuffer;
+    Bytef * dst = new Bytef[tmp];
 
     int result = uncompress(dst, &tmp, src+sizeof(uLongf), (uLong) compressedSize);
 
     uncompressedSize = tmp;
-    //uncompressedBuffer = dst;
+    uncompressedBuffer = dst;
 
     if (result == Z_OK)
         return;

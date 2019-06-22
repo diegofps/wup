@@ -18,7 +18,10 @@
 #include <wup/common/seq.hpp>
 #include <wup/common/random.hpp>
 #include <wup/common/cronus.hpp>
+
+#ifndef WUP_NO_ZIP
 #include <wup/common/zip.hpp>
+#endif
 
 #include <wup/models/wisard.hpp>
 #include <wup/models/kernelcanvas.hpp>

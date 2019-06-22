@@ -191,44 +191,75 @@ public:
 template <typename T>
 class MemSink : public Sink<T>
 {
+private:
+
+    uint64_t _capacity;
+
+    uint64_t _size;
+
+    T * _data;
+
 public:
 
-    uint64_t capacity;
-
-    uint64_t size;
-
-    T * data;
-
     MemSink(const uint64_t initialCapacity) :
-        capacity(initialCapacity ? initialCapacity : 1),
-        size(0),
-        data((T*) malloc(capacity * sizeof(T)))
+        _capacity(initialCapacity ? initialCapacity : 1),
+        _size(0),
+        _data((T*) malloc(_capacity * sizeof(T)))
     {
 
     }
 
     virtual ~MemSink()
     {
-        free(data);
+        free(_data);
     }
 
     void
     put(const T &t)
     {
-        if (size == capacity)
+        if (_size == _capacity)
         {
-            capacity *= 2;
-            data = (T*) realloc(data, capacity);
+            _capacity *= 2;
+            _data = (T*) realloc(_data, _capacity * sizeof(T));
+            print("Resizing buffer, new size = ", _capacity);
         }
 
-        data[size] = t;
-        ++size;
+        _data[_size] = t;
+        ++_size;
     }
 
     bool
     good()
     {
         return true;
+    }
+
+    /// Returns the number of bytes saved inside the memory buffer.
+    uint64_t
+    size()
+    {
+        return _size * sizeof(T);
+    }
+
+    /// Returns the number of T elements saved inside the memory buffer.
+    uint64_t
+    length()
+    {
+        return _size;
+    }
+
+    /// Returns the amount of bytes allocated for this memory buffer.
+    uint64_t
+    capacity()
+    {
+        return _capacity;
+    }
+
+    /// Returns the pointer to the first element of this memory buffer.
+    T *
+    data()
+    {
+        return _data;
     }
 
 };
