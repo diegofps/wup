@@ -4,6 +4,7 @@
 #include <zlib.h>
 #include <cstdint>
 #include "exceptions.hpp"
+#include <wup/common/msgs.hpp>
 
 namespace wup
 {
@@ -20,7 +21,23 @@ zip(const A * const buffer, const uint64_t bufferLength, B *& compressedBuffer, 
 {
     uLongf boundSize = sizeof(uint64_t) + compressBound(bufferLength);
 
-    Bytef *dest = new Bytef[boundSize];
+    if (compressedBuffer == nullptr)
+    {
+        print("creating new area for zip");
+        compressedBuffer = new Bytef[boundSize];
+    }
+    else if (compressedSize < boundSize)
+    {
+        print("expanding area for zip");
+        delete [] compressedBuffer;
+        compressedBuffer = new Bytef[boundSize];
+    }
+    else
+    {
+        print("reusing for zip");
+    }
+
+    Bytef *dest = compressedBuffer;
     uLongf *destLen = (uLongf*)dest;
     const Bytef *source = buffer;
     uLong sourceLen = bufferLength;
@@ -31,7 +48,7 @@ zip(const A * const buffer, const uint64_t bufferLength, B *& compressedBuffer, 
 
     *destLen += sizeof(uint64_t);
 
-    compressedBuffer = dest;
+    //compressedBuffer = dest;
     compressedSize = *destLen;
     *destLen = bufferLength;
 
@@ -61,13 +78,29 @@ unzip(const A * const compressedBuffer, const uint64_t compressedSize,
 {
     uLongf & tmp = *((uLongf*) compressedBuffer);
 
+    if (uncompressedBuffer == nullptr)
+    {
+        print("creating new area for unzip");
+        uncompressedBuffer = new Bytef[tmp];
+    }
+    else if (uncompressedSize < tmp)
+    {
+        print("expanding area for unzip");
+        delete [] uncompressedBuffer;
+        uncompressedBuffer = new Bytef[tmp];
+    }
+    else
+    {
+        print("reusing for zip");
+    }
+
     Bytef * src = (Bytef*) compressedBuffer;
-    Bytef * dst = new Bytef[tmp];
+    Bytef * dst = uncompressedBuffer;
 
     int result = uncompress(dst, &tmp, src+sizeof(uLongf), (uLong) compressedSize);
 
     uncompressedSize = tmp;
-    uncompressedBuffer = dst;
+    //uncompressedBuffer = dst;
 
     if (result == Z_OK)
         return;
