@@ -430,14 +430,14 @@ template <typename T>
 T
 min(const Bundle<T> & data)
 {
-    arrayMin(&data(0,0), data.size());
+    return arrayMin(&data(0,0), data.size());
 }
 
 template <typename T>
 T
 max(const Bundle<T> & data)
 {
-    arrayMax(&data(0,0), data.size());
+    return arrayMax(&data(0,0), data.size());
 }
 
 }
