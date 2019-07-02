@@ -39,6 +39,37 @@ public:
         return _data[i * (_cols * _depth) + j * (_depth) + d];
     }
 
+    const T &
+    operator()(const int i, const int j, const int d) const
+    {
+        return _data[i * (_cols * _depth) + j * (_depth) + d];
+    }
+
+    T *
+    data()
+    {
+        return _data.data();
+    }
+
+    const T *
+    data() const
+    {
+        return _data.data();
+    }
+
+    uint64_t
+    size() const
+    {
+        return _rows * _cols * _depth;
+    }
+
+    void
+    operator=(const T & value)
+    {
+        for (uint i=0;i!=_data.size();++i)
+            _data[i] = value;
+    }
+
     void
     clear()
     {
@@ -82,6 +113,20 @@ public:
     }
 
 }; // Bundle3D
+
+template <typename T>
+T
+min(const Bundle3D<T> & data)
+{
+    return arrayMin(&data(0,0,0), data.size());
+}
+
+template <typename T>
+T
+max(const Bundle3D<T> & data)
+{
+    return arrayMax(&data(0,0,0), data.size());
+}
 
 } // wup
 

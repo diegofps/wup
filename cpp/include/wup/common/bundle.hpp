@@ -430,24 +430,14 @@ template <typename T>
 T
 min(const Bundle<T> & data)
 {
-    T r = data(0,0);
-    for (uint i=1;i!=data.size();++i)
-        if (data.at(i) < r)
-            r = data.at(i);
-    return r;
+    arrayMin(&data(0,0), data.size());
 }
 
 template <typename T>
 T
 max(const Bundle<T> & data)
 {
-    T r = data(0,0);
-
-    for (uint i=1;i!=data.size();++i)
-        if (data.at(i) > r)
-            r = data.at(i);
-
-    return r;
+    arrayMax(&data(0,0), data.size());
 }
 
 }

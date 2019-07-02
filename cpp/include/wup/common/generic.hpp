@@ -59,6 +59,32 @@ inline uint32_t rotr32 (uint32_t n, uint c)
   return (n>>c) | (n<<( (-c)&mask ));
 }
 
+inline void
+binarizeAvg(uint8_t * const ptr, const int patternLen)
+{
+    uint sum = 0;
+
+    for (uint k=0;k<patternLen;++k)
+        sum += ptr[k];
+
+    sum = sum / patternLen;
+
+    for (uint k=0;k<patternLen;++k)
+        ptr[k] = ptr[k] >= sum ? 0 : UINT8_MAX;
+}
+
+inline void
+binarizeAvg(uint8_t * const ptr, const int numValues, const int patternLen)
+{
+    uint current = 0;
+
+    for (uint i=0; i!=numValues; ++i)
+    {
+        binarizeAvg(ptr + current, patternLen);
+        current += patternLen;
+    }
+}
+
 inline long 
 factorial(long n)
 {
@@ -356,10 +382,52 @@ int indexOfMax(const T * const mem, const int length, int &times)
     return index;
 }
 
+template <typename T>
+int indexOfMin(const T * const mem, const int length)
+{
+    int index = -1;
+    T bigger;
+
+    for (int i=0;i<length;++i) {
+        if (index == -1 || mem[i] < bigger) {
+            bigger = mem[i];
+            index = i;
+        }
+    }
+
+    return index;
+}
+
+template <typename T>
+int indexOfMin(const T * const mem, const int length, int &times)
+{
+    int index = -1;
+    times = 1;
+    T bigger;
+
+    for (int i=0;i<length;++i) {
+        if (index == -1 || mem[i] < bigger) {
+            bigger = mem[i];
+            index = i;
+            times = 1;
+        } else if (mem[i] == bigger) {
+            ++times;
+        }
+    }
+
+    return index;
+}
+
 template <typename A>
 A arrayMax(const A * const array, const int length)
 {
     return array[indexOfMax(array, length)];
+}
+
+template <typename A>
+A arrayMin(const A * const array, const int length)
+{
+    return array[indexOfMin(array, length)];
 }
 
 template <typename A>
