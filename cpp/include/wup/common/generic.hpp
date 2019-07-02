@@ -167,6 +167,20 @@ printArray(const char * msg, const T * const src, const int length, bool indexes
     printArray(src, length, indexes);
 }
 
+template <typename T>
+void
+binarizeAvg(T * const ptr, const uint len)
+{
+    uint32_t sum = 0;
+    for (uint k=0;k<len;++k)
+        sum += ptr[k];
+
+    sum /= len;
+
+    for (uint k=0;k<len;++k)
+        ptr[k] = ptr[k] >= sum ? 0 : UINT8_MAX;
+}
+
 inline void
 topkqsort(BOX * const array, const int bottom, const int top, const int k)
 {
