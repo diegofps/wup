@@ -45,18 +45,38 @@ inline double log2(const double value)
 { return log(value) / log(2.); }
 #endif
 
-inline uint32_t rotl32 (uint32_t n, uint c)
+inline uint32_t
+rotl32 (uint32_t n, uint c)
 {
-  const unsigned int mask = (CHAR_BIT*sizeof(n)-1);
-  c &= mask;
-  return (n<<c) | (n>>( (-c)&mask ));
+    const unsigned int mask = (CHAR_BIT*sizeof(n)-1);
+    c &= mask;
+    return (n<<c) | (n>>( (-c)&mask ));
 }
 
-inline uint32_t rotr32 (uint32_t n, uint c)
+inline uint32_t
+rotr32 (uint32_t n, uint c)
 {
-  const unsigned int mask = (CHAR_BIT*sizeof(n)-1);
-  c &= mask;
-  return (n>>c) | (n<<( (-c)&mask ));
+    const unsigned int mask = (CHAR_BIT*sizeof(n)-1);
+    c &= mask;
+    return (n>>c) | (n<<( (-c)&mask ));
+}
+
+template <typename T>
+T
+rotl (T n, uint c)
+{
+    const unsigned int mask = (CHAR_BIT*sizeof(n)-1);
+    c &= mask;
+    return (n<<c) | (n>>( (-c)&mask ));
+}
+
+template <typename T>
+T
+rotr (T n, uint c)
+{
+    const unsigned int mask = (CHAR_BIT*sizeof(n)-1);
+    c &= mask;
+    return (n>>c) | (n<<( (-c)&mask ));
 }
 
 inline void
@@ -402,8 +422,10 @@ int indexOfMin(const T * const mem, const int length)
     int index = -1;
     T bigger;
 
-    for (int i=0;i<length;++i) {
-        if (index == -1 || mem[i] < bigger) {
+    for (int i=0;i!=length;++i)
+    {
+        if (index == -1 || mem[i] < bigger)
+        {
             bigger = mem[i];
             index = i;
         }
@@ -413,18 +435,23 @@ int indexOfMin(const T * const mem, const int length)
 }
 
 template <typename T>
-int indexOfMin(const T * const mem, const int length, int &times)
+int indexOfMin(const T * const mem, const int length, int & times)
 {
     int index = -1;
     times = 1;
     T bigger;
 
-    for (int i=0;i<length;++i) {
-        if (index == -1 || mem[i] < bigger) {
+    for (int i=0;i!=length;++i)
+    {
+        if (index == -1 || mem[i] < bigger)
+        {
             bigger = mem[i];
             index = i;
             times = 1;
-        } else if (mem[i] == bigger) {
+        }
+
+        else if (mem[i] == bigger)
+        {
             ++times;
         }
     }
