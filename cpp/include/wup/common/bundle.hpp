@@ -13,6 +13,17 @@ namespace wup {
 
 template <typename T>
 class Bundle {
+private:
+    uint _columns;
+
+    uint _capacity;
+
+    uint _size;
+
+    T * _data;
+
+    bool _ownerOfData;
+
 public:
 
     Bundle() :
@@ -98,6 +109,18 @@ public:
         }
     }
 
+    Bundle<T> & operator=(const Bundle<T> & other)
+    {
+        if (_ownerOfData)
+            delete [] _data;
+
+        _columns = other._columns;
+        _capacity = other._capacity;
+        _size = other._size;
+        _data = other._data;
+        _ownerOfData = false;
+    }
+
     T & operator()(const uint i, const uint j)
     {
 #ifndef WUP_UNSAFE
@@ -161,6 +184,7 @@ public:
 
         return _data[index];
     }
+
 
     const Bundle<T> & operator=(const T & value)
     {
@@ -290,16 +314,6 @@ private:
         _capacity = newCap;
         _data = newData;
     }
-
-    uint _columns;
-
-    uint _capacity;
-
-    uint _size;
-
-    T * _data;
-
-    bool _ownerOfData;
 
 };
 
