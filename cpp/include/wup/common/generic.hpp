@@ -80,8 +80,11 @@ rotr (T n, uint c)
 }
 
 inline void
-binarizeAvg(uint8_t * const ptr, const int patternLen)
+binarizeAvg(uint8_t * const ptr, const int patternLen, uint8_t * dst=nullptr)
 {
+    if (dst == nullptr)
+        dst = ptr;
+
     uint sum = 0;
 
     for (uint k=0;k<patternLen;++k)
