@@ -119,6 +119,8 @@ public:
         _size = other._size;
         _data = other._data;
         _ownerOfData = false;
+
+        return *this;
     }
 
     T & operator()(const uint i, const uint j)

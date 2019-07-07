@@ -54,6 +54,21 @@ public:
             delete [] _data;
     }
 
+    Bundle3D<T> &
+    operator=(const Bundle3D<T> & other)
+    {
+        if (_ownerOfData)
+            delete [] _data;
+
+        _dim1 = other._dim1;
+        _dim2 = other._dim2;
+        _dim3 = other._dim3;
+        _data = other._data;
+        _ownerOfData = false;
+
+        return *this;
+    }
+
     T &
     operator()(const uint32_t i1, const uint32_t i2, const uint32_t i3)
     {
