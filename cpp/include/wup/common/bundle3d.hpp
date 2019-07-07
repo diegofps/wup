@@ -3,7 +3,7 @@
 
 #include <cstring>
 #include <vector>
-#include <cstdlib>
+#include <cstdint>
 
 namespace wup {
 
@@ -11,105 +11,138 @@ template <typename T>
 class Bundle3D {
 public:
 
-    int _rows;
+    uint32_t _dim1;
 
-    int _cols;
+    uint32_t _dim2;
 
-    int _depth;
+    uint32_t _dim3;
 
-    std::vector<T> _data;
+    T * _data;
+
+    bool _ownerOfData;
+
+public:
 
     Bundle3D() : Bundle3D(1, 1, 1)
     {
 
     }
 
-    Bundle3D(const int rows, const int cols, const int depth) :
-        _rows(rows),
-        _cols(cols),
-        _depth(cols),
-        _data(cols * rows * depth, T())
+    Bundle3D(const uint32_t dim1, const uint32_t dim2, const uint32_t dim3) :
+        _dim1(dim1),
+        _dim2(dim2),
+        _dim3(dim3),
+        _data(new T[dim1 * dim2 * dim3]()),
+        _ownerOfData(true)
     {
 
+    }
+
+    Bundle3D(T * data, const uint32_t dim1, const uint32_t dim2, const uint32_t dim3) :
+        _dim1(dim1),
+        _dim2(dim2),
+        _dim3(dim3),
+        _data(data),
+        _ownerOfData(false)
+    {
+
+    }
+
+    ~Bundle3D()
+    {
+        if (_ownerOfData)
+            delete [] _data;
     }
 
     T &
-    operator()(const int i, const int j, const int d)
+    operator()(const uint32_t i1, const uint32_t i2, const uint32_t i3)
     {
-        return _data[i * (_cols * _depth) + j * (_depth) + d];
+        return _data[i1 * (_dim2 * _dim3) + i2 * (_dim3) + i3];
     }
 
     const T &
-    operator()(const int i, const int j, const int d) const
+    operator()(const uint32_t i1, const uint32_t i2, const uint32_t i3) const
     {
-        return _data[i * (_cols * _depth) + j * (_depth) + d];
+        return _data[i1 * (_dim2 * _dim3) + i2 * (_dim3) + i3];
     }
 
     T *
     data()
     {
-        return _data.data();
+        return _data;
     }
 
     const T *
     data() const
     {
-        return _data.data();
+        return _data;
     }
 
     uint64_t
     size() const
     {
-        return _rows * _cols * _depth;
+        return _dim1 * _dim2 * _dim3;
     }
 
     void
     operator=(const T & value)
     {
-        for (uint i=0;i!=_data.size();++i)
+        for (uint64_t i=0;i!=size();++i)
             _data[i] = value;
     }
 
     void
     clear()
     {
-        memset(_data.data(), 0, sizeof(T) * _data.size());
+        memset(_data, 0, sizeof(T) * size());
     }
 
     void
-    reshape(const int rows, const int cols, const int depth)
+    reshape(const uint32_t dim1, const uint32_t dim2, const uint32_t dim3, bool preserveOldData=false)
     {
-        if (rows != _rows)
-            _rows = rows;
+        const uint64_t oldSize = size();
 
-        if (cols != _cols)
-            _cols = cols;
+        if (dim1 != _dim1)
+            _dim1 = dim1;
 
-        if (depth != _depth)
-            _depth = depth;
+        if (dim2 != _dim2)
+            _dim2 = dim2;
 
-        const int newSize = _rows * _cols * _depth;
+        if (dim3 != _dim3)
+            _dim3 = dim3;
 
-        if (newSize > _data.size())
-            _data.resize(newSize);
+        const uint64_t newSize = uint64_t(_dim1) * uint64_t(_dim2) * uint64_t(_dim3);
+
+        if (newSize > oldSize)
+        {
+            T * newData = new T[newSize];
+
+            if (preserveOldData)
+                std::copy(_data, _data + oldSize, newData);
+
+            if (_ownerOfData)
+                delete [] _data;
+
+            _data = newData;
+        }
     }
 
-    int
-    numRows() const
+    uint32_t
+    dim1() const
     {
-        return _rows;
+        return _dim1;
     }
 
-    int
-    numCols() const
+    uint32_t
+    dim2() const
     {
-        return _cols;
+        return _dim2;
     }
 
-    int
-    numDepth() const
+    uint32_t
+    dim3() const
     {
-        return _depth;
+        return _dim3;
     }
 
 }; // Bundle3D
