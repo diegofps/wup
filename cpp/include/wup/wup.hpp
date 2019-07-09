@@ -19,6 +19,7 @@
 #include <wup/common/random.hpp>
 #include <wup/common/cronus.hpp>
 #include <wup/common/zip.hpp>
+#include <wup/common/threads.hpp>
 
 #include <wup/models/wisard.hpp>
 #include <wup/models/kernelcanvas.hpp>
