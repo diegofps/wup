@@ -383,6 +383,28 @@ randperm(const int n)
     return randperm(n, new T[n]);
 }
 
+inline string
+slice(const string str, const int a, const int b)
+{
+    return str.substr(a, b - a);
+}
+
+inline string
+slice_from(const string str, int a)
+{
+    return a < 0
+            ? slice(str, str.length() + a, str.length())
+            : slice(str, b, str.length());
+}
+
+inline string
+slice_to(const string str, const int b)
+{
+    return b < 0
+            ? slice(str, 0, str.length() + b)
+            : slice(str, 0, b);
+}
+
 template <typename T>
 int indexOfMax(const T * const mem, const int length)
 {

@@ -105,6 +105,12 @@ public:
         return _mem.at(cmd)->operator[]( index ).c_str();
     }
 
+    void setStringAt(const char * const cmd, const int index, const string str)
+    {
+        if (misses(cmd, index)) missingCommand( cmd );
+        _mem.at(cmd)->operator[]( index ) = str;
+    }
+
     const char * getStringAt(const char * const cmd, const int index, const char * const default_value) const
     {
         if (misses(cmd, index)) return default_value;

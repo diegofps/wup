@@ -146,10 +146,10 @@ class MemSource : public Source<T>
 
 public:
 
-    MemSource(const T * const data, const uint64_t size) :
+    MemSource(const T * const data, const uint64_t length) :
         data(data),
         pos(0),
-        size(size)
+        size(length)
     {
 
     }
