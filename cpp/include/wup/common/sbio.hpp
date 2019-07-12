@@ -128,9 +128,24 @@ template <typename T>
 class Sink
 {
 public:
+
     virtual ~Sink() { }
+
     virtual void put(const T &t) = 0;
+
     virtual bool good() = 0;
+
+    // Returns the number of bytes saved inside the memory buffer.
+    virtual uint64_t size() = 0;
+
+    // Returns the number of T elements saved inside the memory buffer.
+    virtual uint64_t length() = 0;
+
+    // Returns the amount of bytes allocated for this memory buffer.
+    virtual uint64_t capacity() = 0;
+
+    // Returns the pointer to the first element of this memory buffer.
+    virtual T * data() = 0;
 };
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -234,32 +249,82 @@ public:
         return true;
     }
 
-    /// Returns the number of bytes saved inside the memory buffer.
-    uint64_t
+    virtual uint64_t
     size()
     {
         return _size * sizeof(T);
     }
 
-    /// Returns the number of T elements saved inside the memory buffer.
-    uint64_t
+    virtual uint64_t
     length()
     {
         return _size;
     }
 
-    /// Returns the amount of bytes allocated for this memory buffer.
-    uint64_t
+    virtual uint64_t
     capacity()
     {
         return _capacity;
     }
 
-    /// Returns the pointer to the first element of this memory buffer.
-    T *
+    virtual T *
     data()
     {
         return _data;
+    }
+
+};
+
+template <typename T>
+class VectorSink : public Sink<T>
+{
+private:
+
+    vector<T> & mem;
+
+public:
+
+    VectorSink(vector<T> & mem, const bool clearVector=true) :
+        mem(mem)
+    {
+        if (clearVector)
+            mem.clear();
+    }
+
+    void
+    put(const T &t)
+    {
+        mem.push_back(t);
+    }
+
+    bool
+    good()
+    {
+        return true;
+    }
+
+    virtual uint64_t
+    size()
+    {
+        return mem.size() * sizeof(T);
+    }
+
+    virtual uint64_t
+    length()
+    {
+        return mem.size();
+    }
+
+    virtual uint64_t
+    capacity()
+    {
+        return mem.capacity() * sizeof(T);
+    }
+
+    virtual T *
+    data()
+    {
+        return mem.data();
     }
 
 };
@@ -335,6 +400,16 @@ private:
 template <typename T>
 class FileSink : public Sink<T>
 {
+private:
+
+    ofstream _stream;
+
+    T * _buffer;
+
+    uint64_t _capacity;
+
+    uint64_t _current;
+
 public:
 
     FileSink(const std::string &filename, bool abortOnOpenFail=true) :
@@ -382,11 +457,30 @@ public:
         return _stream.good();
     }
 
-private:
-    ofstream _stream;
-    T * _buffer;
-    uint64_t _capacity;
-    uint64_t _current;
+    virtual uint64_t
+    size()
+    {
+        return 0;
+    }
+
+    virtual uint64_t
+    length()
+    {
+        return 0;
+    }
+
+    virtual uint64_t
+    capacity()
+    {
+        return 0;
+    }
+
+    virtual T *
+    data()
+    {
+        return nullptr;
+    }
+
 };
 
 /////////////////////////////////////////////////////////////////////////////////
