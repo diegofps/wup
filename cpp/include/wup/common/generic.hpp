@@ -394,7 +394,7 @@ slice_from(const string str, int a)
 {
     return a < 0
             ? slice(str, str.length() + a, str.length())
-            : slice(str, b, str.length());
+            : slice(str, a, str.length());
 }
 
 inline string
