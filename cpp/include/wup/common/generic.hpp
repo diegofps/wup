@@ -342,30 +342,28 @@ A sum(const A * const array, const int length)
 }
 
 template <typename T>
+void
+shuffle(T * const data, const uint32_t n)
+{
+    for (uint32_t i=0;i!=n-1;++i)
+    {
+        const uint32_t pivot = rand() % (n - i);
+        const uint32_t final  = n-i-1;
+
+        const T tmp = data[pivot];
+        data[pivot] = data[final];
+        data[final] = tmp;
+    }
+}
+
+template <typename T>
 inline T *
 randperm(const uint n, T * const indexes)
 {
-    int r, t;
-    //boost::random::mt19937 gen(time(NULL));
-    //boost::random::uniform_real_distribution<> dist;
-
-    for (uint i=0; i<n; ++i) {
+    for (uint i=0; i!=n; ++i)
         indexes[i] = i;
-    }
 
-//    std::random_shuffle(indexes, &indexes[n-1]);
-
-    for (uint i=0; i<n; ++i) {
-//        r = (int)(rand() / (float) RAND_MAX * (n - i));
-//        if (r == (n - i)) --r;
-
-        r = rand() % (n - i);
-//        r = floor(dist(gen) * (n - i));
-        t = indexes[r];
-        indexes[r] = indexes[n-i-1];
-        indexes[n-i-1] = t;
-    }
-
+    shuffle(indexes, n);
     return indexes;
 }
 
