@@ -24,13 +24,6 @@ const char * const BG_GREEN  = "\033[46m";
 const char * const BG_YELLOW = "\033[45m";
 const char * const BG_RED    = "\033[41m";
 
-template <typename... Args>
-void
-setLogger(const Args&... args)
-{
-    logPrefix = cat(args...);
-}
-
 template <typename A, typename B>
 std::ostream & operator<<(std::ostream &o, const std::pair<A,B> &pair)
 {
@@ -56,6 +49,13 @@ std::string cat(const Args&... args)
 {
     std::stringstream ss;
     return _cat(ss, args...).str();
+}
+
+template <typename... Args>
+void
+setLogger(const Args&... args)
+{
+    logPrefix = cat(args...);
 }
 
 inline void
