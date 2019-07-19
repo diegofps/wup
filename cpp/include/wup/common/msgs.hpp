@@ -11,6 +11,8 @@
 namespace wup
 {
 
+extern std::string logPrefix;
+
 const char * const BLUE   = "\033[94m";
 const char * const GREEN  = "\033[92m";
 const char * const YELLOW = "\033[93m";
@@ -21,6 +23,13 @@ const char * const BG_BLUE   = "\033[44m";
 const char * const BG_GREEN  = "\033[46m";
 const char * const BG_YELLOW = "\033[45m";
 const char * const BG_RED    = "\033[41m";
+
+template <typename... Args>
+void
+setLogger(const Args&... args)
+{
+    logPrefix = cat(args...);
+}
 
 template <typename A, typename B>
 std::ostream & operator<<(std::ostream &o, const std::pair<A,B> &pair)
@@ -45,66 +54,82 @@ std::stringstream & _cat(std::stringstream &ss, const P1 &p1, const Args&... arg
 template <typename... Args>
 std::string cat(const Args&... args)
 {
-	std::stringstream ss;
+    std::stringstream ss;
     return _cat(ss, args...).str();
 }
 
 inline void
-print()
+_print()
 {
     std::cout << std::endl;
 }
 
 template <typename P1>
-void print(const P1 &p1)
+void _print(const P1 &p1)
 {
     std::cout << p1 << std::endl;
 }
 
 template <typename P1, typename... Args>
-void print(const P1 &p1, const Args&... args)
+void _print(const P1 &p1, const Args&... args)
 {
     std::cout << p1;
-    print(args...);
+    _print(args...);
 }
 
 template <typename P1>
-void printn(const P1 &p1)
+void _printn(const P1 &p1)
 {
     std::cout << p1;
 }
 
 template <typename P1, typename... Args>
-void printn(const P1 &p1, const Args&... args)
+void _printn(const P1 &p1, const Args&... args)
 {
     std::cout << p1;
-    printn(args...);
+    _printn(args...);
 }
 
 template <typename... Args>
-void debug(const Args&... args)
+void _debug(const Args&... args)
 {
-    print(GREEN, "Debug: ", args..., NORMAL);
+    _print(GREEN, "Debug: ", args..., NORMAL);
 }
 
 template <typename... Args>
-void info(const Args&... args)
+void _info(const Args&... args)
 {
-    print(BLUE, "Info: ", args..., NORMAL);
+    _print(BLUE, "Info: ", args..., NORMAL);
 }
 
 template <typename... Args>
-void warn(const Args&... args)
+void _warn(const Args&... args)
 {
-    print(YELLOW, "Warning: ", args..., NORMAL);
+    _print(YELLOW, "Warning: ", args..., NORMAL);
 }
 
 template <typename... Args>
-void error(const Args&... args)
+void _error(const Args&... args)
 {
-    print(RED, "Error: ", args..., NORMAL);
+    _print(RED, "Error: ", args..., NORMAL);
     throw FatalException();
 }
+
+#define WRAP_LOGPREFIX(name, subname) \
+template <typename... Args> \
+void \
+name(const Args&... args) \
+{ \
+    std::cout << logPrefix; \
+    subname(args...); \
+}
+
+WRAP_LOGPREFIX(print, _print)
+WRAP_LOGPREFIX(printn, _printn)
+WRAP_LOGPREFIX(debug, _debug)
+WRAP_LOGPREFIX(info, _info)
+WRAP_LOGPREFIX(warn, _warn)
+WRAP_LOGPREFIX(error, _error)
 
 #ifdef QT_VERSION_STR
 

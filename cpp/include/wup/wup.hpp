@@ -1,6 +1,8 @@
 #ifndef INCLUDE_WUP_HPP
 #define INCLUDE_WUP_HPP
 
+#define WUP_STATICS namespace wup { std::string logPrefix; };
+
 #include <wup/common/exceptions.hpp>
 #include <wup/common/msgs.hpp>
 #include <wup/common/generic.hpp>
