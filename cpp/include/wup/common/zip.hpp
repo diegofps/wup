@@ -5,6 +5,7 @@
 
 #include <zlib.h>
 #include <cstdint>
+#include <vector>
 #include "exceptions.hpp"
 #include <wup/common/msgs.hpp>
 
@@ -25,18 +26,21 @@ zip(const A * const uncompressedBuffer, const uint64_t uncompressedSize,
 {
     uLongf boundSize = sizeof(uint64_t) + compressBound(uncompressedSize);
 
+    if (boundSize % sizeof(int32_t))
+        boundSize = (boundSize / sizeof(int32_t) + 1) * sizeof(int32_t);
+
     Bytef *dest = new Bytef[boundSize];
     uLongf *destLen = (uLongf*)dest;
     const Bytef *source = (const Bytef*)uncompressedBuffer;
     uLong sourceLen = uncompressedSize;
 
-    *destLen = boundSize;
+    *destLen = boundSize - sizeof(uint64_t);
 
     int result = compress2(dest+sizeof(uint64_t), destLen, source, sourceLen, compressionLevel);
 
     *destLen += sizeof(uint64_t);
 
-    compressedBuffer = dest;
+    compressedBuffer = (B*) dest;
     compressedSize = *destLen;
     *destLen = uncompressedSize;
 
@@ -72,7 +76,7 @@ unzip(const A * const compressedBuffer, const uint64_t compressedSize,
     int result = uncompress(dst, &tmp, src+sizeof(uLongf), (uLong) compressedSize);
 
     uncompressedSize = tmp;
-    uncompressedBuffer = dst;
+    uncompressedBuffer = (B*) dst;
 
     if (result == Z_OK)
         return;
