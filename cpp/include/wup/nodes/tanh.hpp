@@ -54,7 +54,7 @@ public:
     }
 
     virtual
-    void onStart(const int & sampleId)
+    void onStart(const int & /*sampleId*/)
     {
 
     }

@@ -68,11 +68,11 @@ public:
     virtual
     void onExport(IntWriter & writer)
     {
-        writer.putUnsignedInt(_columns.size());
+        writer.putUInt(_columns.size());
         writer.putBool(_useHighestStd);
 
         for (uint i=0; i!=_columns.size(); ++i)
-            writer.putUnsignedInt(_columns[i]);
+            writer.putUInt(_columns[i]);
     }
 
     virtual ~ZScore()
@@ -82,7 +82,7 @@ public:
     }
 
     virtual
-    void onStart(const int & sampleId)
+    void onStart(const int & /*sampleId*/)
     {
         _cache.clear();
     }

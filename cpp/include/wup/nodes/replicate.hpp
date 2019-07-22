@@ -16,7 +16,7 @@ public:
     Replicate(Node * const parent, IntReader & reader) :
             Node(parent, reader)
     {
-        _times = reader.getUnsignedInt();
+        _times = reader.getUInt32();
     }
 
     Replicate(Node * const parent, const uint times) :
@@ -41,7 +41,7 @@ public:
 
     virtual void onExport(IntWriter & writer)
     {
-        writer.putUnsignedInt(_times);
+        writer.putUInt(_times);
     }
 
 };

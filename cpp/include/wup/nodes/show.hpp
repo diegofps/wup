@@ -41,7 +41,7 @@ public:
 
     Show(Node * const parent, IntReader & reader) :
         Node(parent, reader),
-        _bundle(reader.getUnsignedInt()),
+        _bundle(reader.getUInt32()),
         _counter(reader.get()),
         _eachStep(reader.get()),
         _label(reader.getString()),
@@ -54,7 +54,7 @@ public:
     virtual
     void onExport(IntWriter & writer)
     {
-        writer.putUnsignedInt(_bundle.numCols());
+        writer.putUInt(_bundle.numCols());
         writer.put(_counter);
         writer.putBool(_eachStep);
         writer.putString(_label);

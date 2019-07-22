@@ -30,7 +30,7 @@ public:
             Node(parent, reader),
             _kcs()
     {
-        uint numCanvas = reader.getUnsignedInt();
+        uint numCanvas = reader.getUInt32();
 
         for (uint i=0; i!=numCanvas; ++i)
             _kcs.push_back(new KC(reader));

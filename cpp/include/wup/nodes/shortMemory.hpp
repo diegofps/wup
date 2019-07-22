@@ -31,7 +31,7 @@ public:
 
     ShortMemory(Node * const parent, IntReader & reader) :
         Node(parent, reader),
-        _times(reader.getUnsignedInt()),
+        _times(reader.getUInt32()),
         _mem(new double[parent->output().size()]),
         _current(reader.get())
     {
@@ -46,12 +46,12 @@ public:
     virtual
     void onExport(IntWriter & writer)
     {
-        writer.putUnsignedInt(_times);
+        writer.putUInt(_times);
         writer.put(_current);
     }
 
     virtual
-    void onStart(const int & sampleId)
+    void onStart(const int & /*sampleId*/)
     {
         output() = 0.0;
     }

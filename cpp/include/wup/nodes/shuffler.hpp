@@ -19,11 +19,11 @@ public:
     Shuffler(Node * const parent, IntReader & reader) :
             Node(parent, reader)
     {
-        _numIndexes = reader.getUnsignedInt();
+        _numIndexes = reader.getUInt32();
         _indexes = new uint[_numIndexes];
 
         for (uint i=0; i!=_numIndexes; ++i)
-            _indexes[i] = reader.getUnsignedInt();
+            _indexes[i] = reader.getUInt32();
     }
 
     Shuffler(Node * const parent) :
@@ -49,9 +49,9 @@ public:
 
     virtual void onExport(IntWriter & writer)
     {
-        writer.putUnsignedInt(_numIndexes);
+        writer.putUInt(_numIndexes);
         for (uint i=0; i!=_numIndexes; ++i)
-            writer.putUnsignedInt(_indexes[i]);
+            writer.putUInt(_indexes[i]);
     }
 
 };

@@ -36,7 +36,7 @@ public:
         _size(other._size),
         _mem(_size==0?NULL:new T[_size])
     {
-        for (int i=0;i<_size;++i)
+        for (uint i=0;i!=_size;++i)
             _mem[i] = other._mem[i];
     }
 
