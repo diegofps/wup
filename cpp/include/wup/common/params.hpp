@@ -76,7 +76,7 @@ public:
     bool misses(const char * const cmd) const
     { return _mem.find(cmd) == _mem.end(); }
 
-    bool misses(const char * const cmd, const int index) const
+    bool misses(const char * const cmd, const uint index) const
     {
         if (misses(cmd)) return true;
         return _mem.at(cmd)->size() <= index;

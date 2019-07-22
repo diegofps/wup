@@ -70,7 +70,7 @@ public:
         if (reader.get() != -1)
             throw new WUPException("Invalid file");
 
-        uint outputSize = reader.getUnsignedInt();
+        uint outputSize = reader.getUInt32();
         _actsAsPattern = reader.get();
 
         _outputBuffer = outputSize == 0 ? nullptr : new double[outputSize];
@@ -83,7 +83,7 @@ public:
     void exportTo(IntWriter & writer)
     {
         writer.put(-1);
-        writer.putUnsignedInt(_output.size());
+        writer.putUInt(_output.size());
         writer.put(_actsAsPattern);
         writer.put(-1);
         onExport(writer);
@@ -106,7 +106,7 @@ public:
     }
 
     virtual void
-    onExport(IntWriter & writer)
+    onExport(IntWriter & )
     {
         //LOGE("generic onExport");
     }
@@ -205,7 +205,7 @@ public:
     }
 
     virtual void
-    onStart(const int & sampleId)
+    onStart(const int & /*sampleId*/)
     {
 
     }

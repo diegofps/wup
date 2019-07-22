@@ -44,7 +44,7 @@ public:
     }
 
     virtual
-    void onStart(const int & sampleId)
+    void onStart(const int & /*sampleId*/)
     {
         _lastX = 0.0;
         _lastY = 0.0;

@@ -120,7 +120,7 @@ public:
     {
     	writer.put(-1);
         kernelgens::exportKernels(writer, _dims, _numKernels, _kernels);
-        writer.putUnsignedInt(_k);
+        writer.putUInt(_k);
         writer.put(-1);
     }
 
@@ -180,7 +180,7 @@ class KernelCanvas {
 public:
 
     KernelCanvas(IntReader & reader) :
-            _term_bits(reader.getUnsignedInt()),
+            _term_bits(reader.getUInt32()),
             _kernelSpace(reader),
             _outputFreq(new int[_kernelSpace.numKernels()]),
             _outputBits(new int[_kernelSpace.numKernels() * _term_bits])

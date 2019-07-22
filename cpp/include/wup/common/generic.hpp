@@ -80,24 +80,24 @@ rotr (T n, uint c)
 }
 
 inline void
-binarizeAvg(uint8_t * const ptr, const int patternLen, uint8_t * dst=nullptr)
+binarizeAvg(uint8_t * const ptr, const uint patternLen, uint8_t * dst=nullptr)
 {
     if (dst == nullptr)
         dst = ptr;
 
     uint sum = 0;
 
-    for (uint k=0;k<patternLen;++k)
+    for (uint k=0;k!=patternLen;++k)
         sum += ptr[k];
 
     sum = sum / patternLen;
 
-    for (uint k=0;k<patternLen;++k)
+    for (uint k=0;k!=patternLen;++k)
         ptr[k] = ptr[k] >= sum ? 0 : UINT8_MAX;
 }
 
 inline void
-binarizeAvg(uint8_t * const ptr, const int numValues, const int patternLen)
+binarizeAvg(uint8_t * const ptr, const uint numValues, const uint patternLen)
 {
     uint current = 0;
 
@@ -123,10 +123,13 @@ inline double
 sdistance(const double * const v1, const double * const v2, const T cols)
 {
     double ssum = 0.0;
-    for (int i=0;i<cols;++i) {
+
+    for (uint i=0;i<cols;++i)
+    {
         const double v = v1[i] - v2[i];
         ssum += v * v;
     }
+
     return ssum;
 }
 
@@ -382,25 +385,28 @@ randperm(const int n)
 }
 
 inline string
-slice(const string str, const int a, const int b)
+slice(const string str, int a, int b)
 {
+    const int len = int(str.length());
+    if (a < 0) a = len + a;
+    if (b < 0) b = len + b;
     return str.substr(a, b - a);
 }
 
 inline string
 slice_from(const string str, int a)
 {
-    return a < 0
-            ? slice(str, str.length() + a, str.length())
-            : slice(str, a, str.length());
+    const int len = int(str.length());
+    if (a < 0) a = len + a;
+    return slice(str, a, len);
 }
 
 inline string
-slice_to(const string str, const int b)
+slice_to(const string str, int b)
 {
-    return b < 0
-            ? slice(str, 0, str.length() + b)
-            : slice(str, 0, b);
+    const int len = int(str.length());
+    if (b < 0) b = len + b;
+    return slice(str, 0, b);
 }
 
 template <typename T>

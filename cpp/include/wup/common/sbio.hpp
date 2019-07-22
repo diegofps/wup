@@ -118,10 +118,17 @@ template <typename T>
 class Source
 {
 public:
+
     virtual ~Source() { }
+
     virtual void get(T &t) = 0;
+
+    virtual void getMany(void * t, const uint64_t len) = 0;
+
     virtual const T & get() = 0;
+
     virtual bool good() = 0;
+
 };
 
 template <typename T>
@@ -132,6 +139,8 @@ public:
     virtual ~Sink() { }
 
     virtual void put(const T &t) = 0;
+
+    virtual void putMany(const T * ptr, const uint64_t len) = 0;
 
     virtual bool good() = 0;
 
@@ -169,7 +178,8 @@ public:
 
     }
 
-    virtual ~MemSource()
+    virtual
+    ~MemSource()
     {
 
     }
@@ -178,7 +188,7 @@ public:
     get(T &t)
     {
         if (pos == size)
-            throw wup::WUPException();
+            error("Too many reads");
 
         t = data[pos];
         ++pos;
@@ -188,11 +198,22 @@ public:
     get()
     {
         if (pos == size)
-            throw wup::WUPException();
+            error("Too many reads");
 
         const T & r = data[pos];
         ++pos;
         return r;
+    }
+
+    virtual void
+    getMany(void * _ptr, const uint64_t len)
+    {
+        if (pos + len > size)
+            error("Too many reads");
+
+        T * ptr = (T*) _ptr;
+        std::copy(data+pos, data+pos+len, ptr);
+        pos += len;
     }
 
     bool
@@ -224,7 +245,8 @@ public:
 
     }
 
-    virtual ~MemSink()
+    virtual
+    ~MemSink()
     {
         free(_data);
     }
@@ -241,6 +263,20 @@ public:
 
         _data[_size] = t;
         ++_size;
+    }
+
+    void
+    putMany(const T * ptr, const uint64_t len)
+    {
+        if (_size + len > _capacity)
+        {
+            _capacity = _size + len;
+            _data = (T*) realloc(_data, _capacity * sizeof(T));
+            print("Resizing buffer, new size = ", _capacity);
+        }
+
+        std::copy(ptr, ptr + len, _data + _size);
+        _size += len;
     }
 
     bool
@@ -295,6 +331,12 @@ public:
     put(const T &t)
     {
         mem.push_back(t);
+    }
+
+    void
+    putMany(const T * ptr, const uint64_t len)
+    {
+        mem.insert(mem.end(), ptr, ptr + len);
     }
 
     bool
@@ -352,25 +394,52 @@ public:
             throw WUPException(cat("Failed to open ", filename, " for reading"));
     }
     
-    virtual ~FileSource()
+    virtual
+    ~FileSource()
     {
         _stream.close();
         free(_buffer);
     }
     
-    void get(T &t)
+    void
+    get(T &t)
     {
         if (_current == _content) readMore();
         t = _buffer[_current++];
     }
 
-    const T & get()
+    const T &
+    get()
     {
         if (_current == _content) readMore();
         return _buffer[_current++];
     }
 
-    bool good()
+    virtual void
+    getMany(void * _ptr, const uint64_t len)
+    {
+        T * ptr = (T*) _ptr;
+        uint64_t pos = 0;
+
+        while(pos != len)
+        {
+            if (_current == _content) readMore();
+
+            const uint64_t remaining = len - pos;
+            const uint64_t available = _content - _current;
+            const uint64_t toRead = min(available, remaining);
+
+            std::copy(_buffer + _current,
+                      _buffer + _current + toRead,
+                      ptr + pos);
+
+            _current += toRead;
+            pos += toRead;
+        }
+    }
+
+    bool
+    good()
     {
         return _stream.good();
     }
@@ -380,21 +449,25 @@ private:
     void readMore()
     {
         _stream.read((char*) _buffer, sizeof(T) * _capacity);
-        //int chars = _stream.gcount();
         _content = _stream.gcount() / sizeof(T);
         _current = 0;
-//        print("Read ", chars, " characters, giving ", _content, " entities");
 
         if (_current == _content)
             throw wup::WUPException();
     }
 
 private:
+
     ifstream _stream;
+
     T * _buffer;
+
     uint64_t _capacity;
+
     uint64_t _current;
+
     uint64_t _content;
+
 };
 
 template <typename T>
@@ -429,7 +502,8 @@ public:
             throw WUPException(cat("Failed to open ", filename, " for writing"));
     }
 
-    virtual ~FileSink()
+    virtual
+    ~FileSink()
     {
         if (_current != 0)
         {
@@ -441,7 +515,8 @@ public:
         free(_buffer);
     }
 
-    void put(const T &t)
+    void
+    put(const T &t)
     {
         _buffer[_current++] = t;
 
@@ -452,7 +527,32 @@ public:
         }
     }
 
-    bool good()
+    void
+    putMany(const T * ptr, const uint64_t len)
+    {
+        uint64_t pos = 0;
+
+        while(pos != len)
+        {
+            const uint64_t required = len - pos;
+            const uint64_t available = _capacity - _current;
+            const uint64_t toWrite = min(required, available);
+
+            std::copy(ptr + pos, ptr + pos + toWrite, _buffer + _current);
+
+            _current += toWrite;
+            pos += toWrite;
+
+            if (_current == _capacity)
+            {
+                _stream.write((char*) _buffer, sizeof(T) * _current);
+                _current = 0;
+            }
+        }
+    }
+
+    bool
+    good()
     {
         return _stream.good();
     }
@@ -524,13 +624,10 @@ public:
     std::string
     getString()
     {
-        std::stringstream ss;
-
-        int32_t tmp;
-        while ((tmp = src.get()) != 0)
-            ss << (char) tmp;
-
-        return ss.str();
+        const uint64_t numBytes = getSize();
+        std::string tmp(numBytes, 'a');
+        getBytes((char*)tmp.c_str(), numBytes);
+        return tmp;
     }
 
     double
@@ -571,6 +668,12 @@ public:
         return tmp;
     }
 
+    int32_t
+    getInt32()
+    {
+        return src.get();
+    }
+
     uint64_t
     getUInt64()
     {
@@ -585,7 +688,7 @@ public:
     }
 
     uint
-    getUnsignedInt()
+    getUInt32()
     {
         uint l;
         int32_t * const root = (int32_t*) (&l);
@@ -597,6 +700,44 @@ public:
     getBool()
     {
         return src.get() != 0;
+    }
+
+    uint64_t
+    getSize()
+    {
+        return getUInt64();
+    }
+
+    void *
+    getBytes()
+    {
+        const uint64_t numBytes = getSize();
+        uint8_t * buffer = new uint8_t[numBytes];
+        getBytes(buffer, numBytes);
+        return buffer;
+    }
+
+    void
+    getBytes(void * _buffer, uint64_t numBytes)
+    {
+        uint8_t * buffer = (uint8_t *) _buffer;
+        const uint64_t eltos = numBytes / sizeof(int32_t);
+        src.getMany(buffer, eltos);
+
+        if (numBytes % sizeof(int32_t))
+        {
+            uint8_t * current = buffer + numBytes - 1;
+            uint8_t * end = buffer + eltos * sizeof(uint32_t) - 1;
+
+            int32_t tmp = src.get();
+
+            while (current != end)
+            {
+                *current = tmp & 0xFF;
+                tmp = tmp >> 8;
+                --current;
+            }
+        }
     }
 
 };
@@ -649,6 +790,12 @@ public:
     }
 
     void
+    putInt32(const int32_t & l)
+    {
+        snk.put(l);
+    }
+
+    void
     putUInt64(const uint64_t & l)
     {
         const int32_t * root = (const int32_t*)( &l );
@@ -671,7 +818,7 @@ public:
     }
 
     void
-    putUnsignedInt(const uint & ui)
+    putUInt(const uint & ui)
     {
         const int32_t * const root = (const int*) (& ui);
         snk.put(root[0]);
@@ -687,13 +834,35 @@ public:
         snk.put(j);
     }
 
+    void
+    putString(const string & str)
+    {
+        putBytes(str.data(), str.size());
+    }
+
     template <typename T>
     void
-    putString(T & str)
+    putBytes(const T * const data, const uint64_t len)
     {
-        for (int i=0; str[i]!='\0'; ++i)
-            snk.put((int32_t)str[i]);
-        snk.put(0);
+        const uint64_t bytes = len * sizeof(T);
+
+        const uint8_t * data2 = (uint8_t*) data;
+        const int32_t * data3 = (const int32_t*)data;
+
+        const int eltos = bytes / sizeof(int32_t);
+
+        putUInt64(bytes);
+        snk.putMany(data3, eltos);
+
+        if (bytes % sizeof(int32_t))
+        {
+            int32_t tmp = 0;
+
+            for (uint i=eltos*sizeof(int32_t);i!=bytes;++i)
+                tmp = (tmp << 8) | data2[i];
+
+            snk.put(tmp);
+        }
     }
 
 };
