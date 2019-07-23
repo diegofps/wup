@@ -2,6 +2,7 @@
 #define __WUP__CLOCK
 
 #include <sys/time.h>
+#include <cstdint>
 #include <ctime>
 
 namespace wup
@@ -104,6 +105,26 @@ private:
     long _last;
 
 };
+
+inline uint64_t
+time_micro()
+{
+    struct timeval v;
+    gettimeofday(&v, nullptr);
+    return uint64_t(v.tv_usec) + uint64_t(1000000l) * uint64_t(v.tv_sec);
+}
+
+inline uint64_t
+time_milli()
+{
+    return time_micro() / uint64_t(1000);
+}
+
+inline uint64_t
+time_seconds()
+{
+    return time_micro() / uint64_t(1000000);
+}
 
 }; /* wup */
 
