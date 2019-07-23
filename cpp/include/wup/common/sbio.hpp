@@ -674,16 +674,20 @@ public:
         return src.get();
     }
 
-    uint64_t
-    getUInt64()
+    void
+    getUInt64(uint64_t & tmp)
     {
-        uint64_t tmp;
-
         int32_t * root = (int32_t*) (&tmp);
 
         src.get(root[0]);
         src.get(root[1]);
+    }
 
+    uint64_t
+    getUInt64()
+    {
+        uint64_t tmp;
+        getUInt64(tmp);
         return tmp;
     }
 
@@ -700,6 +704,12 @@ public:
     getBool()
     {
         return src.get() != 0;
+    }
+
+    void
+    getSize(uint64_t & tmp)
+    {
+        getUInt64(tmp);
     }
 
     uint64_t
@@ -802,6 +812,12 @@ public:
 
         snk.put(root[0]);
         snk.put(root[1]);
+    }
+
+    void
+    putSize(const uint64_t & l)
+    {
+        putUInt64(l);
     }
 
     void
