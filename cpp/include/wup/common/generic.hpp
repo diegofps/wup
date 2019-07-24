@@ -122,9 +122,10 @@ template <typename T>
 inline double
 sdistance(const double * const v1, const double * const v2, const T cols)
 {
+    const uint size = uint(cols);
     double ssum = 0.0;
 
-    for (uint i=0;i<cols;++i)
+    for (uint i=0;i!=size;++i)
     {
         const double v = v1[i] - v2[i];
         ssum += v * v;
