@@ -106,7 +106,7 @@ private:
     writeAll(IntWriter & writer)
     {
         writer.put(a);
-        writer.putUInt(b);
+        writer.putUInt32(b);
         writer.putUInt64(c);
         writer.putInt32(d);
         writer.putInt64(e);

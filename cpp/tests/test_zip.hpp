@@ -99,8 +99,6 @@ private:
         return tmp;
     }
 
-
-
 };
 
 #endif // TEST_ZIP

@@ -383,18 +383,17 @@ range(const uint n)
 inline uint *
 range2D(const uint rows, const uint cols, const uint rowStride, uint * const indexes)
 {
-    uint k = 0;
     uint w = 0;
 
     for (uint i=0;i!=rows;++i)
     {
+        const uint k = i * rowStride;
+
         for (uint j=0;j!=cols;++j)
         {
             indexes[w] = k + j;
             ++w;
         }
-
-        k = i * rowStride;
     }
 
     return indexes;
@@ -412,20 +411,19 @@ inline uint *
 range3D(const uint rows, const uint cols, const uint depth,
         const uint rowStride, const uint planeStride, uint * const indexes)
 {
-    uint k = 0;
     uint w = 0;
 
     for (uint d=0;d!=depth;++d)
     {
         for (uint i=0;i!=rows;++i)
         {
+            const uint k = d * planeStride + i * rowStride;
+
             for (uint j=0;j!=cols;++j)
             {
                 indexes[w] = k + j;
                 ++w;
             }
-
-            k = d * planeStride + i * rowStride;
         }
     }
 
