@@ -46,7 +46,7 @@ public:
     virtual
     void onExport(IntWriter & writer)
     {
-        writer.putUInt(_times);
+        writer.putUInt32(_times);
         writer.put(_current);
     }
 

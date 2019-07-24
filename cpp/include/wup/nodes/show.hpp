@@ -54,7 +54,7 @@ public:
     virtual
     void onExport(IntWriter & writer)
     {
-        writer.putUInt(_bundle.numCols());
+        writer.putUInt32(_bundle.numCols());
         writer.put(_counter);
         writer.putBool(_eachStep);
         writer.putString(_label);

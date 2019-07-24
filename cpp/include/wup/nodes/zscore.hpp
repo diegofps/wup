@@ -68,11 +68,11 @@ public:
     virtual
     void onExport(IntWriter & writer)
     {
-        writer.putUInt(_columns.size());
+        writer.putUInt32(_columns.size());
         writer.putBool(_useHighestStd);
 
         for (uint i=0; i!=_columns.size(); ++i)
-            writer.putUInt(_columns[i]);
+            writer.putUInt32(_columns[i]);
     }
 
     virtual ~ZScore()

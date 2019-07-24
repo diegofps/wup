@@ -49,9 +49,9 @@ public:
 
     virtual void onExport(IntWriter & writer)
     {
-        writer.putUInt(_numIndexes);
+        writer.putUInt32(_numIndexes);
         for (uint i=0; i!=_numIndexes; ++i)
-            writer.putUInt(_indexes[i]);
+            writer.putUInt32(_indexes[i]);
     }
 
 };

@@ -63,8 +63,8 @@ namespace kernelgens {
     inline void
     exportKernels(wup::IntWriter & writer, const uint dims, uint numKernels, double** &kernels)
     {
-        writer.putUInt(dims);
-        writer.putUInt(numKernels);
+        writer.putUInt32(dims);
+        writer.putUInt32(numKernels);
 
         for (uint i=0; i!=numKernels; ++i)
         {

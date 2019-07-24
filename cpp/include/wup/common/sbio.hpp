@@ -834,7 +834,7 @@ public:
     }
 
     void
-    putUInt(const uint & ui)
+    putUInt32(const uint & ui)
     {
         const int32_t * const root = (const int*) (& ui);
         snk.put(root[0]);

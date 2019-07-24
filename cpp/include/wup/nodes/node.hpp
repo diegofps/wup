@@ -83,7 +83,7 @@ public:
     void exportTo(IntWriter & writer)
     {
         writer.put(-1);
-        writer.putUInt(_output.size());
+        writer.putUInt32(_output.size());
         writer.put(_actsAsPattern);
         writer.put(-1);
         onExport(writer);

@@ -120,7 +120,7 @@ public:
     {
     	writer.put(-1);
         kernelgens::exportKernels(writer, _dims, _numKernels, _kernels);
-        writer.putUInt(_k);
+        writer.putUInt32(_k);
         writer.put(-1);
     }
 
