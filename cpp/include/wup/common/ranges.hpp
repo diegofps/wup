@@ -66,21 +66,21 @@ XRange<T> xrange(const T &start, const T &end, const T &step=1)
     return XRange<T>(start, end, step);
 }
 
-template <typename T>
-std::vector<T> range(const T &end)
-{
-    std::vector<T> v;
-    for (auto &i : xrange(end)) v.push_back(i);
-    return v;
-}
+//template <typename T>
+//std::vector<T> range(const T &end)
+//{
+//    std::vector<T> v;
+//    for (auto &i : xrange(end)) v.push_back(i);
+//    return v;
+//}
 
-template <typename T>
-std::vector<T> range(const T &start, const T &end, const T &step=1)
-{
-    std::vector<T> v;
-    for (auto &i : xrange(start, end, step)) v.push_back(i);
-    return v;
-}
+//template <typename T>
+//std::vector<T> range(const T &start, const T &end, const T &step=1)
+//{
+//    std::vector<T> v;
+//    for (auto &i : xrange(start, end, step)) v.push_back(i);
+//    return v;
+//}
 
 }; /* wup */
 

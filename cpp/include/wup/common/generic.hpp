@@ -345,8 +345,9 @@ A sum(const A * const array, const int length)
     return a;
 }
 
+
 template <typename T>
-void
+T *
 shuffle(T * const data, const uint32_t n)
 {
     for (uint32_t i=0;i!=n-1;++i)
@@ -358,32 +359,120 @@ shuffle(T * const data, const uint32_t n)
         data[pivot] = data[final];
         data[final] = tmp;
     }
+
+    return data;
 }
+
+
+template <typename T>
+uint *
+range(const uint n, T * const indexes)
+{
+    for (uint i=0; i!=n; ++i)
+        indexes[i] = i;
+    return indexes;
+}
+
+inline uint *
+range(const uint n)
+{
+    return range(n, new uint[n]);
+}
+
+
+inline uint *
+range2D(const uint rows, const uint cols, const uint rowStride, uint * const indexes)
+{
+    uint k = 0;
+    uint w = 0;
+
+    for (uint i=0;i!=rows;++i)
+    {
+        for (uint j=0;j!=cols;++j)
+        {
+            indexes[w] = k + j;
+            ++w;
+        }
+
+        k = i * rowStride;
+    }
+
+    return indexes;
+}
+
+inline uint *
+range2D(const uint rows, const uint cols, const uint rowStride)
+{
+    uint * const indexes = new uint[rows * cols];
+    return range2D(rows, cols, rowStride, indexes);
+}
+
+
+inline uint *
+range3D(const uint rows, const uint cols, const uint depth,
+        const uint rowStride, const uint planeStride, uint * const indexes)
+{
+    uint k = 0;
+    uint w = 0;
+
+    for (uint d=0;d!=depth;++d)
+    {
+        for (uint i=0;i!=rows;++i)
+        {
+            for (uint j=0;j!=cols;++j)
+            {
+                indexes[w] = k + j;
+                ++w;
+            }
+
+            k = d * planeStride + i * rowStride;
+        }
+    }
+
+    return indexes;
+}
+
+inline uint *
+range3D(const uint rows, const uint cols, const uint depth,
+        const uint rowStride, const uint planeStride)
+{
+    uint * const indexes = new uint[rows * cols * depth];
+    return range3D(rows, cols, depth, rowStride, planeStride, indexes);
+}
+
 
 template <typename T>
 inline T *
 randperm(const uint n, T * const indexes)
 {
-    for (uint i=0; i!=n; ++i)
-        indexes[i] = i;
-
+    range(n, indexes);
     shuffle(indexes, n);
     return indexes;
 }
 
-template <typename T>
 inline uint *
-randperm(const T n)
+randperm(const uint n)
 {
     return randperm(n, new uint[n]);
 }
 
-template <typename T>
-inline T *
-randperm(const int n)
+uint *
+randperm2D(const uint rows, const uint cols, const uint rowStride)
 {
-    return randperm(n, new T[n]);
+    uint * const indexes = range2D(rows, cols, rowStride);
+    wup::shuffle(indexes, rows * cols);
+    return indexes;
 }
+
+uint *
+randperm3D(const uint rows, const uint cols, const uint depth,
+           const uint rowStride, const uint planeStride)
+{
+    uint * const indexes = range3D(rows, cols, depth, rowStride, planeStride);
+    wup::shuffle(indexes, rows * cols * depth);
+    return indexes;
+}
+
 
 inline string
 slice(const string str, int a, int b)
@@ -410,14 +499,17 @@ slice_to(const string str, int b)
     return slice(str, 0, b);
 }
 
+
 template <typename T>
 int indexOfMax(const T * const mem, const int length)
 {
     int index = -1;
     T bigger;
 
-    for (int i=0;i<length;++i) {
-        if (index == -1 || mem[i] > bigger) {
+    for (int i=0;i<length;++i)
+    {
+        if (index == -1 || mem[i] > bigger)
+        {
             bigger = mem[i];
             index = i;
         }
@@ -433,12 +525,16 @@ int indexOfMax(const T * const mem, const int length, int &times)
     times = 1;
     T bigger;
 
-    for (int i=0;i<length;++i) {
-        if (index == -1 || mem[i] > bigger) {
+    for (int i=0;i<length;++i)
+    {
+        if (index == -1 || mem[i] > bigger)
+        {
             bigger = mem[i];
             index = i;
             times = 1;
-        } else if (mem[i] == bigger) {
+        }
+        else if (mem[i] == bigger)
+        {
             ++times;
         }
     }

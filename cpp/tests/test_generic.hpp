@@ -94,6 +94,27 @@ public:
         TS_ASSERT_EQUALS(rotr(last64,1), (last64>>1));
     }
 
+    void test_range()
+    {
+        vector<uint> goal = {0, 1, 2, 3, 4, 5};
+        uint * r = range(6);
+        TS_ASSERT_SAME_DATA(goal.data(), r, goal.size());
+    }
+
+    void test_range2D()
+    {
+        vector<int> goal = {0, 1, 4, 5, 8, 9};
+        uint * r = range2D(3, 2, 4);
+        TS_ASSERT_SAME_DATA(goal.data(), r, goal.size());
+    }
+
+    void test_range3D()
+    {
+        vector<int> goal = {0, 1, 4, 5, 8, 9, 16, 17, 20, 21, 24, 25, 28, 29};
+        uint * r = range3D(3, 2, 2, 4, 16);
+        TS_ASSERT_SAME_DATA(goal.data(), r, goal.size());
+    }
+
 };
 
 #endif // TEST_GENERIC_SLICES_HPP
