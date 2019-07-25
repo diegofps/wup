@@ -85,7 +85,7 @@ public: // TESTS
 
     void test_disk()
     {
-        const char * filename = "./tmp";
+        const char * filename = "./tmp.delme";
 
         {
             FileSink<int32_t> snk(filename);

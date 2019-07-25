@@ -108,11 +108,22 @@ public:
         TS_ASSERT_SAME_DATA(goal.data(), r, goal.size() * sizeof(uint));
     }
 
-    void test_range3D()
+    void test_range3DPlane()
     {
         vector<int> goal = {0, 1, 4, 5, 8, 9, 16, 17, 20, 21, 24, 25};
-        uint * r = range3D(3, 2, 2, 4, 16);
+        uint * r = range3DPlane(3, 2, 2, 4, 16);
         TS_ASSERT_SAME_DATA(goal.data(), r, goal.size() * sizeof(uint));
+    }
+
+    void test_range3DCell()
+    {
+        vector<int> goal = {0, 1, 2, 3, 4, 5, 6, 7};
+        uint * r = range3DCell(4, 2, 2, 2 * 2);
+        TS_ASSERT_SAME_DATA(goal.data(), r, goal.size() * sizeof(uint));
+
+        vector<int> goal2 = {0, 1, 4, 5};
+        uint * r2 = range3DCell(4, 1, 2, 2 * 2);
+        TS_ASSERT_SAME_DATA(goal2.data(), r2, goal2.size() * sizeof(uint));
     }
 
 };

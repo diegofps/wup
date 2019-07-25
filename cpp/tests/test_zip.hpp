@@ -43,7 +43,7 @@ public:
 
     void test_zip()
     {
-        const char * filename = "./tmp.bin";
+        const char * filename = "./zip.delme";
 
         uint64_t LENGTH = 102400;
         uint8_t * buffer = createBuffer(LENGTH);

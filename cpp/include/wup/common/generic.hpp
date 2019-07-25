@@ -408,7 +408,7 @@ range2D(const uint rows, const uint cols, const uint rowStride)
 
 
 inline uint *
-range3D(const uint rows, const uint cols, const uint depth,
+range3DPlane(const uint rows, const uint cols, const uint depth,
         const uint rowStride, const uint planeStride, uint * const indexes)
 {
     uint w = 0;
@@ -431,11 +431,44 @@ range3D(const uint rows, const uint cols, const uint depth,
 }
 
 inline uint *
-range3D(const uint rows, const uint cols, const uint depth,
+range3DPlane(const uint rows, const uint cols, const uint depth,
         const uint rowStride, const uint planeStride)
 {
     uint * const indexes = new uint[rows * cols * depth];
-    return range3D(rows, cols, depth, rowStride, planeStride, indexes);
+    return range3DPlane(rows, cols, depth, rowStride, planeStride, indexes);
+}
+
+inline uint *
+range3DCell(const uint rows, const uint cols, const uint depth,
+        const uint rowStride, uint * const indexes)
+{
+    uint w = 0;
+    uint k;
+
+    for (uint i=0;i!=rows;++i)
+    {
+        k = i * rowStride;
+
+        for (uint j=0;j!=cols;++j)
+        {
+            for (uint d=0;d!=depth;++d)
+            {
+                indexes[w] = k;
+                ++k;
+                ++w;
+            }
+        }
+    }
+
+    return indexes;
+}
+
+inline uint *
+range3DCell(const uint rows, const uint cols, const uint depth,
+        const uint rowStride)
+{
+    uint * const indexes = new uint[rows * cols * depth];
+    return range3DCell(rows, cols, depth, rowStride, indexes);
 }
 
 
@@ -462,11 +495,46 @@ randperm2D(const uint rows, const uint cols, const uint rowStride)
     return indexes;
 }
 
+/*
+    Generates a random permutation of indexes for a 3D region of interest with size
+    [depth x rows x cols], which is inside a matrix of size [depth x Rows x Cols].
+
+    This function is plain oriented, which means that each value of depth contains
+    the an entire Plane in the original matrix [Rows, Cols]. If you want to apply this
+    with opencv, consider the function randperm3DPlane.
+
+    rows - Number of rows in the region of interest
+    cols - number of columns in the region of interest
+    depth - depth of the cell, or the number of planes in the matrix.
+    rowStride - Number of elements in the Row of the full matrix.
+    planeStride - Number of elements in the Plane of the full matrix. Like Rows * Cols.
+*/
 uint *
-randperm3D(const uint rows, const uint cols, const uint depth,
+randperm3DPlane(const uint rows, const uint cols, const uint depth,
            const uint rowStride, const uint planeStride)
 {
-    uint * const indexes = range3D(rows, cols, depth, rowStride, planeStride);
+    uint * const indexes = range3DPlane(rows, cols, depth, rowStride, planeStride);
+    wup::shuffle(indexes, rows * cols * depth);
+    return indexes;
+}
+
+/*
+    Generates a random permutation of indexes for a 3D region of interest with size
+    [rows x cols x depth], which is inside a matrix of size [Rows x Cols X depth].
+
+    This function assumes that each cell in [rows, cols] contains depth elements.
+    This is the format used by opencv, for instance.
+
+    rows - Number of rows in the region of interest
+    cols - number of columns in the region of interest
+    depth - depth of the cell, or the number of elements in it. For RGB it is 3.
+    rowStride - Number of elements in the Row of the full matrix. Like Rows * depth.
+*/
+uint *
+randperm3DCell(const uint rows, const uint cols, const uint depth,
+           const uint rowStride)
+{
+    uint * const indexes = range3DCell(rows, cols, depth, rowStride);
     wup::shuffle(indexes, rows * cols * depth);
     return indexes;
 }
