@@ -175,14 +175,17 @@ template<typename T>
 void
 printArray(const T * const src, const int length, bool indexes=false)
 {
-    if (indexes) {
+    if (indexes)
+    {
         for (int i=0;i<length;++i)
-            printn("<", i, ":", src[i], "> ");
-        print();
-    } else {
+            _printn("<", i, ":", src[i], "> ");
+        _print();
+    }
+    else
+    {
         for (int i=0;i<length;++i)
-            printn(src[i], " ");
-        print();
+            _printn(src[i], " ");
+        _print();
     }
 }
 
@@ -190,7 +193,8 @@ template<typename T>
 void
 printArray(const char * msg, const T * const src, const int length, bool indexes=false)
 {
-    printn(msg, ": ");
+    std::cout << logPrefix;
+    _printn(msg, ": ");
     printArray(src, length, indexes);
 }
 
