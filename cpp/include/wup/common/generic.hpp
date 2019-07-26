@@ -491,6 +491,15 @@ randperm(const uint n)
     return randperm(n, new uint[n]);
 }
 
+template <typename T>
+T *
+filter(const T * const src, T * const dst, const uint * const indexes, const uint indexesLen)
+{
+    for (uint k=0;k!=indexesLen;++k)
+        dst[k] = src[indexes[k]];
+    return dst;
+}
+
 uint *
 randperm2D(const uint rows, const uint cols, const uint rowStride)
 {
