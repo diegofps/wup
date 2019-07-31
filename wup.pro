@@ -30,7 +30,9 @@ HEADERS += \
     cpp/include/wup/common/generic.hpp \
     cpp/include/wup/common/iterators.hpp \
     cpp/include/wup/common/kfold.hpp \
+    cpp/include/wup/common/mpichutils.hpp \
     cpp/include/wup/common/msgs.hpp \
+    cpp/include/wup/common/opencvutils.hpp \
     cpp/include/wup/common/params.hpp \
     cpp/include/wup/common/random.hpp \
     cpp/include/wup/common/ranges.hpp \
