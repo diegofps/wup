@@ -79,6 +79,12 @@ public:
 
 };
 
+std::ostream & operator<<(std::ostream & o, const Region & r)
+{
+    o << "(" << r.x << "," << r.y << " " << r.width << "," << r.height << ")";
+    return o;
+}
+
 template <typename T>
 inline uint
 sumRegion(const T & view,
@@ -91,6 +97,8 @@ sumRegion(const T & view,
 void
 calculateImageIntegral(const cv::Mat & image, wup::Bundle<uint> & ii)
 {
+    ii.reshape(image.rows, image.cols);
+
     const uchar * const final = &image.at<uchar>(0, image.cols);
     const uchar * j = &image.at<uchar>(0, 0);
     uint * b = &ii(0,0);

@@ -73,7 +73,7 @@ void _print(const P1 &p1)
 template <typename P1, typename... Args>
 void _print(const P1 &p1, const Args&... args)
 {
-    std::cout << p1;
+    std::cout << p1 << " ";
     _print(args...);
 }
 
