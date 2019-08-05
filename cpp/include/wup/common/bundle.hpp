@@ -291,6 +291,9 @@ public:
         return _data;
     }
 
+    /*
+        Returns the number of elements in this Bundle
+    */
     uint size() const
     {
         return _size;

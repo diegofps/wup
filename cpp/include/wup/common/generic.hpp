@@ -328,17 +328,51 @@ A abs(const A &a)
     return a<0?-a:a;
 }
 
-template <typename A, typename B>
-A min(const A &a, const B &b)
+template <typename P>
+const P & min(const P &p1)
 {
-    return a<b?a:b;
+    return p1;
 }
 
-template <typename A, typename B>
-A max(const A &a, const B &b)
+template <typename P, typename... Args>
+const P & min(const P &p1, const Args&... args)
 {
-    return a>b?a:b;
+    const P & p2 = min(args...);
+
+    if (p1 < p2)
+        return p1;
+    else
+        return p2;
 }
+
+template <typename P>
+const P & max(const P &p1)
+{
+    return p1;
+}
+
+template <typename P, typename... Args>
+const P & max(const P &p1, const Args&... args)
+{
+    const P & p2 = max(args...);
+
+    if (p1 > p2)
+        return p1;
+    else
+        return p2;
+}
+
+//template <typename A, typename B>
+//A min(const A &a, const B &b)
+//{
+//    return a<b?a:b;
+//}
+
+//template <typename A, typename B>
+//A max(const A &a, const B &b)
+//{
+//    return a>b?a:b;
+//}
 
 template <typename A>
 A sum(const A * const array, const int length)
