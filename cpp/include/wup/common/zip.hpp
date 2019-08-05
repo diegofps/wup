@@ -1,12 +1,10 @@
 #ifndef ZIP_HPP
 #define ZIP_HPP
 
-#ifndef WUP_NO_ZIP
-
 #include <zlib.h>
 #include <cstdint>
 #include <vector>
-#include "exceptions.hpp"
+#include <wup/common/exceptions.hpp>
 #include <wup/common/msgs.hpp>
 
 namespace wup
@@ -95,38 +93,5 @@ unzip(const A * const compressedBuffer, const uint64_t compressedSize,
 }
 
 }
-
-#else
-
-template <typename A, typename B>
-void
-zip(const A * const buffer, const uint64_t bufferLength,
-    B *& compressedBuffer, uint64_t & compressedSize,
-    int compressionLevel=0)
-{
-    uint8_t * src = (uint8_t*) buffer;
-    uint8_t * dst = new uint8_t[bufferLength];
-
-    std::copy(src, src + bufferLength, dst);
-
-    compressedBuffer = (B*) dst;
-    compressedSize = bufferLength;
-}
-
-template <typename A, typename B>
-void
-unzip(const A * const compressedBuffer, const uint64_t compressedSize,
-      B *& uncompressedBuffer, uint64_t & uncompressedSize)
-{
-    uint8_t * src = (uint8_t*) compressedBuffer;
-    uint8_t * dst = new uint8_t[compressedSize];
-
-    std::copy(src, src + compressedSize, dst);
-
-    uncompressedBuffer = (B*) dst;
-    uncompressedSize = compressedSize;
-}
-
-#endif
 
 #endif // ZIP_HPP

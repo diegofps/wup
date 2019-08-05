@@ -20,8 +20,19 @@
 #include <wup/common/seq.hpp>
 #include <wup/common/random.hpp>
 #include <wup/common/cronus.hpp>
-#include <wup/common/zip.hpp>
 #include <wup/common/threads.hpp>
+
+#ifndef WUP_NO_ZIP
+#include <wup/common/zip.hpp>
+#endif
+
+#ifndef WUP_NO_OPENCV
+#include <wup/common/opencvutils.hpp>
+#endif
+
+#ifndef WUP_NO_MPICH
+#include <wup/common/mpichutils.hpp>
+#endif
 
 #include <wup/models/wisard.hpp>
 #include <wup/models/kernelcanvas.hpp>
