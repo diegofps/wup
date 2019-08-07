@@ -254,7 +254,7 @@ void parallel_blocks_thread(Pipe<int> * const p, F f, const int tid, const size_
     while(blockId >= 0)
     {
         const size_t first = blockId * blockSize;
-        const size_t last  = wup::min(first + blockSize, jobs);
+        const size_t last  = wmin(first + blockSize, jobs);
 
         f(tid, blockId, first, last);
         blockId = p->get();

@@ -199,11 +199,11 @@ selectROI(const char * window, cv::Mat & img, Region & roi)
         }
     }
 
-    const int x0 = wup::min(points[1].x, points[2].x);
-    const int x1 = wup::max(points[1].x, points[2].x);
+    const int x0 = wmin(points[1].x, points[2].x);
+    const int x1 = wmax(points[1].x, points[2].x);
 
-    const int y0 = wup::min(points[1].y, points[2].y);
-    const int y1 = wup::max(points[1].y, points[2].y);
+    const int y0 = wmin(points[1].y, points[2].y);
+    const int y1 = wmax(points[1].y, points[2].y);
 
     roi.x = x0;
     roi.y = y0;

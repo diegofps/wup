@@ -291,7 +291,9 @@ public:
         return _data;
     }
 
-    // Returns the number of elements in this Bundle
+    /*
+        Returns the number of elements in this Bundle
+    */
     uint size() const
     {
         return _size;
@@ -445,14 +447,14 @@ std::ostream & operator<<(std::ostream & o, const wup::BundleView<T> & view)
 
 template <typename T>
 T
-min(const Bundle<T> & data)
+wmin(const Bundle<T> & data)
 {
     return arrayMin(&data(0,0), data.size());
 }
 
 template <typename T>
 T
-max(const Bundle<T> & data)
+wmax(const Bundle<T> & data)
 {
     return arrayMax(&data(0,0), data.size());
 }
