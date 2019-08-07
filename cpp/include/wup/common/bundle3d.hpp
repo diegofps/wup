@@ -164,14 +164,14 @@ public:
 
 template <typename T>
 T
-min(const Bundle3D<T> & data)
+wmin(const Bundle3D<T> & data)
 {
     return arrayMin(&data(0,0,0), data.size());
 }
 
 template <typename T>
 T
-max(const Bundle3D<T> & data)
+wmax(const Bundle3D<T> & data)
 {
     return arrayMax(&data(0,0,0), data.size());
 }

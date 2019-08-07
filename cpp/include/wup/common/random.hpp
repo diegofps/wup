@@ -28,14 +28,14 @@ public:
         return rand() % 2;
     }
 
-    int uniformIntNoise(const int& min, const int& max) const
+    int uniformIntNoise(const int& lower, const int& upper) const
     {
-        return min + rand() % (max-min);
+        return lower + rand() % (upper-lower);
     }
 
-    int uniformIntNoise(const int& max) const
+    int uniformIntNoise(const int& upper) const
     {
-        return rand() % max;
+        return rand() % upper;
     }
 
     int uniformIntNoise() const
@@ -43,14 +43,14 @@ public:
         return rand();
     }
 
-    double uniformNoise(const double& min, const double& max) const
+    double uniformNoise(const double& lower, const double& upper) const
     {
-        return min + uniformNoise() * (max - min);
+        return lower + uniformNoise() * (upper - lower);
     }
 
-    double uniformNoise(const double& max) const
+    double uniformNoise(const double& upper) const
     {
-        return uniformNoise(0.0, max);
+        return uniformNoise(0.0, upper);
     }
 
     double uniformNoise() const

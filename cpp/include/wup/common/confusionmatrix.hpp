@@ -101,20 +101,20 @@ public:
     }
 
     int
-    max() const
+    maxValue() const
     {
-        int max = -1;
+        int best = -1;
         for (uint i=0;i!=classes();++i)
         {
             for (uint j=0;j!=classes();++i)
             {
                 const int value = static_cast<int>(_matrix(i,j));
 
-                if (value > max)
-                    max = value;
+                if (value > best)
+                    best = value;
             }
         }
-        return max;
+        return best;
     }
 
     int

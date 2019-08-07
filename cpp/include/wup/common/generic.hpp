@@ -329,15 +329,15 @@ A abs(const A &a)
 }
 
 template <typename P>
-const P & min(const P &p1)
+const P & wmin(const P &p1)
 {
     return p1;
 }
 
 template <typename P, typename... Args>
-const P & min(const P &p1, const Args&... args)
+const P & wmin(const P &p1, const Args&... args)
 {
-    const P & p2 = min(args...);
+    const P & p2 = wmin(args...);
 
     if (p1 < p2)
         return p1;
@@ -346,15 +346,15 @@ const P & min(const P &p1, const Args&... args)
 }
 
 template <typename P>
-const P & max(const P &p1)
+const P & wmax(const P &p1)
 {
     return p1;
 }
 
 template <typename P, typename... Args>
-const P & max(const P &p1, const Args&... args)
+const P & wmax(const P &p1, const Args&... args)
 {
-    const P & p2 = max(args...);
+    const P & p2 = wmax(args...);
 
     if (p1 > p2)
         return p1;

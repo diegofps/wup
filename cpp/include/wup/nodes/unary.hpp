@@ -21,7 +21,7 @@ private:
 
     template <typename DST> void
     termometer(DST * const dst, const double value, const int termBits) {
-        const int threshold = min((value + 1.0) / 2.0 * termBits, termBits);
+        const int threshold = wmin((value + 1.0) / 2.0 * termBits, termBits);
         int i=0;
         while (i<threshold) dst[i++] = 0;
         while (i<termBits)  dst[i++] = 1;
