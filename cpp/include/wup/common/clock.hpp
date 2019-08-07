@@ -31,6 +31,13 @@ public:
         return *this;
     }
 
+    Clock & lap()
+    {
+        stop();
+        start();
+        return *this;
+    }
+
     // Returns the ellapsed time in seconds
     long double ellapsed_seconds() const
     {

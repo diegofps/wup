@@ -121,13 +121,20 @@ public:
 
     virtual ~Source() { }
 
+    // Get a number and move to the next position
     virtual void get(T &t) = 0;
 
+    // Get many numbers and advance len positions
     virtual void getMany(void * t, const uint64_t len) = 0;
 
+    // Get a number and move to the next position
     virtual const T & get() = 0;
 
+    // Returns true if the source is good for reading, false otherwise
     virtual bool good() = 0;
+
+    // Similar to get, but doesn't advance the position
+    virtual const T & current() = 0;
 
 };
 
@@ -220,6 +227,15 @@ public:
     good()
     {
         return true;
+    }
+
+    const T &
+    current()
+    {
+        if (pos == size)
+            error("Too many reads");
+
+        return data[pos];
     }
 
 };
@@ -442,6 +458,13 @@ public:
     good()
     {
         return _stream.good();
+    }
+
+    const T &
+    current()
+    {
+        if (_current == _content) readMore();
+        return _buffer[_current];
     }
 
 private:

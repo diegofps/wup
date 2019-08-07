@@ -12,25 +12,24 @@ namespace wup
 
 /// Compresses a sequence of bytes.
 ///
-/// buffer - Pointer to the sequence of bytes to be compresses.
-/// bufferSize - Size of the buffer to be compressed (in bytes).
-/// compressedBuffer - Pointer to the compressed buffer (will be allocated by the function with new[]).
-/// compressedSize - Size of the compressed buffer (in bytes).
+/// uBuffer - Pointer to the sequence of bytes to be compresses.
+/// uSize - Size of the uncompressed buffer to be compressed (in bytes).
+/// cBuffer - Pointer to the compressed buffer (will be allocated by the function with new[]). You must delete after use.
+/// cSize - Size of the compressed buffer (in bytes).
 template <typename A, typename B>
 void
-zip(const A * const uncompressedBuffer, const uint64_t uncompressedSize,
-    B *& compressedBuffer, uint64_t & compressedSize,
+zip(const A * const uBuffer, const uint64_t uSize, B *& cBuffer, uint64_t & cSize,
     int compressionLevel=Z_DEFAULT_COMPRESSION)
 {
-    uLongf boundSize = sizeof(uint64_t) + compressBound(uncompressedSize);
+    uLongf boundSize = sizeof(uint64_t) + compressBound(uSize);
 
     if (boundSize % sizeof(int32_t))
         boundSize = (boundSize / sizeof(int32_t) + 1) * sizeof(int32_t);
 
     Bytef *dest = new Bytef[boundSize];
     uLongf *destLen = (uLongf*)dest;
-    const Bytef *source = (const Bytef*)uncompressedBuffer;
-    uLong sourceLen = uncompressedSize;
+    const Bytef *source = (const Bytef*)uBuffer;
+    uLong sourceLen = uSize;
 
     *destLen = boundSize - sizeof(uint64_t);
 
@@ -38,9 +37,9 @@ zip(const A * const uncompressedBuffer, const uint64_t uncompressedSize,
 
     *destLen += sizeof(uint64_t);
 
-    compressedBuffer = (B*) dest;
-    compressedSize = *destLen;
-    *destLen = uncompressedSize;
+    cBuffer = (B*) dest;
+    cSize = *destLen;
+    *destLen = uSize;
 
     if (result == Z_OK)
         return;
@@ -57,24 +56,23 @@ zip(const A * const uncompressedBuffer, const uint64_t uncompressedSize,
 
 /// Uncompresses a sequence of bytes.
 ///
-/// compressedBuffer - Pointer to the compressed sequence of bytes.
-/// compressedSize - Size of the compressed buffer (in bytes).
-/// uncompressedBuffer - Pointer to the uncompressed buffer (will be allocated by the function with new[]).
-/// uncompressedSize - Size of the uncompressed buffer (in bytes).
+/// cBuffer - Pointer to the compressed sequence of bytes.
+/// cSize - Size of the compressed buffer (in bytes).
+/// uBuffer - Pointer to the uncompressed buffer (will be allocated by the function with new[]).
+/// uSize - Size of the uncompressed buffer (in bytes).
 template <typename A, typename B>
 void
-unzip(const A * const compressedBuffer, const uint64_t compressedSize,
-      B *& uncompressedBuffer, uint64_t & uncompressedSize)
+unzip(const A * const cBuffer, const uint64_t cSize, B *& uBuffer, uint64_t & uSize)
 {
-    uLongf & tmp = *((uLongf*) compressedBuffer);
+    uLongf & tmp = *((uLongf*) cBuffer);
 
-    Bytef * src = (Bytef *) compressedBuffer;
+    Bytef * src = (Bytef *) cBuffer;
     Bytef * dst = new Bytef[tmp];
 
-    int result = uncompress(dst, &tmp, src+sizeof(uLongf), (uLong) compressedSize);
+    int result = uncompress(dst, &tmp, src+sizeof(uLongf), (uLong) cSize);
 
-    uncompressedSize = tmp;
-    uncompressedBuffer = (B*) dst;
+    uSize = tmp;
+    uBuffer = (B*) dst;
 
     if (result == Z_OK)
         return;

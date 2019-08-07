@@ -579,13 +579,13 @@ slice_to(const string str, int b)
 }
 
 
-template <typename T>
-int indexOfMax(const T * const mem, const int length)
+template <typename T, typename SIZE>
+int indexOfMax(const T * const mem, const SIZE & length)
 {
     int index = -1;
     T bigger;
 
-    for (int i=0;i<length;++i)
+    for (SIZE i=0;i!=length;++i)
     {
         if (index == -1 || mem[i] > bigger)
         {
@@ -597,14 +597,14 @@ int indexOfMax(const T * const mem, const int length)
     return index;
 }
 
-template <typename T>
-int indexOfMax(const T * const mem, const int length, int &times)
+template <typename T, typename SIZE>
+int indexOfMax(const T * const mem, const SIZE & length, int &times)
 {
     int index = -1;
     times = 1;
     T bigger;
 
-    for (int i=0;i<length;++i)
+    for (SIZE i=0;i!=length;++i)
     {
         if (index == -1 || mem[i] > bigger)
         {

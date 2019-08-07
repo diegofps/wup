@@ -85,11 +85,11 @@ std::ostream & operator<<(std::ostream & o, const Region & r)
     return o;
 }
 
-template <typename T>
+template <typename T, typename INDEX>
 inline uint
 sumRegion(const T & view,
-          const uint & i1, const uint & j1,
-          const uint & i2, const uint & j2)
+          const INDEX & i1, const INDEX & j1,
+          const INDEX & i2, const INDEX & j2)
 {
     return view(i2, j2) - view(i2, j1) - view(i1, j2) + view(i1, j1);
 }
