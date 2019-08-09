@@ -45,6 +45,27 @@ inline double log2(const double value)
 { return log(value) / log(2.); }
 #endif
 
+template <typename T, typename B>
+void
+prevIndex(T & index, const B & size, bool loop=true)
+{
+    if (index == 0)
+    {
+        if (loop)
+            index = size - 1;
+    }
+    else
+        --index;
+}
+
+template <typename T, typename B>
+void
+nextIndex(T & index, const B & size, bool loop=true)
+{
+    if (++index == size)
+        index = loop ? 0 : size-1;
+}
+
 inline uint32_t
 rotl32 (uint32_t n, uint c)
 {

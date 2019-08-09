@@ -9,6 +9,48 @@
 namespace wup
 {
 
+const uchar KEY_NUMPAD_ON_1 = 177;
+const uchar KEY_NUMPAD_ON_2 = 178;
+const uchar KEY_NUMPAD_ON_3 = 179;
+const uchar KEY_NUMPAD_ON_4 = 180;
+const uchar KEY_NUMPAD_ON_5 = 181;
+const uchar KEY_NUMPAD_ON_6 = 182;
+const uchar KEY_NUMPAD_ON_7 = 183;
+const uchar KEY_NUMPAD_ON_8 = 184;
+const uchar KEY_NUMPAD_ON_9 = 185;
+const uchar KEY_NUMPAD_ON_0 = 176;
+const uchar KEY_NUMPAD_ON_DOT = 172;
+
+const uchar KEY_NUMPAD_OFF_END = 156;
+const uchar KEY_NUMPAD_OFF_DOWN = 153;
+const uchar KEY_NUMPAD_OFF_PGDOWN = 155;
+const uchar KEY_NUMPAD_OFF_LEFT = 150;
+const uchar KEY_NUMPAD_OFF_5 = 157;
+const uchar KEY_NUMPAD_OFF_RIGHT = 152;
+const uchar KEY_NUMPAD_OFF_HOME = 149;
+const uchar KEY_NUMPAD_OFF_UP = 151;
+const uchar KEY_NUMPAD_OFF_PGUP = 154;
+const uchar KEY_NUMPAD_OFF_0 = 158;
+const uchar KEY_NUMPAD_OFF_DOT = 159;
+
+const uchar KEY_NUMPAD_DIV = 175;
+const uchar KEY_NUMPAD_MUL = 170;
+const uchar KEY_NUMPAD_MINUS = 173;
+const uchar KEY_NUMPAD_PLUS = 171;
+const uchar KEY_NUMPAD_ENTER = 141;
+
+const uchar KEY_NONE = 255;
+
+const uchar KEY_ESC = 27;
+const uchar KEY_SPACE = 32;
+const uchar KEY_ENTER = 10;
+const uchar KEY_BACKSPACE = 8;
+
+} /* wup */
+
+namespace wup
+{
+
 // CLASS SIMILAR TO Rect2i, REPRESENTS A REGION OF INTEREST
 class Region
 {
