@@ -133,7 +133,7 @@ sumRegion(const T & view,
           const INDEX & i1, const INDEX & j1,
           const INDEX & i2, const INDEX & j2)
 {
-    return view(i2, j2) - view(i2, j1) - view(i1, j2) + view(i1, j1);
+    return view(i2, j2) + view(i1, j1) - view(i2, j1) - view(i1, j2);
 }
 
 void
