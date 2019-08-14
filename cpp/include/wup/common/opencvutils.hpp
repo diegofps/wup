@@ -46,6 +46,71 @@ const uchar KEY_SPACE = 32;
 const uchar KEY_ENTER = 10;
 const uchar KEY_BACKSPACE = 8;
 
+const uchar KEY_A = 65;
+const uchar KEY_B = 66;
+const uchar KEY_C = 67;
+const uchar KEY_D = 68;
+const uchar KEY_E = 69;
+const uchar KEY_F = 70;
+const uchar KEY_G = 71;
+const uchar KEY_H = 72;
+const uchar KEY_I = 73;
+const uchar KEY_J = 74;
+const uchar KEY_K = 75;
+const uchar KEY_L = 76;
+const uchar KEY_M = 77;
+const uchar KEY_N = 78;
+const uchar KEY_O = 79;
+const uchar KEY_P = 80;
+const uchar KEY_Q = 81;
+const uchar KEY_R = 82;
+const uchar KEY_S = 83;
+const uchar KEY_T = 84;
+const uchar KEY_U = 85;
+const uchar KEY_V = 86;
+const uchar KEY_W = 87;
+const uchar KEY_X = 88;
+const uchar KEY_Y = 89;
+const uchar KEY_Z = 90;
+
+const uchar KEY_a = 97;
+const uchar KEY_b = 98;
+const uchar KEY_c = 99;
+const uchar KEY_d = 100;
+const uchar KEY_e = 101;
+const uchar KEY_f = 102;
+const uchar KEY_g = 103;
+const uchar KEY_h = 104;
+const uchar KEY_i = 105;
+const uchar KEY_j = 106;
+const uchar KEY_k = 107;
+const uchar KEY_l = 108;
+const uchar KEY_m = 109;
+const uchar KEY_n = 110;
+const uchar KEY_o = 111;
+const uchar KEY_p = 112;
+const uchar KEY_q = 113;
+const uchar KEY_r = 114;
+const uchar KEY_s = 115;
+const uchar KEY_t = 116;
+const uchar KEY_u = 117;
+const uchar KEY_v = 118;
+const uchar KEY_w = 119;
+const uchar KEY_x = 120;
+const uchar KEY_y = 121;
+const uchar KEY_z = 122;
+
+const uchar KEY_0 = 48;
+const uchar KEY_1 = 49;
+const uchar KEY_2 = 50;
+const uchar KEY_3 = 51;
+const uchar KEY_4 = 52;
+const uchar KEY_5 = 53;
+const uchar KEY_6 = 54;
+const uchar KEY_7 = 55;
+const uchar KEY_8 = 56;
+const uchar KEY_9 = 57;
+
 } /* wup */
 
 namespace wup
