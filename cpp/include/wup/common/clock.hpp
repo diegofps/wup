@@ -1,8 +1,10 @@
 #ifndef __WUP__CLOCK
 #define __WUP__CLOCK
 
+#include <wup/common/msgs.hpp>
 #include <sys/time.h>
 #include <cstdint>
+#include <string>
 #include <ctime>
 
 namespace wup
@@ -11,19 +13,24 @@ namespace wup
 class Clock {
 public:
 
-    Clock () : _delta_sec(0), _delta_nsec(0)
+    Clock () :
+        _delta_sec(0),
+        _delta_nsec(0)
     {
         start();
     }
 
-    void 
+    Clock &
     start()
     {
         clock_gettime(clock_id, &_begin);
+        return *this;
     }
 
-    // Stops counting and returns the ellapsed time in microseconds
-    Clock & stop()
+    // Stops the clock, get the time took by calling ellapsed_*()
+
+    Clock &
+    stop()
     {
         clock_gettime(clock_id, &_end);
         _delta_nsec = _end.tv_nsec - _begin.tv_nsec;
@@ -31,32 +38,72 @@ public:
         return *this;
     }
 
-    Clock & lap()
+
+    // Stop the clock and start it again
+
+    Clock &
+    lap()
     {
-        stop();
-        start();
+        return stop().start();
+    }
+
+
+    // Display a message and the time passed since the last lap / start
+
+    Clock &
+    lap_second(const std::string msg)
+    {
+        print(msg, ":", this->lap().ellapsed_seconds(), "s");
         return *this;
     }
 
-    // Returns the ellapsed time in seconds
-    long double ellapsed_seconds() const
+    Clock &
+    lap_milli(const std::string msg)
     {
-        return _delta_sec + _delta_nsec / 1000000000.0;
+        print(msg, ":", this->lap().ellapsed_milli(), "ms");
+        return *this;
     }
 
-    long double ellapsed_milli() const
+    Clock &
+    lap_micro(const std::string msg)
     {
-        return _delta_sec * 1000.0 + _delta_nsec / 1000000.0;
+        print(msg, ":", this->lap().ellapsed_micro(), "us");
+        return *this;
     }
 
-    long double ellapsed_micro() const
+    Clock &
+    lap_nano(const std::string msg)
     {
-        return _delta_sec * 1000000.0 + _delta_nsec / 1000.0;
+        print(msg, ":", this->lap().ellapsed_nano(), "ns");
+        return *this;
     }
 
-    long double ellapsed_nano() const
+
+    // Returns the ellapsed time in seconds / milli/ micro / nano
+    // until the last time stop() was called
+
+    long double
+    ellapsed_seconds() const
     {
-        return _delta_sec * 1000000000.0 + _delta_nsec;
+        return _delta_sec + _delta_nsec / static_cast<long double>(1000000000.0);
+    }
+
+    long double
+    ellapsed_milli() const
+    {
+        return _delta_sec * static_cast<long double>(1000.0) + _delta_nsec / static_cast<long double>(1000000.0);
+    }
+
+    long double
+    ellapsed_micro() const
+    {
+        return _delta_sec * static_cast<long double>(1000000.0) + _delta_nsec / static_cast<long double>(1000.0);
+    }
+
+    long double
+    ellapsed_nano() const
+    {
+        return _delta_sec * static_cast<long double>(1000000000.0) + _delta_nsec;
     }
 
 private:
