@@ -13,16 +13,17 @@ namespace wup
 
 extern std::string logPrefix;
 
-const char * const BLUE   = "\033[94m";
-const char * const GREEN  = "\033[92m";
-const char * const YELLOW = "\033[93m";
-const char * const RED    = "\033[91m";
-const char * const NORMAL = "\033[0m";
+const char * const RED     = "\033[91m";
+const char * const GREEN   = "\033[92m";
+const char * const YELLOW  = "\033[93m";
+const char * const BLUE    = "\033[94m";
+const char * const MAGENTA = "\033[95m";
+const char * const NORMAL  = "\033[0m";
 
-const char * const BG_BLUE   = "\033[44m";
-const char * const BG_GREEN  = "\033[46m";
-const char * const BG_YELLOW = "\033[45m";
 const char * const BG_RED    = "\033[41m";
+const char * const BG_BLUE   = "\033[44m";
+const char * const BG_YELLOW = "\033[45m";
+const char * const BG_GREEN  = "\033[46m";
 
 template <typename A, typename B>
 std::ostream & operator<<(std::ostream &o, const std::pair<A,B> &pair)

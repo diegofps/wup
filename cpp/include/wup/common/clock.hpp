@@ -53,28 +53,28 @@ public:
     Clock &
     lap_second(const std::string msg)
     {
-        print(msg, ":", this->lap().ellapsed_seconds(), "s");
+        printn(YELLOW, "|CLOCK| ", MAGENTA, msg, ": ", YELLOW, this->lap().ellapsed_seconds(), " s\n", NORMAL);
         return *this;
     }
 
     Clock &
     lap_milli(const std::string msg)
     {
-        print(msg, ":", this->lap().ellapsed_milli(), "ms");
+        printn(YELLOW, "|CLOCK| ", MAGENTA, msg, ": ", YELLOW, this->lap().ellapsed_milli(), " ms\n", NORMAL);
         return *this;
     }
 
     Clock &
     lap_micro(const std::string msg)
     {
-        print(msg, ":", this->lap().ellapsed_micro(), "us");
+        printn(YELLOW, "|CLOCK| ", MAGENTA, msg, ": ", YELLOW, this->lap().ellapsed_micro(), " us\n", NORMAL);
         return *this;
     }
 
     Clock &
     lap_nano(const std::string msg)
     {
-        print(msg, ":", this->lap().ellapsed_nano(), "ns");
+        printn(YELLOW, "|CLOCK| ", MAGENTA, msg, ": ", YELLOW, this->lap().ellapsed_nano(), " ns\n", NORMAL);
         return *this;
     }
 
