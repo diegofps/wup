@@ -184,6 +184,26 @@ public:
         dst.height = height * dstSize.height / srcSize.height;
     }
 
+    template <typename RECT>
+    void
+    toRect(RECT & r)
+    {
+        r.x = x;
+        r.y = y;
+        r.width = width;
+        r.height = height;
+    }
+    
+    template <typename RECT>
+    void
+    fromRect(const RECT & r)
+    {
+        x = r.x;
+        y = r.y;
+        width = r.width;
+        height = r.height;
+    }
+    
 };
 
 std::ostream & operator<<(std::ostream & o, const Region & r)
@@ -319,6 +339,72 @@ selectROI(const char * window, cv::Mat & img, Region & roi)
 
     cv::setMouseCallback(window, nullptr, nullptr);
     return true;
+}
+
+void
+bundleToMat(wup::Bundle<uint> & src, cv::Mat & dst, const uint srcMax)
+{
+    if (uint(dst.rows) != src.numRows())
+        wup::error("Number of rows differ");
+
+    if (uint(dst.cols) != src.numCols())
+        wup::error("Number of cols differ");
+
+    int size = int(dst.total());
+    int k = 0;
+
+    uint  * ptr1 = src.data();
+    uchar * ptr2 = dst.data;
+
+    while (k != size)
+    {
+        ptr2[k] = static_cast<uchar>(ptr1[k] * 255 / srcMax);
+        ++k;
+    }
+}
+
+inline void
+drawCross(cv::Mat & canvas,
+          const uint x, const uint y,
+          cv::Scalar & color)
+{
+    line(canvas, cv::Point(0, y), cv::Point(canvas.cols, y), color, 1);
+    line(canvas, cv::Point(x, 0), cv::Point(x, canvas.rows), color, 1);
+}
+
+inline void
+drawObjectRegion(cv::Mat & canvas,
+               const uint scanX, const uint scanY,
+               const uint scanWidth, const uint scanHeight,
+               const uint iterWidth, const uint iterHeight,
+               const uint stepWidth, const uint stepHeight,
+               cv::Scalar & color)
+{
+    cv::Point p1(scanX, scanY);
+    cv::Point p2(scanX + scanWidth, scanY + scanHeight);
+
+    rectangle(canvas, p1, p2, color, 2);
+
+    uint yy = scanY;
+    for (uint i=0;i!=iterHeight;++i)
+    {
+        uint xx = scanX;
+
+        for (uint j=0;j!=iterWidth;++j)
+        {
+            cv::Point p1h(scanX, yy);
+            cv::Point p2h(scanX + scanWidth, yy);
+            line(canvas, p1h, p2h, color, 1);
+
+            cv::Point p1j(xx, scanY);
+            cv::Point p2j(xx, scanY + scanHeight);
+            line(canvas, p1j, p2j, color, 1);
+
+            xx += stepWidth;
+        }
+
+        yy += stepHeight;
+    }
 }
 
 } /* wup */
