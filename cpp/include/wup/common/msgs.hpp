@@ -52,6 +52,27 @@ std::string cat(const Args&... args)
     return _cat(ss, args...).str();
 }
 
+template <typename P1>
+std::stringstream & _cats(std::stringstream &ss, const P1 &p1)
+{
+    ss << p1;
+    return ss;
+}
+
+template <typename P1, typename... Args>
+std::stringstream & _cats(std::stringstream &ss, const P1 &p1, const Args&... args)
+{
+    ss << p1 << " ";
+    return _cats(ss, args...);
+}
+
+template <typename... Args>
+std::string cats(const Args&... args)
+{
+    std::stringstream ss;
+    return _cats(ss, args...).str();
+}
+
 template <typename... Args>
 void
 setLogger(const Args&... args)
@@ -131,6 +152,23 @@ WRAP_LOGPREFIX(debug, _debug)
 WRAP_LOGPREFIX(info, _info)
 WRAP_LOGPREFIX(warn, _warn)
 WRAP_LOGPREFIX(error, _error)
+
+#define WRAP_LOGPREFIX_T(name, subname)             \
+template <typename... Args>                         \
+void                                                \
+name(const Args&... args)                           \
+{                                                   \
+    subname(cats(logPrefix, " ", args..., "\n"));   \
+}
+
+WRAP_LOGPREFIX_T(printt, _printn)
+
+inline void
+pressEnter()
+{
+    print("Press ENTER to continue...");
+    getchar();
+}
 
 #ifdef QT_VERSION_STR
 
