@@ -51,31 +51,39 @@ public:
     // Display a message and the time passed since the last lap / start
 
     Clock &
-    lap_second(const std::string msg)
+    lap_seconds(const std::string msg, double factor=1.0)
     {
-        printn(YELLOW, "|CLOCK| ", MAGENTA, msg, ": ", YELLOW, this->lap().ellapsed_seconds(), " s\n", NORMAL);
-        return *this;
+        stop();
+        const auto ellapsed = this->ellapsed_seconds() / factor;
+        printn(YELLOW, "|CLOCK| ", MAGENTA, msg, ": ", YELLOW, ellapsed, " s\n", NORMAL);
+        return start();
     }
 
     Clock &
-    lap_milli(const std::string msg)
+    lap_milli(const std::string msg, double factor=1.0)
     {
-        printn(YELLOW, "|CLOCK| ", MAGENTA, msg, ": ", YELLOW, this->lap().ellapsed_milli(), " ms\n", NORMAL);
-        return *this;
+        stop();
+        const auto ellapsed = this->ellapsed_milli() / factor;
+        printn(YELLOW, "|CLOCK| ", MAGENTA, msg, ": ", YELLOW, ellapsed, " ms\n", NORMAL);
+        return start();
     }
 
     Clock &
-    lap_micro(const std::string msg)
+    lap_micro(const std::string msg, double factor=1.0)
     {
-        printn(YELLOW, "|CLOCK| ", MAGENTA, msg, ": ", YELLOW, this->lap().ellapsed_micro(), " us\n", NORMAL);
-        return *this;
+        stop();
+        const auto ellapsed = this->ellapsed_micro() / factor;
+        printn(YELLOW, "|CLOCK| ", MAGENTA, msg, ": ", YELLOW, ellapsed, " us\n", NORMAL);
+        return start();
     }
 
     Clock &
-    lap_nano(const std::string msg)
+    lap_nano(const std::string msg, double factor=1.0)
     {
-        printn(YELLOW, "|CLOCK| ", MAGENTA, msg, ": ", YELLOW, this->lap().ellapsed_nano(), " ns\n", NORMAL);
-        return *this;
+        stop();
+        const auto ellapsed = this->ellapsed_micro() / factor;
+        printn(YELLOW, "|CLOCK| ", MAGENTA, msg, ": ", YELLOW, ellapsed, " ns\n", NORMAL);
+        return start();
     }
 
 
