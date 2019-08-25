@@ -1,10 +1,13 @@
 #ifndef OPENCVUTILS_HPP
 #define OPENCVUTILS_HPP
 
+#include <wup/common/bundle3d.hpp>
 #include <wup/common/generic.hpp>
 #include <wup/common/bundle.hpp>
 #include <opencv2/opencv.hpp>
 #include <vector>
+
+#include "../../../tinyml/wisard_cmd/priorityflow.hpp"
 
 namespace wup
 {
@@ -222,7 +225,7 @@ sumRegion(const T & view,
 }
 
 void
-calculateImageIntegral(const cv::Mat & image, wup::Bundle<uint> & ii)
+calculateImageIntegral1(const cv::Mat & image, wup::Bundle<uint> & ii)
 {
     ii.reshape(image.rows, image.cols);
 
@@ -270,6 +273,487 @@ calculateImageIntegral(const cv::Mat & image, wup::Bundle<uint> & ii)
         }
     }
 }
+
+void
+calculateImageIntegral(const cv::Mat & image, wup::Bundle<uint> & ii)
+{
+    ii.reshape(static_cast<uint>(image.rows),
+               static_cast<uint>(image.cols));
+
+    const uint imgHeight = static_cast<uint>(image.rows);
+    const uint imgWidth = static_cast<uint>(image.cols);
+
+    const uchar * currPixel = image.data;
+    const uchar * finalRowPixel = currPixel + imgWidth;
+    const uchar * finalPixel = currPixel + imgWidth * imgHeight;
+
+    uint * currPos = ii.data();
+    uint * startRowPos = currPos;
+    uint * leftPos = currPos;
+    uint * diagPos;
+    uint * topPos;
+
+    // First pixel of first row
+    *currPos = *currPixel;
+    ++currPixel;
+    ++currPos;
+
+    // Remainder first row
+    while(currPixel != finalRowPixel)
+    {
+        *currPos = *currPixel + *leftPos;
+
+        leftPos = currPos;
+        ++currPixel;
+        ++currPos;
+    }
+
+    // All remainder rows
+    while (currPixel != finalPixel)
+    {
+        topPos = startRowPos;
+        startRowPos = currPos;
+        finalRowPixel = currPixel + imgWidth;
+
+        // First pixel in this row
+        *currPos = *currPixel + *topPos;
+
+        diagPos = topPos;
+        leftPos = currPos;
+        ++currPixel;
+        ++currPos;
+        ++topPos;
+
+        // Remainder pixels in this row
+        while (currPixel != finalRowPixel)
+        {
+            *currPos = *currPixel + *topPos + *leftPos - *diagPos;
+
+            diagPos = topPos;
+            leftPos = currPos;
+            ++currPixel;
+            ++currPos;
+            ++topPos;
+        }
+    }
+}
+
+void
+calculateImageIntegral3(const cv::Mat & image, wup::Bundle<uint> & ii)
+{
+    ii.reshape(static_cast<uint>(image.rows),
+               static_cast<uint>(image.cols));
+
+    const int imgHeight = image.rows;
+    const int imgWidth = image.cols;
+
+    ii(0,0) = image.at<uchar>(0,0);
+
+    for (int j=1;j!=imgWidth;++j)
+        ii(0,j) = ii(0,j) + image.at<uchar>(0,j);
+
+    for (int i=1;i!=imgHeight;++i)
+    {
+        ii(i,0) = image.at<uchar>(i,0) + ii(i-1,0);
+
+        for (int j=1;j!=imgWidth;++j)
+            ii(i,j) = image.at<uchar>(i,j) + ii(i-1,j) + ii(i,j-1) -  ii(i-1,j-1);
+    }
+}
+
+void
+calculateImageIntegral4(const cv::Mat & image, wup::Bundle<uint> & ii)
+{
+    ii.reshape(image.rows, image.cols);
+
+    const uchar * const finalRowPixel = &image.at<uchar>(0, image.cols);
+    const uchar * currPixel = &image.at<uchar>(0, 0);
+    uint * currPos = &ii(0,0);
+    uint * leftPos = currPos;
+
+    *currPos = *currPixel;
+    ++currPos;
+    ++currPixel;
+
+    while(currPixel != finalRowPixel)
+    {
+        *currPos = *currPixel + *leftPos;
+        leftPos = currPos;
+        ++currPixel;
+        ++currPos;
+    }
+
+    for (int i=1; i!=image.rows; ++i)
+    {
+        const uchar * const finalRowPixel = &image.at<uchar>(i, image.cols);
+        const uchar * currentPixel = &image.at<uchar>(i, 0);
+
+        uint * topPos = & ii(i-1, 0);
+        uint * diagPos = topPos;
+
+        uint * currPos = & ii(i, 0);
+        uint * leftPos = currPos;
+
+        *currPos = *topPos + *currentPixel;
+        ++topPos;
+        ++currentPixel;
+        ++currPos;
+
+        while(currentPixel != finalRowPixel)
+        {
+            *currPos = *topPos + *leftPos - *diagPos + *currentPixel;
+
+            diagPos = topPos;
+            leftPos = currPos;
+            ++topPos;
+            ++currentPixel;
+            ++currPos;
+        }
+    }
+}
+
+void
+calculateImageIntegral5(const cv::Mat & image, wup::Bundle<int> & ii)
+{
+    ii.reshape(static_cast<uint>(image.rows+1),
+               static_cast<uint>(image.cols+1));
+
+    cv::Mat tmp(image.cols+1, image.rows+1, CV_32SC1, ii.data());
+    cv::integral(image, tmp);
+}
+
+void
+calculateImageIntegral6(const cv::Mat & image, wup::Bundle<uint> & ii)
+{
+    ii.reshape(static_cast<uint>(image.rows),
+               static_cast<uint>(image.cols));
+
+    const int imgHeight = image.rows;
+    const int imgWidth = image.cols;
+
+    ii(0,0) = image.at<uchar>(0,0);
+
+    for (int j=1;j!=imgWidth;++j)
+        ii(0,j) = ii(0,j) + image.at<uchar>(0,j);
+
+    for (int i=1;i!=imgHeight;++i)
+        ii(i,0) = ii(i,0) + image.at<uchar>(i,0);
+
+    const uint numThreads = 2;
+    int * poss = new int[imgHeight];
+
+    poss[0] = imgWidth;
+    for (int i=1;i!=imgHeight;++i)
+        poss[i] = 1;
+
+    wup::parallel(numThreads, numThreads, [&](const uint tid, const uint jid)
+    {
+        int i = tid + 1;
+
+        while (i < imgHeight)
+        {
+            int & parentJ = poss[i-1];
+            int & j = poss[i];
+
+            while (j != imgWidth)
+            {
+                asm("");
+                while(j != parentJ)
+                {
+                    ii(i,j) = image.at<uchar>(i,j) + ii(i-1,j) + ii(i,j-1) - ii(i-1,j-1);
+                    ++j;
+                }
+            }
+
+            i += numThreads;
+        }
+    });
+}
+
+void
+calculateImageIntegral3D1(const cv::Mat & image, Bundle3D<int> & ii)
+{
+    if (image.type() != CV_8UC3)
+        error("The input image must have 3 color channels");
+
+    ii.reshape(static_cast<uint>(image.rows),
+               static_cast<uint>(image.cols),
+               3);
+
+    const uint imgHeight = static_cast<uint>(image.rows);
+    const uint imgWidth  = static_cast<uint>(image.cols);
+
+    const uchar * currPixel     = image.data;
+    const uchar * finalRowPixel = currPixel + imgWidth * 3;
+    const uchar * finalPixel    = currPixel + imgWidth * imgHeight * 3;
+
+    int * currPos     = ii.data();
+    int * startRowPos = currPos;
+    int * leftPos;
+    int * diagPos;
+    int * topPos;
+
+    // First pixel of first row
+    currPos[0] = currPixel[0];
+    currPos[1] = currPixel[1];
+    currPos[2] = currPixel[2];
+
+    leftPos = currPos;
+
+    currPixel += 3;
+    currPos   += 3;
+
+    // Remainder first row
+    while(currPixel != finalRowPixel)
+    {
+        currPos[0] = currPixel[0] + leftPos[0];
+        currPos[1] = currPixel[1] + leftPos[1];
+        currPos[2] = currPixel[2] + leftPos[2];
+
+        leftPos = currPos;
+
+        currPixel += 3;
+        currPos   += 3;
+    }
+
+    // All remainder rows
+    while (currPixel != finalPixel)
+    {
+        topPos        = startRowPos;
+        startRowPos   = currPos;
+        finalRowPixel = currPixel + imgWidth * 3;
+
+        // First pixel in this row
+        currPos[0] = currPixel[0] + topPos[0];
+        currPos[1] = currPixel[1] + topPos[1];
+        currPos[2] = currPixel[2] + topPos[2];
+
+        diagPos = topPos;
+        leftPos = currPos;
+
+        currPixel += 3;
+        currPos   += 3;
+        topPos    += 3;
+
+        // Remainder pixels in this row
+        while (currPixel != finalRowPixel)
+        {
+            currPos[0] = currPixel[0] + topPos[0] + leftPos[0] - diagPos[0];
+            currPos[1] = currPixel[1] + topPos[1] + leftPos[1] - diagPos[1];
+            currPos[2] = currPixel[2] + topPos[2] + leftPos[2] - diagPos[2];
+
+            diagPos = topPos;
+            leftPos = currPos;
+
+            currPixel += 3;
+            currPos   += 3;
+            topPos    += 3;
+        }
+    }
+}
+
+void
+calculateImageIntegral3D(const cv::Mat & image, Bundle3D<uint> & ii)
+{
+    if (image.type() != CV_8UC3)
+        error("The input image must have 3 color channels");
+
+    ii.reshape(static_cast<uint>(image.rows),
+               static_cast<uint>(image.cols),
+               3);
+
+    const uint imgHeight = static_cast<uint>(image.rows);
+    const uint imgWidth  = static_cast<uint>(image.cols);
+
+    const uchar * currPixel     = image.data;
+    const uchar * finalRowPixel = currPixel + imgWidth * 3;
+    const uchar * finalPixel    = currPixel + imgWidth * imgHeight * 3;
+
+    uint * currPos     = ii.data();
+    uint * startRowPos = currPos;
+    uint * leftPos     = currPos;
+    uint * diagPos;
+    uint * topPos;
+
+    // First pixel of first row
+    *currPos = *currPixel;
+    ++currPixel;
+    ++currPos;
+
+    *currPos = *currPixel;
+    ++currPixel;
+    ++currPos;
+
+    *currPos = *currPixel;
+    ++currPixel;
+    ++currPos;
+
+    // Remainder first row
+    while(currPixel != finalRowPixel)
+    {
+        *currPos = *currPixel + *leftPos;
+        ++leftPos;
+        ++currPixel;
+        ++currPos;
+
+        *currPos = *currPixel + *leftPos;
+        ++leftPos;
+        ++currPixel;
+        ++currPos;
+
+        *currPos = *currPixel + *leftPos;
+        ++leftPos;
+        ++currPixel;
+        ++currPos;
+    }
+
+    // All remainder rows
+    while (currPixel != finalPixel)
+    {
+        topPos        = startRowPos;
+        startRowPos   = currPos;
+        finalRowPixel = currPixel + imgWidth * 3;
+        diagPos       = topPos;
+        leftPos       = currPos;
+
+        // First pixel in this row
+        *currPos = *currPixel + *topPos;
+        ++currPixel;
+        ++currPos;
+        ++topPos;
+
+        *currPos = *currPixel + *topPos;
+        ++currPixel;
+        ++currPos;
+        ++topPos;
+
+        *currPos = *currPixel + *topPos;
+        ++currPixel;
+        ++currPos;
+        ++topPos;
+
+        // Remainder pixels in this row
+        while (currPixel != finalRowPixel)
+        {
+            *currPos = *currPixel + *topPos + *leftPos - *diagPos;
+            ++diagPos;
+            ++leftPos;
+            ++currPixel;
+            ++currPos;
+            ++topPos;
+
+            *currPos = *currPixel + *topPos + *leftPos - *diagPos;
+            ++diagPos;
+            ++leftPos;
+            ++currPixel;
+            ++currPos;
+            ++topPos;
+
+            *currPos = *currPixel + *topPos + *leftPos - *diagPos;
+            ++diagPos;
+            ++leftPos;
+            ++currPixel;
+            ++currPos;
+            ++topPos;
+        }
+    }
+}
+
+//void
+//calculateImageIntegral3D(const cv::Mat & image, wup::Bundle3D<uint> & ii)
+//{
+//    if (image.dims != 3)
+//        error("This method expects an RGB image");
+
+//    ii.reshape(image.rows, image.cols, 3);
+
+//    const uint imgHeight = image.rows;
+//    const uint imgWidth = image.cols;
+
+//    uint * topPos;
+//    uint * topLeftPos;
+//    uint * leftPos;
+//    uint * currPos;
+
+//    const cv::Vec3b * currPixel = &image.at<cv::Vec3b>(0, 0);
+//    const cv::Vec3b * finalPixel = currPixel + imgWidth * imgHeight;
+//    const cv::Vec3b * finalRowPixel = currPixel + imgWidth;
+
+//    currPos = &ii(0, 0, 0);
+//    leftPos = currPos;
+
+//    *(currPos) = (*currPixel)[0]; currPos += 1;
+//    *(currPos) = (*currPixel)[1]; currPos += 1;
+//    *(currPos) = (*currPixel)[2]; currPos += 1;
+
+//    currPixel += 1;
+
+//    while(currPixel != finalRowPixel)
+//    {
+//        *(currPos) = (*currPixel)[0] + *(leftPos);
+//        currPos += 1; leftPos += 1;
+
+//        *(currPos) = (*currPixel)[1] + *(leftPos);
+//        currPos += 1; leftPos += 1;
+
+//        *(currPos) = (*currPixel)[2] + *(leftPos);
+//        currPos += 1; leftPos += 1;
+//    }
+
+//    while (currPixel != finalPixel)
+//    {
+//        finalRowPixel = currPixel + imgWidth;
+//        topPos = l
+
+//        while(currPixel != finalRowPixel)
+//        {
+//            *(currPos) = (*currPixel)[0] + *(leftPos) + *(topPos) - *(topLeftPos);
+
+//            *(currPos+1) = (*currPixel)[1];
+//            *(currPos+2) = (*currPixel)[2];
+//        }
+//    }
+
+//    while(currPixel != final)
+//    {
+//        *(currPos+0) = (*imgPixel)[0] + *(leftPos+0);
+//        *(currPos+1) = (*imgPixel)[1] + *(leftPos+1);
+//        *(currPos+2) = (*imgPixel)[2] + *(leftPos+2);
+
+//        leftPos = currPos;
+
+//        imgPixel += 1;
+//        currPos += 3;
+//    }
+
+//    for (int i=1; i!=image.rows; ++i)
+//    {
+//        const cv::Vec3b * const final = &image.at<cv::Vec3b>(i, image.cols);
+//        const cv::Vec3b * j = &image.at<cv::Vec3b>(i, 0);
+
+//        uint * topPos = & ii(i-1, 0, 0);
+//        uint * topLeftPos = topPos;
+
+//        uint * currPos = & ii(i, 0, 0);
+//        uint * leftPos = currPos;
+
+//        *b = *b2 + *j;
+//        ++topPos;
+//        ++j;
+//        ++currPos;
+
+//        while(j != final)
+//        {
+//            *b = *b2 + *a - *a2 + *j;
+
+//            topLeftPos = topPos;
+//            leftPos = currPos;
+//            ++topPos;
+//            ++j;
+//            ++currPos;
+//        }
+//    }
+//}
 
 template <typename T1, typename T2>
 void

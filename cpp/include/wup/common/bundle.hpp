@@ -123,36 +123,30 @@ public:
         return *this;
     }
 
-    T & operator()(const uint i, const uint j)
+    template <typename I1, typename I2>
+    T &
+    operator()(const I1 & i, const I2 & j)
     {
 #ifndef WUP_UNSAFE
-        if (j > _columns)
-            throw WUPException("Out of bounds");
-#endif
-        const uint index = i * _columns + j;
-
-#ifndef WUP_UNSAFE
-        if (index > _size)
-            throw WUPException("Out of bounds");
-#endif
+        const I1 index = i * _columns + j;
+        if (j > _columns || index > _size) error("Out of bounds");
         return _data[index];
+#else
+        return _data[i * _columns + j];
+#endif
     }
 
-    const T & operator()(const uint i, const uint j) const
+    template <typename I1, typename I2>
+    const T &
+    operator()(const I1 & i, const I2 & j) const
     {
 #ifndef WUP_UNSAFE
-        if (j > _columns)
-            throw WUPException("Out of bounds");
-#endif
-
-        const uint index = i * _columns + j;
-
-#ifndef WUP_UNSAFE
-        if (index > _size)
-            throw WUPException("Out of bounds");
-#endif
-
+        const I1 index = i * _columns + j;
+        if (j > _columns || index > _size) error("Out of bounds");
         return _data[index];
+#else
+        return _data[i * _columns + j];
+#endif
     }
 
     T & operator()(const uint j)
