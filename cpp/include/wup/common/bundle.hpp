@@ -14,14 +14,11 @@ namespace wup {
 template <typename T>
 class Bundle {
 private:
+
     uint _columns;
-
     uint _capacity;
-
     uint _size;
-
     T * _data;
-
     bool _ownerOfData;
 
 public:
@@ -104,9 +101,7 @@ public:
     ~Bundle()
     {
         if (_ownerOfData)
-        {
             delete [] _data;
-        }
     }
 
     Bundle<T> & operator=(const Bundle<T> & other)

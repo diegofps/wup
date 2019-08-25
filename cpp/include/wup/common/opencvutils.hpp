@@ -12,6 +12,11 @@
 namespace wup
 {
 
+const uchar KEY_LEFT  = 81;
+const uchar KEY_UP    = 82;
+const uchar KEY_RIGHT = 83;
+const uchar KEY_DOWN  = 84;
+
 const uchar KEY_NUMPAD_ON_1 = 177;
 const uchar KEY_NUMPAD_ON_2 = 178;
 const uchar KEY_NUMPAD_ON_3 = 179;
@@ -125,11 +130,8 @@ class Region
 public:
 
     int x;
-
     int y;
-
     int width;
-
     int height;
 
 public:
@@ -225,7 +227,7 @@ sumRegion(const T & view,
 }
 
 void
-calculateImageIntegral1(const cv::Mat & image, wup::Bundle<uint> & ii)
+calculateImageIntegral1(const cv::Mat & image, wup::Bundle3D<uint> & ii)
 {
     ii.reshape(image.rows, image.cols);
 
@@ -339,7 +341,7 @@ calculateImageIntegral(const cv::Mat & image, wup::Bundle<uint> & ii)
 }
 
 void
-calculateImageIntegral3(const cv::Mat & image, wup::Bundle<uint> & ii)
+calculateImageIntegral3(const cv::Mat & image, wup::Bundle3D<uint> & ii)
 {
     ii.reshape(static_cast<uint>(image.rows),
                static_cast<uint>(image.cols));
@@ -362,7 +364,7 @@ calculateImageIntegral3(const cv::Mat & image, wup::Bundle<uint> & ii)
 }
 
 void
-calculateImageIntegral4(const cv::Mat & image, wup::Bundle<uint> & ii)
+calculateImageIntegral4(const cv::Mat & image, wup::Bundle3D<uint> & ii)
 {
     ii.reshape(image.rows, image.cols);
 
@@ -413,7 +415,7 @@ calculateImageIntegral4(const cv::Mat & image, wup::Bundle<uint> & ii)
 }
 
 void
-calculateImageIntegral5(const cv::Mat & image, wup::Bundle<int> & ii)
+calculateImageIntegral5(const cv::Mat & image, wup::Bundle3D<int> & ii)
 {
     ii.reshape(static_cast<uint>(image.rows+1),
                static_cast<uint>(image.cols+1));
@@ -423,7 +425,7 @@ calculateImageIntegral5(const cv::Mat & image, wup::Bundle<int> & ii)
 }
 
 void
-calculateImageIntegral6(const cv::Mat & image, wup::Bundle<uint> & ii)
+calculateImageIntegral6(const cv::Mat & image, wup::Bundle3D<uint> & ii)
 {
     ii.reshape(static_cast<uint>(image.rows),
                static_cast<uint>(image.cols));
@@ -471,7 +473,7 @@ calculateImageIntegral6(const cv::Mat & image, wup::Bundle<uint> & ii)
 }
 
 void
-calculateImageIntegral3D1(const cv::Mat & image, Bundle3D<int> & ii)
+calculateImageIntegral3D1(const cv::Mat & image, wup::Bundle3D<int> & ii)
 {
     if (image.type() != CV_8UC3)
         error("The input image must have 3 color channels");
@@ -553,7 +555,7 @@ calculateImageIntegral3D1(const cv::Mat & image, Bundle3D<int> & ii)
 }
 
 void
-calculateImageIntegral3D(const cv::Mat & image, Bundle3D<uint> & ii)
+calculateImageIntegral3D(const cv::Mat & image, wup::Bundle3D<uint> & ii)
 {
     if (image.type() != CV_8UC3)
         error("The input image must have 3 color channels");
