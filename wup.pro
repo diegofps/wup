@@ -2,6 +2,7 @@ TEMPLATE = app
 CONFIG += console c++11
 CONFIG -= app_bundle
 CONFIG -= qt
+DEFINES += "WUP_NO_MPICH"
 
 INCLUDEPATH += ./cpp/include ./c/include
 
@@ -75,5 +76,6 @@ HEADERS += \
     cpp/include/wup/nodes/zscore.hpp \
     cpp/include/wup/wup.hpp \
     cpp/tests/test_generic.hpp \
+    cpp/tests/test_opencvutils.hpp \
     cpp/tests/test_sbio_intreader_and_intwriter.hpp \
     cpp/tests/test_zip.hpp
