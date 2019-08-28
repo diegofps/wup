@@ -84,7 +84,7 @@ public:
             if (rows <= ignoreRows) continue;
 
             // Quebra a linha em celulas
-            split(cells, line, delimiter);
+            split(line, delimiter, cells);
 
             // Guarda o numero de colunas
             if (_columns == 0)

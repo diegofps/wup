@@ -98,6 +98,20 @@ std::ostream & operator<<(std::ostream & o, const Result & r)
 #include <wup/wup.hpp>
 using namespace wup;
 
+// Concatenate all
+auto tmp1 = cat("Wespa's", "Unified", "Platform");
+
+// Join using the first element
+auto tmp2 = join("-", "Wespa's", "Unified", "Platform");
+
+// Join using a single space (" ")
+auto tmp3 = joins("Wespa's", "Unified", "Platform");
+
+// Split a string
+auto tmp = "Wespa-Intelligent-Systems";
+std::vector<std::string> cells;
+    split(tmp2, "-", cells);
+
 ```
 
 # Measuring time

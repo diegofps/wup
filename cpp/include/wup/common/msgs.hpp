@@ -52,25 +52,31 @@ std::string cat(const Args&... args)
     return _cat(ss, args...).str();
 }
 
-template <typename P1>
-std::stringstream & _cats(std::stringstream &ss, const P1 &p1)
+template <typename S, typename P1>
+std::stringstream & _join(std::stringstream &ss, const S & sep, const P1 &p1)
 {
     ss << p1;
     return ss;
 }
 
-template <typename P1, typename... Args>
-std::stringstream & _cats(std::stringstream &ss, const P1 &p1, const Args&... args)
+template <typename S, typename P1, typename... Args>
+std::stringstream & _join(std::stringstream &ss, const S & sep, const P1 &p1, const Args&... args)
 {
-    ss << p1 << " ";
-    return _cats(ss, args...);
+    ss << p1 << sep;
+    return _join(ss, sep, args...);
+}
+
+template <typename S, typename... Args>
+std::string join(const S sep, const Args&... args)
+{
+    std::stringstream ss;
+    return _join(ss, sep, args...).str();
 }
 
 template <typename... Args>
-std::string cats(const Args&... args)
+std::string joins(const Args&... args)
 {
-    std::stringstream ss;
-    return _cats(ss, args...).str();
+    return join(" ", args...);
 }
 
 template <typename... Args>

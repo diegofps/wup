@@ -776,8 +776,7 @@ T load_value(const std::string filename)
 }
 
 inline std::vector<std::string> &
-split(std::vector<std::string> &elems,
-    const std::string &s, char delim)
+split(const std::string & s, char delim, std::vector<std::string> & elems)
 {
     std::stringstream ss(s);
     std::string item;
