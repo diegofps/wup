@@ -133,8 +133,9 @@ void _warn(const Args&... args)
 template <typename... Args>
 void _error(const Args&... args)
 {
-    _print(RED, "Error: ", args..., NORMAL);
-    throw FatalException();
+    auto tmp = cat(RED, "Error: ", args..., NORMAL);
+    _print(tmp);
+    throw WUPException(tmp);
 }
 
 #define WRAP_LOGPREFIX(name, subname) \
