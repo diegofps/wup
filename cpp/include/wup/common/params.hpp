@@ -215,12 +215,21 @@ public:
     bool getBoolAt(const char * const cmd, const int index, const bool default_value) const
     { return parseValueAt(cmd, index, default_value, wup::parse_bool); }
 
-    bool getBool(const char * const &cmd) const
-    { return parseValue(cmd, wup::parse_bool); }
-
     bool getBool(const char * const &cmd, const bool default_value) const
-    { return parseValue(cmd, default_value, wup::parse_bool); }
+    {
+        if (misses(cmd))
+            return default_value;
 
+        if (len(cmd) == 0)
+            return true;
+
+        return parse_bool(_mem.at(cmd)->operator[]( 0 ));
+    }
+
+    bool getBool(const char * const &cmd) const
+    {
+      return getBool(cmd, false);
+    }
 
     // get double
     double getDoubleAt(const char * const cmd, const int index) const

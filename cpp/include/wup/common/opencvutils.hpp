@@ -209,6 +209,14 @@ public:
         height = r.height;
     }
     
+    template <typename T1, typename T2>
+    bool
+    contains(const T1 & x, const T2 & y) const
+    {
+        return (x >= this->x && x < this->x + this->width) &&
+               (y >= this->y && y < this->y + this->height);
+    }
+
 };
 
 std::ostream & operator<<(std::ostream & o, const Region & r)
@@ -779,7 +787,7 @@ __selectPoints(int event, int x, int y, int flags, void * userdata)
 }
 
 bool
-selectROI(const char * window, cv::Mat & img, Region & roi)
+selectROI(const char * window, cv::Mat & img, Region & roi, const int minSize=0)
 {
     std::vector<cv::Point2i> points(1, cv::Point2i(0,0));
     cv::Scalar color2(255,255,255);
@@ -824,7 +832,11 @@ selectROI(const char * window, cv::Mat & img, Region & roi)
     roi.height = y1 - y0;
 
     cv::setMouseCallback(window, nullptr, nullptr);
-    return true;
+
+    if (roi.width < minSize || roi.height < minSize)
+        return false;
+    else
+        return true;
 }
 
 void
@@ -891,6 +903,35 @@ drawObjectRegion(cv::Mat & canvas,
 
         yy += stepHeight;
     }
+}
+
+void
+drawLabel(cv::Mat & canvas,
+          const string name,
+          const int x,
+          const int y,
+          const double scale=0.7,
+          const cv::Scalar backColor=cv::Scalar(0,0,0),
+          const cv::Scalar textColor=cv::Scalar(255,255,255),
+          const int pl=5,
+          const int pt=5,
+          const int pr=5,
+          const int pb=5,
+          const int font=cv::FONT_HERSHEY_DUPLEX,
+          const int thickness=1,
+          const int lineType=cv::LINE_AA)
+{
+
+    int baseline;
+    cv::Size s = cv::getTextSize(name, font, scale, thickness, &baseline);
+
+    cv::Point2i p1(x, y);
+    cv::Point2i p2(x + s.width + pr + pl, y + s.height + pt + pb);
+
+    rectangle(canvas, p1, p2, backColor, -1);
+
+    cv::Point2i p3(p1.x + pl, p1.y + pt + s.height);
+    cv::putText(canvas, name, p3, font, scale, textColor, thickness, lineType, false);
 }
 
 } /* wup */
