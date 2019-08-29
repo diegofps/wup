@@ -110,7 +110,7 @@ auto tmp3 = joins("Wespa's", "Unified", "Platform");
 // Split a string
 auto tmp = "Wespa-Intelligent-Systems";
 std::vector<std::string> cells;
-    split(tmp2, "-", cells);
+split(tmp2, "-", cells);
 
 ```
 
