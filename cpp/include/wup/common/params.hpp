@@ -123,6 +123,31 @@ public:
     const char * getString(const char * const cmd, const char * const default_value) const
     { return getStringAt(cmd, 0, default_value); }
 
+    void getResolution(const char * const cmd, const char * const defValue, uint & width, uint & height) const
+    {
+        vector<string> cells;
+        const string vp = getString(cmd, defValue);
+        split(vp, 'x', cells);
+
+        try
+        {
+            if (cells.size() == 2)
+            {
+                width  = parse_uint(cells[0]);
+                height = parse_uint(cells[1]);
+                return;
+            }
+
+            else if (cells.size() == 1)
+            {
+                width  = parse_uint(cells[0]);
+                height = width;
+                return;
+            }
+        } catch(ParsersException &e) { }
+
+        error("Invalid size for -vp, format is: <WIDTH>x<HEIGHT>");
+    }
 
     // get long
     long getLongAt(const char * const cmd, const int index) const
