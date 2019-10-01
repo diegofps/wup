@@ -171,6 +171,18 @@ public:
         return cv::Point2i(x+width, y+height);
     }
 
+    cv::Point2i
+    center()
+    {
+        return cv::Point2i(x+width/2, y+height/2);
+    }
+
+    int
+    area()
+    {
+        return width * height;
+    }
+
     void
     updateSizeButKeepCenter(const int newHeight, const int newWidth)
     {
@@ -217,7 +229,22 @@ public:
                (y >= this->y && y < this->y + this->height);
     }
 
+    void
+    intersection(const Region & other, Region & result)
+    {
+        intersect1D(other.x, other.width, x, width, result.x, result.width);
+        intersect1D(other.y, other.height, y, height, result.y, result.height);
+    }
+    
 };
+
+double
+distance(const cv::Point2i p1, const cv::Point2i p2)
+{
+    const int dx = p1.x - p2.x;
+    const int dy = p1.y - p2.y;
+    return sqrt(dx*dx + dy*dy);
+}
 
 std::ostream & operator<<(std::ostream & o, const Region & r)
 {

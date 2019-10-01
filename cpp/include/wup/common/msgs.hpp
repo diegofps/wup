@@ -8,6 +8,10 @@
 
 #include <wup/common/exceptions.hpp>
 
+#ifdef QT_CORE_LIB
+#include <QString>
+#endif
+
 namespace wup
 {
 
@@ -177,7 +181,13 @@ pressEnter()
     getchar();
 }
 
-#ifdef QT_VERSION_STR
+inline void
+notImplemented()
+{
+    error("This function is not implemented yet");
+}
+
+#ifdef QT_CORE_LIB
 
 inline std::ostream &
 operator<<(std::ostream & o, const QString & str)

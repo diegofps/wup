@@ -58,6 +58,53 @@ prevIndex(T & index, const B & size, bool loop=true)
         --index;
 }
 
+void
+intersect1D(const int & a1, const int & aw,
+            const int & b1, const int & bw,
+            int & c, int & cw)
+{
+    const int a2 = a1 + aw;
+    const int b2 = b1 + bw;
+
+    if (a2 <= b1)
+    {
+        c  = 0;
+        cw = 0;
+    }
+
+    else if (a2 <= b2)
+    {
+        if (a1 <= b1)
+        {
+            c  = b1;
+            cw = a2 - b1;
+        }
+        else
+        {
+            c  = a1;
+            cw = a2 - a1;
+        }
+    }
+
+    else if (a1 <= b1)
+    {
+        c  = b1;
+        cw = bw;
+    }
+
+    else if (a1 <= b2)
+    {
+        c  = a1;
+        cw = b2 - a1;
+    }
+
+    else
+    {
+        c  = 0;
+        cw = 0;
+    }
+}
+
 template <typename T, typename B>
 void
 nextIndex(T & index, const B & size, bool loop=true)
@@ -555,7 +602,7 @@ filter(const T * const src, T * const dst, const uint * const indexes, const uin
     return dst;
 }
 
-uint *
+inline uint *
 randperm2D(const uint rows, const uint cols, const uint rowStride)
 {
     uint * const indexes = range2D(rows, cols, rowStride);
@@ -577,7 +624,7 @@ randperm2D(const uint rows, const uint cols, const uint rowStride)
     rowStride - Number of elements in the Row of the full matrix.
     planeStride - Number of elements in the Plane of the full matrix. Like Rows * Cols.
 */
-uint *
+inline uint *
 randperm3DPlane(const uint rows, const uint cols, const uint depth,
            const uint rowStride, const uint planeStride)
 {
@@ -598,7 +645,7 @@ randperm3DPlane(const uint rows, const uint cols, const uint depth,
     depth - depth of the cell, or the number of elements in it. For RGB it is 3.
     rowStride - Number of elements in the Row of the full matrix. Like Rows * depth.
 */
-uint *
+inline uint *
 randperm3DCell(const uint rows, const uint cols, const uint depth,
            const uint rowStride)
 {
