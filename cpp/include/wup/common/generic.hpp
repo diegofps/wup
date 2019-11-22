@@ -723,6 +723,27 @@ int indexOfMax(const T * const mem, const SIZE & length, int &times)
     return index;
 }
 
+template <typename T, typename SIZE>
+void indexOfMax2(const T * const mem, const SIZE & length, int &i1, int &i2)
+{
+    i1 = -1;
+    i2 = -1;
+
+    for (SIZE i=0;i!=length;++i)
+    {
+        if (i1 == -1 || mem[i] > mem[i1])
+        {
+            i2 = i1;
+            i1 = i;
+        }
+
+        else if (i2 == -1 || mem[i] == mem[i2])
+        {
+            i2 = i;
+        }
+    }
+}
+
 template <typename T>
 int indexOfMin(const T * const mem, const int length)
 {

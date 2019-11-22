@@ -61,8 +61,12 @@ public:
 
     }
 
-    Bundle(const std::string filename, const char delimiter='\t',
-        int ignoreRows=0) : _columns(0)
+    Bundle(const std::string filename, const char delimiter='\t', int ignoreRows=0) :
+        _columns(0),
+        _capacity(8),
+        _size(0),
+        _data(new T[_capacity]),
+        _ownerOfData(true)
     {
         // Abre o arquivo para leitura
         std::ifstream file_in(filename);
