@@ -952,7 +952,68 @@ dirFiles(const std::string & path, std::vector<std::string> &list)
     return dirFiles(path.c_str(), list);
 }
 
-} /* wup */
+inline bool
+startsWith(const char * const src, const char * const prefix)
+{
+    for (size_t i=0;prefix[i]!='\0' && src[i]!='\0';++i)
+        if (prefix[i] != src[i])
+            return false;
+
+    return true;
+}
+
+inline bool
+startsWith(const string & src, const char * prefix)
+{
+    return startsWith(src.c_str(), prefix);
+}
+
+inline bool
+startsWith(const char * src, const string & prefix)
+{
+    return startsWith(src, prefix.c_str());
+}
+
+inline bool
+startsWith(const string & src, const string & prefix)
+{
+    return startsWith(src.c_str(), prefix.c_str());
+}
+
+inline bool
+endsWith(const char * const src, const size_t l1,
+         const char * const prefix, const size_t l2)
+{
+    return l1 < l2 ? false : startsWith(src + l1 - l2, prefix);
+}
+
+inline bool
+endsWith(const char * const src,
+         const char * const prefix)
+{
+    return endsWith(src, strlen(src), prefix, strlen(prefix));
+}
+
+inline bool
+endsWith(const string & src,
+         const char * const prefix)
+{
+    return endsWith(src.c_str(), src.size(), prefix, strlen(prefix));
+}
+
+inline bool
+endsWith(const char * const src,
+         const string & prefix)
+{
+    return endsWith(src, strlen(src), prefix.c_str(), prefix.size());
+}
+
+inline bool
+endsWith(const string & src,
+         const string & prefix)
+{
+    return endsWith(src.c_str(), src.size(), prefix.c_str(), prefix.size());
+}
 
 inline uint32_t
 swap_uint32( uint32_t val )
@@ -960,6 +1021,8 @@ swap_uint32( uint32_t val )
     val = ((val << 8) & 0xFF00FF00 ) | ((val >> 8) & 0xFF00FF );
     return (val << 16) | (val >> 16);
 }
+
+} /* wup */
 
 #endif /* __WUP__GENERIC */
 
