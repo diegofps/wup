@@ -17,17 +17,43 @@ namespace wup
 
 extern std::string logPrefix;
 
+const char * const RESET   = "\033[0m";
+
+const char * const BRIGHTER  = "\033[1m";
+const char * const DARKER    = "\033[2m";
+const char * const ITALIC    = "\033[3m";
+const char * const UNDERLINE = "\033[4m";
+const char * const BLINKING  = "\033[5m";
+const char * const REVERSE   = "\033[7m";
+const char * const INVISIBLE = "\033[8m";
+const char * const CROSSING  = "\033[9m";
+
+const char * const GRAY    = "\033[90m";
 const char * const RED     = "\033[91m";
 const char * const GREEN   = "\033[92m";
 const char * const YELLOW  = "\033[93m";
 const char * const BLUE    = "\033[94m";
-const char * const MAGENTA = "\033[95m";
-const char * const NORMAL  = "\033[0m";
+const char * const PURPLE  = "\033[95m";
+const char * const CYAN    = "\033[96m";
+const char * const WHITE   = "\033[97m";
 
+const char * const BOLD_GRAY   = "\033[1;30m";
+const char * const BOLD_RED    = "\033[1;31m";
+const char * const BOLD_GREEN  = "\033[1;32m";
+const char * const BOLD_YELLOW = "\033[1;33m";
+const char * const BOLD_BLUE   = "\033[1;34m";
+const char * const BOLD_PURPLE = "\033[1;35m";
+const char * const BOLD_CYAN   = "\033[1;36m";
+const char * const BOLD_WHITE  = "\033[1;37m";
+
+const char * const BG_GRAY    = "\033[40m";
 const char * const BG_RED    = "\033[41m";
+const char * const BG_GREEN  = "\033[42m";
+const char * const BG_YELLOW = "\033[43m";
 const char * const BG_BLUE   = "\033[44m";
-const char * const BG_YELLOW = "\033[45m";
-const char * const BG_GREEN  = "\033[46m";
+const char * const BG_PURPLE = "\033[45m";
+const char * const BG_CYAN   = "\033[46m";
+const char * const BG_WHITE  = "\033[46m";
 
 template <typename A, typename B>
 std::ostream & operator<<(std::ostream &o, const std::pair<A,B> &pair)
