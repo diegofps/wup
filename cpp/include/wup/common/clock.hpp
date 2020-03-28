@@ -55,7 +55,7 @@ public:
     {
         stop();
         const auto ellapsed = this->ellapsed_seconds() / factor;
-        printn(YELLOW, "|CLOCK| ", MAGENTA, msg, ": ", YELLOW, ellapsed, " s\n", NORMAL);
+        printn(YELLOW, "|CLOCK| ", PURPLE, msg, ": ", YELLOW, ellapsed, " s\n", NORMAL);
         return start();
     }
 
@@ -64,7 +64,7 @@ public:
     {
         stop();
         const auto ellapsed = this->ellapsed_milli() / factor;
-        printn(YELLOW, "|CLOCK| ", MAGENTA, msg, ": ", YELLOW, ellapsed, " ms\n", NORMAL);
+        printn(YELLOW, "|CLOCK| ", PURPLE, msg, ": ", YELLOW, ellapsed, " ms\n", NORMAL);
         return start();
     }
 
@@ -73,7 +73,7 @@ public:
     {
         stop();
         const auto ellapsed = this->ellapsed_micro() / factor;
-        printn(YELLOW, "|CLOCK| ", MAGENTA, msg, ": ", YELLOW, ellapsed, " us\n", NORMAL);
+        printn(YELLOW, "|CLOCK| ", PURPLE, msg, ": ", YELLOW, ellapsed, " us\n", NORMAL);
         return start();
     }
 
@@ -82,7 +82,7 @@ public:
     {
         stop();
         const auto ellapsed = this->ellapsed_micro() / factor;
-        printn(YELLOW, "|CLOCK| ", MAGENTA, msg, ": ", YELLOW, ellapsed, " ns\n", NORMAL);
+        printn(YELLOW, "|CLOCK| ", PURPLE, msg, ": ", YELLOW, ellapsed, " ns\n", NORMAL);
         return start();
     }
 

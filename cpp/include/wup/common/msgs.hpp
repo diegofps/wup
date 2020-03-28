@@ -17,7 +17,7 @@ namespace wup
 
 extern std::string logPrefix;
 
-const char * const RESET   = "\033[0m";
+const char * const NORMAL    = "\033[0m";
 
 const char * const BRIGHTER  = "\033[1m";
 const char * const DARKER    = "\033[2m";
