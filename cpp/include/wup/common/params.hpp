@@ -284,6 +284,34 @@ public:
     { return parseValue(cmd, default_value, wup::parse_float); }
 
 
+    // get enum
+    template <typename KEY_TYPE, typename ENUM_TYPE>
+    ENUM_TYPE getEnum(const char * const cmd,
+                      map<KEY_TYPE, ENUM_TYPE> & decoder,
+                      const ENUM_TYPE defaultValue) const
+    {
+        if (misses(cmd)) return defaultValue;
+        else return getEnum(cmd, decoder);
+    }
+
+    template <typename KEY_TYPE, typename ENUM_TYPE>
+    ENUM_TYPE getEnum(const char * const cmd,
+                      map<KEY_TYPE, ENUM_TYPE> & decoder) const
+    {
+        auto value = getString(cmd);
+        auto it = decoder.find(value);
+
+        if (it != decoder.end())
+            return it->second;
+
+        printn(value, "is not a valid value for", cmd, ". Valid values are:");
+
+        for (auto pair : decoder)
+            printn(" ", pair.first);
+
+        error("Invalid value for", cmd);
+    }
+
     // parseValues
     template <typename T> T
     parseValueAt(const char * const cmd, const int index, T (*parseFunc)(const std::string &)) const
