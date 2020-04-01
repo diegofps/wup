@@ -16,6 +16,8 @@ const uchar KEY_LEFT  = 81;
 const uchar KEY_UP    = 82;
 const uchar KEY_RIGHT = 83;
 const uchar KEY_DOWN  = 84;
+const uchar KEY_HOME  = 80;
+const uchar KEY_END   = 87;
 
 const uchar KEY_NUMPAD_ON_1 = 177;
 const uchar KEY_NUMPAD_ON_2 = 178;
@@ -51,7 +53,7 @@ const uchar KEY_NONE = 255;
 
 const uchar KEY_ESC = 27;
 const uchar KEY_SPACE = 32;
-const uchar KEY_ENTER = 10;
+const uchar KEY_ENTER = 13;
 const uchar KEY_BACKSPACE = 8;
 
 const uchar KEY_A = 65;
