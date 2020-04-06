@@ -1,6 +1,8 @@
 #ifndef INCLUDE_WUP_HPP
 #define INCLUDE_WUP_HPP
 
+#define UNUSED(x) (void)(x)
+
 #define WUP_STATICS namespace wup { std::string logPrefix; };
 
 #include <wup/common/exceptions.hpp>
