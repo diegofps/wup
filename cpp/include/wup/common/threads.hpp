@@ -224,8 +224,11 @@ void parallel_thread(Pipe<int> * const p, F f, const int tid)
 }
 
 template <typename F>
-void parallel(const uint threads, const size_t jobs, F f)
+void parallel(uint threads, const size_t jobs, F f)
 {
+    if (threads == 0)
+        threads = thread::hardware_concurrency();
+
     Pipe<int> p;
     thread *pool = new thread[threads];
 
