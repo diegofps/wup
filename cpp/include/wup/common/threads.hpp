@@ -223,6 +223,11 @@ void parallel_thread(Pipe<int> * const p, F f, const int tid)
     }
 }
 
+// Runs a Pool of jobs in parallel
+//
+// numThreads: Number of threads. If 0 we will use thread::hardware_concurrency()
+// jobs: The number of jobs to run in parallel
+// F: void (*)(const int threadId, const int jobId)
 template <typename F>
 void parallel(uint threads, const size_t jobs, F f)
 {

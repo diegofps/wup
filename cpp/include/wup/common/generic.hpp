@@ -49,13 +49,21 @@ template <typename T, typename B>
 void
 prevIndex(T & index, const B & size, bool loop=true)
 {
-    if (index == 0)
+    if (size == 0)
+    {
+        index = 0;
+    }
+
+    else if (index == 0)
     {
         if (loop)
             index = size - 1;
     }
+
     else
+    {
         --index;
+    }
 }
 
 void
@@ -109,8 +117,15 @@ template <typename T, typename B>
 void
 nextIndex(T & index, const B & size, bool loop=true)
 {
-    if (++index == size)
-        index = loop ? 0 : size-1;
+    if (size == 0)
+    {
+        index = 0;
+    }
+
+    else if (++index == size)
+    {
+        index = loop ? 0 : size - 1;
+    }
 }
 
 inline uint32_t
