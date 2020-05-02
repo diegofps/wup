@@ -3,6 +3,9 @@
 
 #define UNUSED(x) (void)(x)
 
+#define _STR(name) #name
+#define STR(macro) _STR(macro)
+
 #define WUP_STATICS namespace wup { std::string logPrefix; };
 
 #include <wup/common/exceptions.hpp>
