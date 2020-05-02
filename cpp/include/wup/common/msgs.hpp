@@ -83,7 +83,7 @@ std::string cat(const Args&... args)
 }
 
 template <typename S, typename P1>
-std::stringstream & _join(std::stringstream &ss, const S & sep, const P1 &p1)
+std::stringstream & _join(std::stringstream &ss, const S &, const P1 &p1)
 {
     ss << p1;
     return ss;
@@ -151,26 +151,34 @@ void _printn(const P1 &p1, const Args&... args)
 template <typename... Args>
 void _debug(const Args&... args)
 {
-    _print(GREEN, "Debug: ", args..., NORMAL);
+    auto tmp = join(" ", args...);
+    auto msg = cat(GREEN, BRIGHTER, "Debug: ", NORMAL, GREEN, tmp, NORMAL, "\n");
+    _printn(msg);
 }
 
 template <typename... Args>
 void _info(const Args&... args)
 {
-    _print(BLUE, "Info: ", args..., NORMAL);
+    auto tmp = join(" ", args...);
+    auto msg = cat(BLUE, BRIGHTER, "Info: ", NORMAL, BLUE, tmp, NORMAL, "\n");
+    _printn(msg);
 }
 
 template <typename... Args>
 void _warn(const Args&... args)
 {
-    _print(YELLOW, "Warning: ", args..., NORMAL);
+    auto tmp = join(" ", args...);
+    auto msg = cat(YELLOW, BRIGHTER, "Warning: ", NORMAL, YELLOW, tmp, NORMAL, "\n");
+    _printn(msg);
 }
 
 template <typename... Args>
 void _error(const Args&... args)
 {
-    auto tmp = cat(RED, "Error: ", args..., NORMAL);
-    _print(tmp);
+    auto tmp = join(" ", args...);
+    auto msg = cat(RED, BRIGHTER, "Error: ", NORMAL, RED, tmp, NORMAL, "\n");
+    _printn(msg);
+
     throw WUPException(tmp);
 }
 
@@ -189,16 +197,6 @@ WRAP_LOGPREFIX(debug, _debug)
 WRAP_LOGPREFIX(info, _info)
 WRAP_LOGPREFIX(warn, _warn)
 WRAP_LOGPREFIX(error, _error)
-
-#define WRAP_LOGPREFIX_T(name, subname)             \
-template <typename... Args>                         \
-void                                                \
-name(const Args&... args)                           \
-{                                                   \
-    subname(cats(logPrefix, " ", args..., "\n"));   \
-}
-
-WRAP_LOGPREFIX_T(printt, _printn)
 
 inline void
 pressEnter()
