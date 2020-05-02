@@ -9,61 +9,172 @@
 namespace wup
 {
 
+
+
+class Param
+{
+public:
+    bool active;
+    std::vector<std::string> args;
+
+public:
+    Param() : active(true) { }
+};
+
+
+
+class ParamNameSpace
+{
+public:
+    const string name;
+    std::map<std::string, Param*> mem;
+
+public:
+    ParamNameSpace(const char * name) : name(name)
+    {
+        mem["_"] = new Param();
+    }
+
+    ~ParamNameSpace()
+    {
+        for (auto it : mem)
+            delete it.second;
+    }
+};
+
+
+
 class Params {
+private:
+
+private:
+
+    std::map<string, ParamNameSpace*> namespaces;
+    ParamNameSpace * ns;
+
 public:
 
     Params()
     {
-        _mem["_"] = new std::vector<std::string>();
+        ns = new ParamNameSpace("_");
+        namespaces["_"] = ns;
     }
 
-    Params(const int argc, const char ** argv)
+    Params(const int argc, const char * const argv[]) :
+        Params()
     {
-        std::vector<std::string> *list;
+        Param * param = ns->mem["_"];
+        std::string tmp("-ns");
         int i = 0;
         
-        list = new std::vector<std::string>();
-        _mem["_"] = list;
-        
-        while(i < argc) {
-            while(i < argc && argv[i][0] != '-') {
-                list->push_back(argv[i]);
+        while(i < argc)
+        {
+            while(i < argc && argv[i][0] != '-')
+            {
+                param->args.push_back(argv[i]);
                 ++i;
             }
             
-            while(i < argc && argv[i][0] == '-') {
-                list = new std::vector<std::string>();
-                _mem[&argv[i][1]] = list;
+            while(i < argc && tmp == argv[i])
+            {
+                if (i+1 >= argc || argv[i+1][0] == '-')
+                    error("Missing namespace name after -ns");
+
+                auto name = argv[i+1];
+                auto newNs = new ParamNameSpace(name);
+                auto it = namespaces.find(name);
+
+                if (it != namespaces.end())
+                {
+                    warn("Namespace", name, "was declared twice");
+                    delete it->second;
+                }
+
+                namespaces[name] = newNs;
+                param = newNs->mem["_"];
+                ns = newNs;
+
+                i += 2;
+            }
+
+            while(i < argc && tmp != argv[i] && argv[i][0] == '-')
+            {
+                param = new Param();
+                ns->mem[&argv[i][1]] = param;
                 ++i;
             }
         }
     }
 
-    Params(const int argc, char ** argv) : Params(argc, const_cast<const char **>(argv))
+    Params(const int argc, char ** argv) :
+        Params(argc, const_cast<const char **>(argv))
     {
 
     }
 
     ~Params()
     {
-        for (auto it : _mem)
+        for (auto it : namespaces)
             delete it.second;
+    }
+
+    void
+    show(ostream & o) const
+    {
+        for (auto it : namespaces)
+        {
+            o << it.first << ":" << std::endl;
+            for (auto it2 : it.second->mem)
+            {
+                o << "\t" << it2.first << ":";
+                for (auto & it3 : it2.second->args)
+                    o << " " << it3;
+                o << std::endl;
+            }
+        }
+    }
+
+    void
+    use(const char * const nsName)
+    {
+        auto it = namespaces.find(nsName);
+
+        if (it == namespaces.end())
+        {
+            ns = new ParamNameSpace(nsName);
+            namespaces[nsName] = ns;
+        }
+        else
+        {
+            ns = it->second;
+        }
     }
 
     template <typename T>
     void
     put(const char * const cmd, T data)
     {
-        auto it = _mem.find(cmd);
-        if (it == _mem.end())
+        auto it = ns->mem.find(cmd);
+        if (it == ns->mem.end())
         {
-            std::vector<string> *list = new std::vector<std::string>();
-            list->push_back(cat(data));
-            _mem[cmd] = list;
+            auto list = new Param();
+            list->args.push_back(cat(data));
+            ns->mem[cmd] = list;
         }
         else
         {
-            it->second->push_back(cat(data));
+            it->second->args.push_back(cat(data));
+        }
+    }
+
+    void
+    drop(const char * const cmd)
+    {
+        auto it = ns->mem.find(cmd);
+        if (it != ns->mem.end())
+        {
+            delete it->second;
+            ns->mem.erase(it);
         }
     }
 
@@ -74,19 +185,19 @@ public:
     { return !misses(cmd, index); }
     
     bool misses(const char * const cmd) const
-    { return _mem.find(cmd) == _mem.end(); }
+    { return ns->mem.find(cmd) == ns->mem.end(); }
 
     bool misses(const char * const cmd, const uint index) const
     {
         if (misses(cmd)) return true;
-        return _mem.at(cmd)->size() <= index;
+        return ns->mem.at(cmd)->args.size() <= index;
     }
     
     // length
     int len(const char * const cmd) const
     {
         if (misses(cmd)) missingCommand( cmd );
-        return _mem.at(cmd)->size();
+        return ns->mem.at(cmd)->args.size();
     }
     
     // getAll
@@ -94,7 +205,7 @@ public:
     all(const char * const cmd) const
     {
         if (misses(cmd)) missingCommand(cmd);
-        return *(_mem.at(cmd));
+        return ns->mem.at(cmd)->args;
     }
 
 
@@ -102,25 +213,25 @@ public:
     const char * getStringAt(const char * const cmd, const int index) const
     {
         if (misses(cmd, index)) missingCommand( cmd );
-        return _mem.at(cmd)->operator[]( index ).c_str();
+        return ns->mem.at(cmd)->args[index].c_str();
     }
 
     void setStringAt(const char * const cmd, const int index, const string str)
     {
         if (misses(cmd, index)) missingCommand( cmd );
-        _mem.at(cmd)->operator[]( index ) = str;
+        ns->mem.at(cmd)->args[index] = str;
     }
 
-    const char * getStringAt(const char * const cmd, const int index, const char * const default_value) const
+    const char * getStringAt(const char * const cmd, const int index, const string default_value) const
     {
-        if (misses(cmd, index)) return default_value;
-        return _mem.at(cmd)->operator[]( index ).c_str();
+        if (misses(cmd, index)) return default_value.c_str();
+        return ns->mem.at(cmd)->args[index].c_str();
     }
 
     const char * getString(const char * const cmd) const
     { return getStringAt(cmd, 0); }
 
-    const char * getString(const char * const cmd, const char * const default_value) const
+    const char * getString(const char * const cmd, const string default_value) const
     { return getStringAt(cmd, 0, default_value); }
 
     void getResolution(const char * const cmd, const char * const defValue, uint & width, uint & height) const
@@ -248,7 +359,7 @@ public:
         if (len(cmd) == 0)
             return true;
 
-        return parse_bool(_mem.at(cmd)->operator[]( 0 ));
+        return parse_bool(ns->mem.at(cmd)->args[0]);
     }
 
     bool getBool(const char * const &cmd) const
@@ -312,12 +423,85 @@ public:
         error("Invalid value for", cmd);
     }
 
+
+    // pop functions
+    template <typename DECODER, typename ENUM>
+    void
+    popEnum(const char * const cmd, ENUM & variable)
+    {
+        DECODER decoder;
+        variable = getEnum(cmd, decoder, variable);
+        drop(cmd);
+    }
+
+    template <typename V1>
+    void
+    popInt(const char * const cmd, V1 & v1)
+    {
+        v1 = getInt(cmd, v1);
+        drop(cmd);
+    }
+
+    template <typename V1>
+    void
+    popBool(const char * const cmd, V1 & v1)
+    {
+        v1 = getBool(cmd, v1);
+        drop(cmd);
+    }
+
+    template <typename V1>
+    void
+    popDouble(const char * const cmd, V1 & v1)
+    {
+        v1 = getDouble(cmd, v1);
+        drop(cmd);
+    }
+
+    template <typename V1>
+    void
+    popString(const char * const cmd, V1 & v1)
+    {
+        v1 = getString(cmd, v1);
+        drop(cmd);
+    }
+
+    template <typename V1, typename V2>
+    void
+    popInt(const char * const cmd, V1 & v1, V2 & v2)
+    {
+        if (has(cmd))
+        {
+            v1 = getIntAt(cmd, 0, v1);
+            v2 = getIntAt(cmd, 1, v1);
+            drop(cmd);
+        }
+    }
+
+
+
+    void
+    warnUnused()
+    {
+        for (auto it1 : namespaces)
+        {
+            for (auto it2 : it1.second->mem)
+            {
+                if (it2.first != "_")
+                    printn(BRIGHTER, "Unused parameter: ", YELLOW, it1.first, ".", it2.first, NORMAL, "\n");
+
+                else if (it2.second->args.size() != (it1.first == "_" ? 1 : 0))
+                    printn(BRIGHTER, "Unused parameter(s) at start of namespace ", YELLOW, it1.first, NORMAL, "\n");
+            }
+        }
+    }
+
     // parseValues
     template <typename T> T
     parseValueAt(const char * const cmd, const int index, T (*parseFunc)(const std::string &)) const
     {
         if (misses(cmd, index)) missingParameter( cmd );
-        return parseFunc( _mem.at(cmd)->operator[]( index ) );
+        return parseFunc( ns->mem.at(cmd)->args[index]);
     }
 
     template <typename T> T
@@ -326,7 +510,7 @@ public:
         if (misses(cmd, index))
             return default_value;
         else
-            return parseFunc( _mem.at(cmd)->operator[]( index ) );
+            return parseFunc( ns->mem.at(cmd)->args[index] );
     }
     
     template <typename T> T
@@ -348,11 +532,14 @@ private:
     void missingParameter(const char * const cmd, const int i) const
     { throw ParsersException(cat("Missing parameter number ", i," for '", cmd, "'")); }
 
-private:
-    
-    std::map<std::string, std::vector<std::string>* > _mem;
-    
 };
+
+std::ostream &
+operator<<(std::ostream & o, const Params & p)
+{
+    p.show(o);
+    return o;
+}
 
 }; /* wup */
 
