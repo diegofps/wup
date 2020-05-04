@@ -16,13 +16,6 @@ private:
 
     bool _requiresUpdate;
 
-    void
-    checkUpdate()
-    {
-        if (_requiresUpdate)
-            update();
-    }
-
 public:
 
     ConfusionMatrix(const uint numClasses) :
@@ -152,6 +145,15 @@ public:
         const double diag = diagonal();
         _matrix(len, len) = sum == 0 ? 1.0 : diag / sum;
         _requiresUpdate = false;
+    }
+
+private:
+
+    void
+    checkUpdate()
+    {
+        if (_requiresUpdate)
+            update();
     }
 
 };
