@@ -468,24 +468,6 @@ A sum(const A * const array, const int length)
 
 
 template <typename T>
-T *
-shuffle(T * const data, const uint32_t n)
-{
-    for (uint32_t i=0;i!=n-1;++i)
-    {
-        const uint32_t pivot = rand() % (n - i);
-        const uint32_t final  = n-i-1;
-
-        const T tmp = data[pivot];
-        data[pivot] = data[final];
-        data[final] = tmp;
-    }
-
-    return data;
-}
-
-
-template <typename T>
 uint *
 range(const uint n, T * const indexes)
 {
@@ -594,79 +576,12 @@ range3DCell(const uint rows, const uint cols, const uint depth,
 
 
 template <typename T>
-inline T *
-randperm(const uint n, T * const indexes)
-{
-    range(n, indexes);
-    shuffle(indexes, n);
-    return indexes;
-}
-
-inline uint *
-randperm(const uint n)
-{
-    return randperm(n, new uint[n]);
-}
-
-template <typename T>
 T *
 filter(const T * const src, T * const dst, const uint * const indexes, const uint indexesLen)
 {
     for (uint k=0;k!=indexesLen;++k)
         dst[k] = src[indexes[k]];
     return dst;
-}
-
-inline uint *
-randperm2D(const uint rows, const uint cols, const uint rowStride)
-{
-    uint * const indexes = range2D(rows, cols, rowStride);
-    wup::shuffle(indexes, rows * cols);
-    return indexes;
-}
-
-/*
-    Generates a random permutation of indexes for a 3D region of interest with size
-    [depth x rows x cols], which is inside a matrix of size [depth x Rows x Cols].
-
-    This function is plain oriented, which means that each value of depth contains
-    the an entire Plane in the original matrix [Rows, Cols]. If you want to apply this
-    with opencv, consider the function randperm3DPlane.
-
-    rows - Number of rows in the region of interest
-    cols - number of columns in the region of interest
-    depth - depth of the cell, or the number of planes in the matrix.
-    rowStride - Number of elements in the Row of the full matrix.
-    planeStride - Number of elements in the Plane of the full matrix. Like Rows * Cols.
-*/
-inline uint *
-randperm3DPlane(const uint rows, const uint cols, const uint depth,
-           const uint rowStride, const uint planeStride)
-{
-    uint * const indexes = range3DPlane(rows, cols, depth, rowStride, planeStride);
-    wup::shuffle(indexes, rows * cols * depth);
-    return indexes;
-}
-
-/*
-    Generates a random permutation of indexes for a 3D region of interest with size
-    [rows x cols x depth], which is inside a matrix of size [Rows x Cols X depth].
-
-    This function assumes that each cell in [rows, cols] contains depth elements.
-    This is the format used by opencv, for instance.
-
-    rows - Number of rows in the region of interest
-    cols - number of columns in the region of interest
-    depth - depth of the cell, or the number of elements in it. For RGB it is 3.
-    rowStride - Number of elements in the Row of the full matrix. Like Rows * depth.
-*/
-inline uint *
-randperm3DCell(const uint rows, const uint cols, const uint depth,
-           const uint rowStride)
-{
-    uint * const indexes = range3DCell(rows, cols, depth, rowStride);
-    wup::shuffle(indexes, rows * cols * depth);
-    return indexes;
 }
 
 
@@ -695,7 +610,6 @@ slice_to(const string str, int b)
     return slice(str, 0, b);
 }
 
-
 template <typename T, typename SIZE>
 int indexOfMax(const T * const mem, const SIZE & length)
 {
@@ -712,6 +626,13 @@ int indexOfMax(const T * const mem, const SIZE & length)
     }
 
     return index;
+}
+
+template <typename T>
+int
+indexOfMax(const vector<T> & data)
+{
+    return indexOfMax(data.data(), data.size());
 }
 
 template <typename T, typename SIZE>
@@ -778,6 +699,13 @@ int indexOfMin(const T * const mem, const int length)
 }
 
 template <typename T>
+int
+indexOfMin(const vector<T> & data)
+{
+    return indexOfMin(data.data(), data.size());
+}
+
+template <typename T>
 int indexOfMin(const T * const mem, const int length, int & times)
 {
     int index = -1;
@@ -802,6 +730,27 @@ int indexOfMin(const T * const mem, const int length, int & times)
     return index;
 }
 
+template <typename T, typename SIZE>
+void indexOfMin2(const T * const mem, const SIZE & length, int &i1, int &i2)
+{
+    i1 = -1;
+    i2 = -1;
+
+    for (SIZE i=0;i!=length;++i)
+    {
+        if (i1 == -1 || mem[i] < mem[i1])
+        {
+            i2 = i1;
+            i1 = i;
+        }
+
+        else if (i2 == -1 || mem[i] == mem[i2])
+        {
+            i2 = i;
+        }
+    }
+}
+
 template <typename A>
 A arrayMax(const A * const array, const int length)
 {
@@ -821,6 +770,63 @@ double arrayMean(const A * const array, const int length)
     for (int i=1;i<length;++i) tmp += array[i];
     return tmp / double(length);
 }
+
+template <typename A>
+void arrayMeanNStd(const A * const data, const size_t len, A & mean, A & std)
+{
+    A s1 = 0;
+    A s2 = 0;
+
+    for (size_t i=0;i!=len;++i)
+    {
+        s1 += data[i];
+        s2 += data[i] * data[i];
+    }
+
+    meanNstd(len, s1, s2, mean, std);
+}
+
+template <typename A>
+void arrayStats(const A * const data, const size_t len, A & minimum, A & maximum, A & mean, A & std)
+{
+    if (len == 0)
+    {
+        minimum = 0;
+        maximum = 0;
+        mean = 0;
+        std = 0;
+    }
+    else
+    {
+        minimum = arrayMin(data, len);
+        maximum = arrayMax(data, len);
+        arrayMeanNStd(data, len, mean, std);
+    }
+}
+
+//////////////////////
+// Vector Functions //
+//////////////////////
+
+template <typename A>
+A arrayMax(const vector<A> & data)
+{
+    return arrayMax(data.data(), data.size());
+}
+
+template <typename A>
+A arrayMin(const vector<A> & data)
+{
+    return arrayMin(data.data(), data.size());
+}
+
+template <typename A, typename B>
+void arrayStats(const vector<B> & data, A & minimum, A & maximum, A & mean, A & std)
+{
+    arrayStats(data.data(), data.size(), minimum, maximum, mean, std);
+}
+
+
 
 inline std::vector<int>
 load_array(const std::string filename)

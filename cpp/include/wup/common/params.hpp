@@ -134,7 +134,7 @@ public:
         }
     }
 
-    void
+    Params &
     use(const char * const nsName)
     {
         auto it = namespaces.find(nsName);
@@ -148,6 +148,8 @@ public:
         {
             ns = it->second;
         }
+
+        return *this;
     }
 
     template <typename T>
@@ -210,7 +212,7 @@ public:
 
 
     // getStrings
-    const char * getStringAt(const char * const cmd, const int index) const
+    const string getStringAt(const char * const cmd, const int index) const
     {
         if (misses(cmd, index)) missingCommand( cmd );
         return ns->mem.at(cmd)->args[index].c_str();
@@ -222,16 +224,16 @@ public:
         ns->mem.at(cmd)->args[index] = str;
     }
 
-    const char * getStringAt(const char * const cmd, const int index, const string default_value) const
+    const string getStringAt(const char * const cmd, const int index, const string default_value) const
     {
         if (misses(cmd, index)) return default_value.c_str();
         return ns->mem.at(cmd)->args[index].c_str();
     }
 
-    const char * getString(const char * const cmd) const
+    const string getString(const char * const cmd) const
     { return getStringAt(cmd, 0); }
 
-    const char * getString(const char * const cmd, const string default_value) const
+    const string getString(const char * const cmd, const string default_value) const
     { return getStringAt(cmd, 0, default_value); }
 
     void getResolution(const char * const cmd, const char * const defValue, uint & width, uint & height) const
@@ -444,6 +446,14 @@ public:
 
     template <typename V1>
     void
+    popUInt(const char * const cmd, V1 & v1)
+    {
+        v1 = getUInt(cmd, v1);
+        drop(cmd);
+    }
+
+    template <typename V1>
+    void
     popBool(const char * const cmd, V1 & v1)
     {
         v1 = getBool(cmd, v1);
@@ -455,6 +465,14 @@ public:
     popDouble(const char * const cmd, V1 & v1)
     {
         v1 = getDouble(cmd, v1);
+        drop(cmd);
+    }
+
+    template <typename V1>
+    void
+    popFloat(const char * const cmd, V1 & v1)
+    {
+        v1 = getFloat(cmd, v1);
         drop(cmd);
     }
 
@@ -474,6 +492,18 @@ public:
         {
             v1 = getIntAt(cmd, 0, v1);
             v2 = getIntAt(cmd, 1, v1);
+            drop(cmd);
+        }
+    }
+
+    template <typename V1, typename V2>
+    void
+    popUInt(const char * const cmd, V1 & v1, V2 & v2)
+    {
+        if (has(cmd))
+        {
+            v1 = getUIntAt(cmd, 0, v1);
+            v2 = getUIntAt(cmd, 1, v1);
             drop(cmd);
         }
     }

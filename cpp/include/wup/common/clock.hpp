@@ -47,6 +47,42 @@ public:
         return stop().start();
     }
 
+    double
+    lap_seconds(double factor=1.0)
+    {
+        stop();
+        const double ellapsed = this->ellapsed_seconds() / factor;
+        start();
+        return ellapsed;
+    }
+
+    double
+    lap_milli(double factor=1.0)
+    {
+        stop();
+        const double ellapsed = this->ellapsed_milli() / factor;
+        start();
+        return ellapsed;
+    }
+
+    double
+    lap_micro(double factor=1.0)
+    {
+        stop();
+        const double ellapsed = this->ellapsed_micro() / factor;
+        start();
+        return ellapsed;
+    }
+
+    double
+    lap_nano(double factor=1.0)
+    {
+        stop();
+        const double ellapsed = this->ellapsed_micro() / factor;
+        start();
+        return ellapsed;
+    }
+
 
     // Display a message and the time passed since the last lap / start
 

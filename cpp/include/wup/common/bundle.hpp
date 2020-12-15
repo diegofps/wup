@@ -122,6 +122,54 @@ public:
         return *this;
     }
 
+    template <typename T2, typename I2>
+    void
+    importRow(const vector<T2> & other, const I2 dstI)
+    {
+        const T2 * srcv = other.data();
+        T * dstv = & (*this)(dstI,0);
+
+        //copy(srcv, srcv + numCols(), dstv);
+        for (size_t i=0;i!=numCols();++i)
+            dstv[i] = srcv[i];
+    }
+
+    template <typename T2, typename I1, typename I2>
+    void
+    importRow(const Bundle<T2> & other, const I1 srcI, const I2 dstI)
+    {
+        const T2 * srcv = & other(srcI,0);
+        T * dstv = & (*this)(dstI,0);
+
+        //copy(srcv, srcv + numCols(), dstv);
+        for (size_t i=0;i!=numCols();++i)
+            dstv[i] = srcv[i];
+    }
+
+    template <typename T2, typename I1>
+    void
+    exportRow(const I1 srcI, vector<T2> & other) const
+    {
+        const T * const srcv = & (*this)(srcI,0);
+        T2 * const dstv = other.data();
+
+        //copy(srcv, srcv + numCols(), dstv);
+        for (size_t i=0;i!=numCols();++i)
+            dstv[i] = srcv[i];
+    }
+
+    template <typename T2, typename I1, typename I2>
+    void
+    exportRow(const I1 srcI, Bundle<T2> & other, const I2 dstI) const
+    {
+        T * srcv = & (*this)(srcI,0);
+        const T2 * dstv = & other(dstI,0);
+
+        //copy(srcv, srcv + numCols(), dstv);
+        for (size_t i=0;i!=numCols();++i)
+            dstv[i] = srcv[i];
+    }
+
     template <typename I1, typename I2>
     T &
     operator()(const I1 & i, const I2 & j)

@@ -11,6 +11,7 @@
 
 #include <wup/common/dataset.hpp>
 #include <wup/common/msgs.hpp>
+#include <wup/common/random.hpp>
 
 #ifndef ulong
 //#define ulong unsigned long
@@ -98,6 +99,8 @@ private:
     uint _numFolds;
 
     Fold * _folds;
+
+    wup::random generator;
 
     const char * INCOMPATIBLE_FILE_MESSAGE =
             "This file is not a KFold file or it is compatible with this dataset";
@@ -238,7 +241,7 @@ private:
         for (auto pair : classes)
         {
             const int length = pair.second.size();
-            const uint * const mem = randperm(length);
+            const uint * const mem = generator.randperm(length);
 
             for (uint i=0;i<_numFolds;++i)
             {

@@ -3,6 +3,7 @@
 
 #include <wup/nodes/node.hpp>
 #include <wup/models/kernelcanvas.hpp>
+#include <wup/common/random.hpp>
 
 namespace wup {
 
@@ -13,6 +14,8 @@ class Shuffler : public Node {
     uint _numIndexes;
 
     uint * _indexes;
+
+    wup::random generator;
 
 public:
 
@@ -30,7 +33,7 @@ public:
         Node(parent)
     {
         _numIndexes = parent->output().size();
-        _indexes = randperm(_numIndexes);
+        _indexes = generator.randperm(_numIndexes);
     }
 
     ~Shuffler()
