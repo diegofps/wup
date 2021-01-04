@@ -1036,6 +1036,35 @@ endsWith(const string & src,
     return endsWith(src.c_str(), src.size(), prefix.c_str(), prefix.size());
 }
 
+size_t
+removeChar(char * const data, const size_t len, const char c)
+{
+    size_t a = 0;
+    size_t b = 0;
+
+    while(a!=len)
+    {
+        if (data[a] == c)
+        {
+            ++a;
+        }
+        else
+        {
+            data[b] = data[a];
+            ++a;
+            ++b;
+        }
+    }
+
+    return b;
+}
+
+void
+removeChar(string & data, const char c)
+{
+    data.resize(removeChar(&data[0], data.size(), c));
+}
+
 inline uint32_t
 swap_uint32( uint32_t val )
 {

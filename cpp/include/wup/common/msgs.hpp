@@ -5,6 +5,8 @@
 #include <sstream>
 #include <iostream>
 #include <fstream>
+#include <vector>
+#include <map>
 
 #include <wup/common/exceptions.hpp>
 
@@ -101,6 +103,37 @@ std::string join(const S sep, const Args&... args)
 {
     std::stringstream ss;
     return _join(ss, sep, args...).str();
+}
+
+template <typename S, typename I>
+std::string joinList(const S sep, const std::vector<I> & list)
+{
+    if (list.size() == 0)
+        return "";
+    
+    std::stringstream ss;
+    ss << list[0];
+
+    for (size_t i=1;i!=list.size;++i)
+        ss << sep << list[i];
+    
+    return ss.str();
+}
+
+template <typename S1, typename S2, typename K, typename V>
+std::string joinMap(const S1 sepPairs, const S2 sepKV, const std::map<K,V> & list)
+{
+    if (list.size() == 0)
+        return "";
+    
+    std::stringstream ss;
+    auto it = list.begin();
+    ss << it->first << sepKV << it->second;
+
+    for(++it;it!=list.end();++it)
+        ss << sepPairs << it->first << sepKV << it->second;
+    
+    return ss.str();
 }
 
 template <typename... Args>
