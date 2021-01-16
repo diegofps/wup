@@ -1,6 +1,7 @@
 #ifndef __WUP__COMMON__PARAMS
 #define __WUP__COMMON__PARAMS
 
+#include <wup/third_party/json.hpp>
 #include <wup/common/generic.hpp>
 #include <vector>
 #include <string>
@@ -9,27 +10,141 @@
 namespace wup
 {
 
+using json = nlohmann::json;
+
+
+template <typename TYPE>
+json
+map_to_json(std::map<std::string, TYPE*> & mapping)
+{
+    json data;
+
+    for (auto & p : mapping)
+        data[p.first] = p.second->to_json();
+
+    return data;
+}
+
+template <typename TYPE>
+json
+map_to_json(std::map<std::string, TYPE> & mapping)
+{
+    json data;
+
+    for (auto & p : mapping)
+        data[p.first] = p.second;
+
+    return data;
+}
+
+template <typename TYPE>
+void
+map_from_json(json & data, std::map<std::string, TYPE*> & mapping, bool deleteData=true)
+{
+    if (deleteData)
+        for (auto & p : mapping)
+            delete p.second;
+
+    mapping.clear();
+
+    for (auto & p : data.items())
+        mapping[p.key()] = new TYPE(p.value());
+}
+
+template <typename TYPE>
+void
+map_from_json(json & data, std::map<std::string, TYPE> & mapping)
+{
+    mapping.clear();
+    for (auto & p : data.items())
+        mapping[p.key()] = TYPE(p.value());
+}
+
+template <typename TYPE>
+json
+vector_to_json(std::vector<TYPE*> & listing)
+{
+    json data;
+
+    for (auto & v : listing)
+        data.push_back(v->to_json());
+
+    return data;
+}
+
+template <typename TYPE>
+json
+vector_to_json(std::vector<TYPE> & listing)
+{
+    return json(listing);
+}
+
+template <typename TYPE>
+void
+vector_from_json(json & data, std::vector<TYPE*> & listing, bool deleteData=true)
+{
+    if (deleteData)
+        for (auto & v : listing)
+            delete v;
+
+    listing.clear();
+
+    for (auto & v : data)
+        listing.push_back(new TYPE(v));
+}
+
+template <typename TYPE>
+void
+vector_from_json(json & data, std::vector<TYPE> & listing)
+{
+    listing.clear();
+    for (auto & v : data)
+        listing.push_back(v.get<TYPE>());
+}
 
 
 class Param
 {
 public:
+
     bool active;
     std::vector<std::string> args;
 
 public:
-    Param() : active(true) { }
-};
 
+    Param() :
+        active(true)
+    {
+
+    }
+
+    Param(json & data)
+    {
+        active = data["active"].get<bool>();
+        vector_from_json(data["args"], args);
+    }
+
+    json
+    to_json()
+    {
+        json data;
+        data["active"] = active;
+        data["args"] = args;
+        return data;
+    }
+
+};
 
 
 class ParamNameSpace
 {
 public:
-    const string name;
+
+    string name;
     std::map<std::string, Param*> mem;
 
 public:
+
     ParamNameSpace(const char * name) : name(name)
     {
         mem["_"] = new Param();
@@ -40,6 +155,22 @@ public:
         for (auto it : mem)
             delete it.second;
     }
+
+    ParamNameSpace(json & data)
+    {
+        name = data["name"].get<string>();
+        map_from_json(data["mem"], mem);
+    }
+
+    json
+    to_json()
+    {
+        json data;
+        data["name"] = name;
+        data["mem"] = map_to_json(mem);
+        return data;
+    }
+
 };
 
 
@@ -116,6 +247,20 @@ public:
     {
         for (auto it : namespaces)
             delete it.second;
+    }
+
+    Params(json & data)
+    {
+        map_from_json(data["namespaces"], namespaces);
+        ns = namespaces["_"];
+    }
+
+    json
+    to_json()
+    {
+        json data;
+        data["namespaces"] = map_to_json(namespaces);
+        return data;
     }
 
     void

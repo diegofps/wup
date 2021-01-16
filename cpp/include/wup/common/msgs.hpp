@@ -114,7 +114,7 @@ std::string joinList(const S sep, const std::vector<I> & list)
     std::stringstream ss;
     ss << list[0];
 
-    for (size_t i=1;i!=list.size;++i)
+    for (size_t i=1;i!=list.size();++i)
         ss << sep << list[i];
     
     return ss.str();
@@ -213,6 +213,14 @@ void _error(const Args&... args)
     _printn(msg);
 
     throw WUPException(tmp);
+}
+
+template <typename... Args>
+void bright(const Args&... args)
+{
+    auto tmp = join(" ", args...);
+    auto msg = cat(BRIGHTER, tmp, NORMAL, "\n");
+    _printn(msg);
 }
 
 #define WRAP_LOGPREFIX(name, subname) \

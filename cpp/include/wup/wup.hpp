@@ -47,4 +47,6 @@
 #include <wup/nodes/all.hpp>
 #include <wup/nodes/streamencoder.hpp>
 
+#include <wup/third_party/json.hpp>
+
 #endif /* INCLUDE_WUP_HPP */

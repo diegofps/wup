@@ -84,9 +84,7 @@ public:
 private:
 
     mutex _mutex1;
-
     mutex _mutex2;
-
     int _counter;
 
 };
@@ -154,17 +152,11 @@ public:
 private:
 
     int _size;
-
     T *_mem;
-
     int _posWrite;
-
     int _posRead;
-
     Semaphore _semRead;
-
     Semaphore _semWrite;
-
     mutex m;
 
 };
@@ -205,9 +197,7 @@ public:
 private:
 
     priority_queue<T, std::vector<T>, std::function<bool(const T &, const T &)>> queue;
-
     Semaphore _semRead;
-
     mutex m;
 
 };
@@ -268,6 +258,7 @@ void parallel_blocks_thread(Pipe<int> * const p, F f, const int tid, const size_
         blockId = p->get();
     }
 }
+
 
 template <typename F>
 void parallelBlocks(const uint threads, const size_t jobs, const size_t blockSize, F f)

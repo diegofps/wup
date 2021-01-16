@@ -10,6 +10,9 @@
 #include <stdint.h>
 #include <limits.h>
 
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
+
 #include <wup/common/exceptions.hpp>
 #include <wup/common/msgs.hpp>
 
@@ -17,26 +20,14 @@ using namespace std;
 
 namespace wup {
 
-typedef struct _BOX {
-
+typedef struct _BOX
+{
     uint id;
-
     double w;
 
-    _BOX()
-    {
-
-    }
-
-    _BOX(const uint _id, const double _w) : id(_id), w(_w)
-    {
-
-    }
-
-    bool operator<(const wup::_BOX & other)
-    {
-        return w < other.w;
-    }
+    _BOX() { }
+    _BOX(const uint _id, const double _w) : id(_id), w(_w) { }
+    bool operator<(const wup::_BOX & other) { return w < other.w; }
 
 } BOX;
 
@@ -45,28 +36,7 @@ inline double log2(const double value)
 { return log(value) / log(2.); }
 #endif
 
-template <typename T, typename B>
-void
-prevIndex(T & index, const B & size, bool loop=true)
-{
-    if (size == 0)
-    {
-        index = 0;
-    }
-
-    else if (index == 0)
-    {
-        if (loop)
-            index = size - 1;
-    }
-
-    else
-    {
-        --index;
-    }
-}
-
-void
+inline void
 intersect1D(const int & a1, const int & aw,
             const int & b1, const int & bw,
             int & c, int & cw)
@@ -110,6 +80,58 @@ intersect1D(const int & a1, const int & aw,
     {
         c  = 0;
         cw = 0;
+    }
+}
+
+inline void
+getEnv(const char * envVar,
+       const char * defaultValue,
+       string & dst)
+{
+    const char * const value = getenv(envVar);
+    dst = value == nullptr ? defaultValue : value;
+}
+
+inline void
+getHostname(string & dst)
+{
+    dst.resize(HOST_NAME_MAX);
+    gethostname(&dst[0], HOST_NAME_MAX);
+
+    size_t i = 0;
+    while (i!=HOST_NAME_MAX && dst[i] == '\0') ++i;
+    dst.resize(i);
+}
+
+inline void
+getUsername(string & dst)
+{
+    dst.resize(LOGIN_NAME_MAX);
+    getlogin_r(&dst[0], LOGIN_NAME_MAX);
+
+    size_t i = 0;
+    while (i!=HOST_NAME_MAX && dst[i] == '\0') ++i;
+    dst.resize(i);
+}
+
+template <typename T, typename B>
+void
+prevIndex(T & index, const B & size, bool loop=true)
+{
+    if (size == 0)
+    {
+        index = 0;
+    }
+
+    else if (index == 0)
+    {
+        if (loop)
+            index = size - 1;
+    }
+
+    else
+    {
+        --index;
     }
 }
 
@@ -1063,6 +1085,14 @@ void
 removeChar(string & data, const char c)
 {
     data.resize(removeChar(&data[0], data.size(), c));
+}
+
+string
+uuid()
+{
+    string tmp = boost::uuids::to_string(boost::uuids::random_generator()());
+    removeChar(tmp, '-');
+    return tmp;
 }
 
 inline uint32_t
