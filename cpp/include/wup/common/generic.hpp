@@ -96,10 +96,10 @@ inline void
 getHostname(string & dst)
 {
     dst.resize(HOST_NAME_MAX);
-    gethostname(&dst[0], HOST_NAME_MAX);
+    int result = gethostname(&dst[0], HOST_NAME_MAX);
 
     size_t i = 0;
-    while (i!=HOST_NAME_MAX && dst[i] == '\0') ++i;
+    while (i!=HOST_NAME_MAX && dst[i] != '\0') ++i;
     dst.resize(i);
 }
 
@@ -110,7 +110,7 @@ getUsername(string & dst)
     getlogin_r(&dst[0], LOGIN_NAME_MAX);
 
     size_t i = 0;
-    while (i!=HOST_NAME_MAX && dst[i] == '\0') ++i;
+    while (i!=HOST_NAME_MAX && dst[i] != '\0') ++i;
     dst.resize(i);
 }
 

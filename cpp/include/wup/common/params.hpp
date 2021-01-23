@@ -568,6 +568,7 @@ public:
             printn(" ", pair.first);
 
         error("Invalid value for", cmd);
+        return ENUM_TYPE();
     }
 
 
