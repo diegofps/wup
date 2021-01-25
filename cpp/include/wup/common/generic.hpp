@@ -632,6 +632,10 @@ slice_to(const string str, int b)
     return slice(str, 0, b);
 }
 
+//////////////////////
+// Array Functions //
+//////////////////////
+
 template <typename T, typename SIZE>
 int indexOfMax(const T * const mem, const SIZE & length)
 {
@@ -793,8 +797,8 @@ double arrayMean(const A * const array, const int length)
     return tmp / double(length);
 }
 
-template <typename A>
-void arrayMeanNStd(const A * const data, const size_t len, A & mean, A & std)
+template <typename A, typename B>
+void arrayMeanNStd(const B * const data, const size_t len, A & mean, A & std)
 {
     A s1 = 0;
     A s2 = 0;
@@ -808,8 +812,8 @@ void arrayMeanNStd(const A * const data, const size_t len, A & mean, A & std)
     meanNstd(len, s1, s2, mean, std);
 }
 
-template <typename A>
-void arrayStats(const A * const data, const size_t len, A & minimum, A & maximum, A & mean, A & std)
+template <typename A, typename B>
+void arrayStats(const B * const data, const size_t len, A & minimum, A & maximum, A & mean, A & std)
 {
     if (len == 0)
     {
