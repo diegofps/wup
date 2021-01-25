@@ -11,84 +11,36 @@
 
 namespace wup {
 
-class random {
-private:
-
-    double _gaussianSpare;
+class NaiveGenerator
+{
+public:
 
     bool _hasGaussianSpare;
-
-//    std::default_random_engine generator;
-    std::mt19937 generator;
-    std::normal_distribution<long double> distribution;
-    std::uniform_real_distribution<long double> dist2;
-
+    double _gaussianSpare;
     uint seed;
 
 public:
 
-    random() :
-        _hasGaussianSpare(false),
-        distribution(0.0,1.0),
-        dist2(0.0,1.0)
+    NaiveGenerator() :
+        _hasGaussianSpare(false)
     {
-        //srand(time(NULL));
-//        srand(std::chrono::system_clock::now().time_since_epoch().count());
         seed = std::chrono::system_clock::now().time_since_epoch().count();
     }
 
-    bool fairCoin()
-    {
-        return rand_r(&seed) % 2;
-    }
-
-    bool unfairCoin(const double & v)
-    {
-        return rand_r(&seed) / static_cast<double>(RAND_MAX) < v;
-    }
-
-    int uniformIntNoise(const int& lower, const int& upper)
-    {
-        return lower + rand_r(&seed) % (upper-lower);
-    }
-
-    int uniformIntNoise(const int& upper)
-    {
-        return rand_r(&seed) % upper;
-    }
-
-    int uniformIntNoise()
+    int
+    uniformInt()
     {
         return rand_r(&seed);
     }
 
-    double uniformNoise(const double& lower, const double& upper)
-    {
-        return lower + uniformNoise() * (upper - lower);
-    }
-
-    double uniformNoise(const double& upper)
-    {
-        return uniformNoise(0.0, upper);
-    }
-
-    long double uniformNoise()
+    double
+    uniformDouble()
     {
         return rand_r(&seed) / static_cast<double>(RAND_MAX);
-//        return dist2(generator);
     }
 
-    double gaussianNoise(const double& mean, const double &stdDev)
-    {
-        return mean + stdDev * gaussianNoise();
-    }
-
-    long double gaussianNoise2()
-    {
-        return distribution(generator);
-    }
-
-    double gaussianNoise()
+    double
+    normalDouble()
     {
         // Based on Marsaglia Polar Method
         // https://en.wikipedia.org/wiki/Marsaglia_polar_method
@@ -104,8 +56,8 @@ public:
         double u, v, s;
         do
         {
-            u = uniformNoise() * 2.0 - 1.0;
-            v = uniformNoise() * 2.0 - 1.0;
+            u = uniformDouble() * 2.0 - 1.0;
+            v = uniformDouble() * 2.0 - 1.0;
             s = u * u + v * v;
         }
         while( (s >= 1.0) || (s == 0.0) );
@@ -116,13 +68,134 @@ public:
         return u * s;
     }
 
+};
+
+
+class StrongGenerator
+{
+public:
+
+    std::mt19937 generator;
+    std::normal_distribution<double> normal1;
+    std::uniform_real_distribution<double> uniform1;
+    std::uniform_int_distribution<int> uniform2;
+
+public:
+
+    StrongGenerator() :
+        normal1(0.0,1.0),
+        uniform1(0.0,1.0),
+        uniform2(0,RAND_MAX)
+    {
+
+    }
+
+    int
+    uniformInt()
+    {
+        return uniform2(generator);
+    }
+
+    double
+    uniformDouble()
+    {
+        return uniform1(generator);
+    }
+
+    double
+    normalDouble()
+    {
+        return normal1(generator);
+    }
+
+};
+
+
+template <typename BASE>
+class base_random {
+private:
+
+    BASE base;
+
+public:
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////
+    // Coin generators
+    ////////////////////////////////////////////////////////////////////////////////////////
+
+    bool fairCoin()
+    {
+        return base.uniformInt() % 2;
+    }
+
+    bool unfairCoin(const double & v)
+    {
+        return base.uniformInt() < v * RAND_MAX;
+    }
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////
+    // Int generators
+    ////////////////////////////////////////////////////////////////////////////////////////
+
+    int uniformInt(const int & lower, const int & upper)
+    {
+        return lower + base.uniformInt() % (upper - lower);
+    }
+
+    int uniformInt(const int & upper)
+    {
+        return base.uniformInt() % upper;
+    }
+
+    int uniformInt()
+    {
+        return base.uniformInt();
+    }
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////
+    // Double generators
+    ////////////////////////////////////////////////////////////////////////////////////////
+
+    double uniformDouble(const double & lower, const double & upper)
+    {
+        return lower + uniformDouble() * (upper - lower);
+    }
+
+    double uniformDouble(const double& upper)
+    {
+        return uniformDouble(0.0, upper);
+    }
+
+    double uniformDouble()
+    {
+        return base.uniformDouble();
+    }
+
+    double normalDouble(const double& mean, const double &stdDev)
+    {
+        return mean + stdDev * normalDouble();
+    }
+
+    double normalDouble()
+    {
+        return base.normalDouble();
+    }
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////
+    // Arrays and matrix generators
+    ////////////////////////////////////////////////////////////////////////////////////////
+
     template <typename T>
     T *
     shuffle(T * const data, const uint32_t n)
     {
         for (uint32_t i=0;i!=n-1;++i)
         {
-            const uint32_t pivot = rand_r(&seed) % (n - i);
+            const uint32_t pivot = base.uniformInt() % (n - i);
             const uint32_t final  = n-i-1;
 
             const T tmp = data[pivot];
@@ -209,6 +282,9 @@ public:
     }
 
 };
+
+typedef base_random<NaiveGenerator> random;
+//typedef base_random<StrongGenerator> random;
 
 }
 
