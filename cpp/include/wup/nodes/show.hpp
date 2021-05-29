@@ -9,18 +9,13 @@ namespace node {
 
 class Show : public Node {
 private:
-
     Bundle<double> _bundle;
-
     int _counter;
-
     bool _eachStep;
-
     const std::string _label;
-
     int _onlySample;
-
     bool _noPrint;
+    int _currentSample;
 
 public:
 
@@ -36,7 +31,7 @@ public:
         _onlySample(onlySample),
         _noPrint(true)
     {
-
+        _bundle.clear();
     }
 
     Show(Node * const parent, IntReader & reader) :
@@ -65,7 +60,8 @@ public:
     void onStart(const int & sampleId)
     {
         //print(sampleId);
-        _noPrint = sampleId != _onlySample;
+        _noPrint = _onlySample != -1 && sampleId != _onlySample;
+        _currentSample = sampleId;
     }
 
     ~Show()
@@ -122,7 +118,7 @@ public:
         const int numCols = _bundle.numCols();
         std::stringstream ss;
 
-        LOGD("%s : %d", _label.c_str(), _onlySample);
+        LOGD("%s : %d", _label.c_str(), _currentSample);
         for (int i=0;i<numRows; ++i) {
             ss.clear();
             for (int j=0;j<numCols; ++j)
@@ -130,7 +126,7 @@ public:
             LOGD("%d: %s", i, ss.str().c_str());
         }
 #else
-        print(_label, " : ", _onlySample);
+        print(_label, " : ", _currentSample);
         print(_bundle);
 #endif
         _bundle.clear();

@@ -30,13 +30,13 @@ public:
             _boxes(nullptr)
     {
     	if (reader.get() != -1)
-    		throw new WUPException("Invalid file");
+    		throw WUPException("Invalid file");
 
         kernelgens::importKernels(reader, _dims, _numKernels, _kernels);
         _k = reader.get();
 
         if (reader.get() != -1)
-			throw new WUPException("Invalid file");
+		throw WUPException("Invalid file");
 
         _tmp = new double[_dims];
         _boxes = new BOX[_numKernels];
@@ -186,7 +186,7 @@ public:
             _outputBits(new int[_kernelSpace.numKernels() * _term_bits])
     {
         if (reader.get() != -1)
-            throw new WUPException("Could not import kernelcanvas");
+            throw WUPException("Could not import kernelcanvas");
     }
 
     KernelCanvas(const uint inputs, const uint numKernels, const double act,

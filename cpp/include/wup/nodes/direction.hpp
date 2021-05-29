@@ -56,7 +56,7 @@ public:
     {
 #ifndef WUP_UNSAFE
         if (input.size() < 2)
-            throw new WUPException("Feature is too short, need at least two columns");
+            throw WUPException("Feature is too short, need at least two columns");
 #endif
 
         Feature & out = output();

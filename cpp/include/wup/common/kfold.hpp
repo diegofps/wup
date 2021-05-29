@@ -288,7 +288,7 @@ public:
         std::ifstream file_in( filePath );
 
         if (!file_in.good())
-            throw new WUPException("Could not open kfold file");
+            throw WUPException("Could not open kfold file");
 
         else if (oldStyle)
             loadOldStyleFromStream(ds, file_in);

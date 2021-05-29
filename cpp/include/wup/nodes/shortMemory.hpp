@@ -17,7 +17,7 @@ public:
         _current(0)
     {
         if (times < 1)
-            throw new WUPException(cat("Can't replicate ", times, " times"));
+            throw WUPException(cat("Can't replicate ", times, " times"));
     }
 
     ShortMemory(const ShortMemory & other) :

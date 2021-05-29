@@ -292,7 +292,7 @@ public:
 
     virtual void onExport(iwriter & writer)
     {
-        throw new WUPException("Not implemented");
+        throw WUPException("Not implemented");
     }
 
 };

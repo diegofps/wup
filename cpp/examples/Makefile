@@ -13,6 +13,9 @@ t3:
 t4:
 	clang++ -std=c++11 test4.cpp -o test4 -Wall -O3
 
+t5:
+	clang++ test5.cpp -o test5 -Wall -std=c++11 -O3 -DWUP_NO_OPENCV -lpthread
+
 dtest1:
 	clang++ -std=c++14 test1.cpp -o test1 -Wall -g
 
@@ -31,5 +34,4 @@ vtest4:
 	valgrind --leak-check=full --show-leak-kinds=all ./test4
 
 clean:
-	rm -f test1 test2 test3 test4
-
+	rm -f test1 test2 test3 test4 test5

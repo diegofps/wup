@@ -98,9 +98,7 @@ public:
     }
 
 private:
-
     uint _size;
-
     double * _mem;
 
 };

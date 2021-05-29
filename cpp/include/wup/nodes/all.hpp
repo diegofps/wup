@@ -17,5 +17,6 @@
 #include <wup/nodes/unary.hpp>
 #include <wup/nodes/box2d.hpp>
 #include <wup/nodes/steps.hpp>
+#include <wup/nodes/add.hpp>
 
 #endif // ALL_HPP

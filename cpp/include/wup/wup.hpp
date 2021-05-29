@@ -8,6 +8,7 @@
 
 #define WUP_STATICS namespace wup { std::string logPrefix; };
 
+#include <wup/common/base64.hpp>
 #include <wup/common/exceptions.hpp>
 #include <wup/common/msgs.hpp>
 #include <wup/common/generic.hpp>

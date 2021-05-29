@@ -710,7 +710,7 @@ private:
 
 };
 
-std::ostream &
+inline std::ostream &
 operator<<(std::ostream & o, const Params & p)
 {
     p.show(o);

@@ -11,12 +11,13 @@
 
 namespace wup {
 
+template <typename PRECISION>
 class NaiveGenerator
 {
 public:
 
     bool _hasGaussianSpare;
-    double _gaussianSpare;
+    PRECISION _gaussianSpare;
     uint seed;
 
 public:
@@ -33,13 +34,13 @@ public:
         return rand_r(&seed);
     }
 
-    double
+    PRECISION
     uniformDouble()
     {
-        return rand_r(&seed) / static_cast<double>(RAND_MAX);
+        return rand_r(&seed) / static_cast<PRECISION>(RAND_MAX);
     }
 
-    double
+    PRECISION
     normalDouble()
     {
         // Based on Marsaglia Polar Method
@@ -53,7 +54,7 @@ public:
         }
 
         _hasGaussianSpare = true;
-        double u, v, s;
+        PRECISION u, v, s;
         do
         {
             u = uniformDouble() * 2.0 - 1.0;
@@ -71,13 +72,14 @@ public:
 };
 
 
+template <typename PRECISION>
 class StrongGenerator
 {
 public:
 
     std::mt19937 generator;
-    std::normal_distribution<double> normal1;
-    std::uniform_real_distribution<double> uniform1;
+    std::normal_distribution<PRECISION> normal1;
+    std::uniform_real_distribution<PRECISION> uniform1;
     std::uniform_int_distribution<int> uniform2;
 
 public:
@@ -96,13 +98,13 @@ public:
         return uniform2(generator);
     }
 
-    double
+    PRECISION
     uniformDouble()
     {
         return uniform1(generator);
     }
 
-    double
+    PRECISION
     normalDouble()
     {
         return normal1(generator);
@@ -111,7 +113,7 @@ public:
 };
 
 
-template <typename BASE>
+template <typename BASE, typename PRECISION>
 class base_random {
 private:
 
@@ -159,27 +161,27 @@ public:
     // Double generators
     ////////////////////////////////////////////////////////////////////////////////////////
 
-    double uniformDouble(const double & lower, const double & upper)
+    PRECISION uniformDouble(const PRECISION & lower, const PRECISION & upper)
     {
         return lower + uniformDouble() * (upper - lower);
     }
 
-    double uniformDouble(const double& upper)
+    PRECISION uniformDouble(const double& upper)
     {
         return uniformDouble(0.0, upper);
     }
 
-    double uniformDouble()
+    PRECISION uniformDouble()
     {
         return base.uniformDouble();
     }
 
-    double normalDouble(const double& mean, const double &stdDev)
+    PRECISION normalDouble(const double& mean, const double &stdDev)
     {
         return mean + stdDev * normalDouble();
     }
 
-    double normalDouble()
+    PRECISION normalDouble()
     {
         return base.normalDouble();
     }
@@ -283,8 +285,8 @@ public:
 
 };
 
-typedef base_random<NaiveGenerator> random;
-//typedef base_random<StrongGenerator> random;
+typedef base_random<NaiveGenerator<double>, double> random;
+//typedef base_random<StrongGenerator<double>, double> random;
 
 }
 

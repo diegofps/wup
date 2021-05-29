@@ -32,6 +32,7 @@ class BaseWisard
 {
 public:
     
+    random r;
     typedef std::map<int, int> MultiDiscriminator;
     typedef std::unordered_map<Decoder, MultiDiscriminator> Ram;
 
@@ -58,7 +59,7 @@ public:
     {
         _rams = new Ram[_numRams]();
         _activations = new int[_activationsCapacity]();
-        _shuffling = randperm(_numInputBits);
+        _shuffling = r.randperm(_numInputBits);
         _decoders = new Decoder[_numRams]();
         
         for (int i=0;i<_numRams;++i) 
@@ -133,16 +134,16 @@ public:
             _decoders = new Decoder[_numRams];
 
             if (_activations == NULL)
-                throw new WUPException("Out of memory");
+                throw WUPException("Out of memory");
 
             if (_rams == NULL)
-                throw new WUPException("Out of memory");
+                throw WUPException("Out of memory");
 
             if (_shuffling == NULL)
-                throw new WUPException("Out of memory");
+                throw WUPException("Out of memory");
 
             if (_decoders == NULL)
-                throw new WUPException("Out of memory");
+                throw WUPException("Out of memory");
 
             // Carrega o shuffling
             for (int i=0;i<_numInputBits;++i)

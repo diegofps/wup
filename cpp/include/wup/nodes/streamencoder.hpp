@@ -44,7 +44,7 @@ public:
         registerNodeReaders();
 
         if (reader.get() != -1)
-            throw new WUPException("Invalid file");
+            throw WUPException("Invalid file");
 
         if (reader.get() == 1)
         {
@@ -54,7 +54,7 @@ public:
         }
 
         if (reader.get() != -1)
-            throw new WUPException("Invalid file");
+            throw WUPException("Invalid file");
     }
 
     ~StreamEncoder()
@@ -191,7 +191,7 @@ private:
         const std::string nodeName = reader.getString();
         auto it = _nodeReader.find(nodeName);
         if (it == _nodeReader.end())
-            throw new WUPException("Unknown node type");
+            throw WUPException("Unknown node type");
 
         Node * newNode = it->second(parent, reader);
 
@@ -207,6 +207,7 @@ private:
     registerNodeReaders()
     {
         addNodeReader<node::Node>();
+        addNodeReader<node::Add>();
         addNodeReader<node::Show>();
         addNodeReader<node::Direction>();
         addNodeReader<node::ZScore>();

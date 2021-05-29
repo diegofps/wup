@@ -274,7 +274,7 @@ public:
         {
             _capacity *= 2;
             _data = (T*) realloc(_data, _capacity * sizeof(T));
-            print("Resizing buffer, new size = ", _capacity);
+            // print("Resizing buffer, new size = ", _capacity);
         }
 
         _data[_size] = t;
@@ -288,7 +288,7 @@ public:
         {
             _capacity = _size + len;
             _data = (T*) realloc(_data, _capacity * sizeof(T));
-            print("Resizing buffer, new size = ", _capacity);
+            // print("Resizing buffer, new size = ", _capacity);
         }
 
         std::copy(ptr, ptr + len, _data + _size);

@@ -14,25 +14,15 @@ namespace node {
 
 class Node {
 private:
-
     wup::node::Node * _parent;
-
     double * _outputBuffer;
-
     Feature _output;
-
     ref_vector<Node> _children;
-
     ref_vector<Node> _emitters;
-
     uint _patternLength;
-
     uint _realPatternLength;
-
     int * _patternOutput;
-
     double * _realPatternOutput;
-
     bool _actsAsPattern;
 
 public:
@@ -68,7 +58,7 @@ public:
         _actsAsPattern(false)
     {
         if (reader.get() != -1)
-            throw new WUPException("Invalid file");
+            throw WUPException("Invalid file");
 
         uint outputSize = reader.getUInt32();
         _actsAsPattern = reader.get();
@@ -77,7 +67,7 @@ public:
         _output.remap(_outputBuffer, outputSize);
 
         if (reader.get() != -1)
-            throw new WUPException("Invalid file");
+            throw WUPException("Invalid file");
     }
 
     void exportTo(IntWriter & writer)
@@ -225,7 +215,7 @@ public:
     virtual void
     toPattern(int *)
     {
-        throw new WUPException("This class may not be used as a pattern member");
+        throw WUPException("This class may not be used as a pattern member");
     }
 
     virtual uint

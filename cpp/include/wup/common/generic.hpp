@@ -778,6 +778,15 @@ void indexOfMin2(const T * const mem, const SIZE & length, int &i1, int &i2)
 }
 
 template <typename A>
+A arraySum(const A * const array, const int length)
+{
+    A tmp = 0;
+    for (int i=0;i!=length;++i)
+        tmp += array[i];
+    return tmp;
+}
+
+template <typename A>
 A arrayMax(const A * const array, const int length)
 {
     return array[indexOfMax(array, length)];
@@ -833,6 +842,12 @@ void arrayStats(const B * const data, const size_t len, A & minimum, A & maximum
 //////////////////////
 // Vector Functions //
 //////////////////////
+
+template <typename A>
+A arraySum(const vector<A> & data)
+{
+    return arraySum(data.data(), data.size());
+}
 
 template <typename A>
 A arrayMax(const vector<A> & data)
@@ -1062,7 +1077,7 @@ endsWith(const string & src,
     return endsWith(src.c_str(), src.size(), prefix.c_str(), prefix.size());
 }
 
-size_t
+inline size_t
 removeChar(char * const data, const size_t len, const char c)
 {
     size_t a = 0;
@@ -1085,13 +1100,13 @@ removeChar(char * const data, const size_t len, const char c)
     return b;
 }
 
-void
+inline void
 removeChar(string & data, const char c)
 {
     data.resize(removeChar(&data[0], data.size(), c));
 }
 
-string
+inline string
 uuid()
 {
     string tmp = boost::uuids::to_string(boost::uuids::random_generator()());
