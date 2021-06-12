@@ -337,7 +337,7 @@ public:
     // This is used when the dataset already contains a kfold division
     KFold(const Dataset &ds) : _ds(&ds), _numFolds(0), _folds(NULL)
     {
-        auto attributes = ds.attr();
+        auto & attributes = ds.attr();
 
         if (attributes.numCols() < 3)
             throw WUPException("This dataset does not contains an inner kfold");

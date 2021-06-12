@@ -5,6 +5,8 @@
 #include <vector>
 #include <cstdint>
 
+#include <wup/common/sbio.hpp>
+
 namespace wup {
 
 template <typename T>
@@ -20,7 +22,8 @@ private:
 
 public:
 
-    Bundle3D() : Bundle3D(1, 1, 1)
+    Bundle3D() :
+        Bundle3D(1, 1, 1)
     {
 
     }
@@ -95,6 +98,38 @@ public:
     {
         if (_ownerOfData)
             delete [] _data;
+    }
+
+    Bundle3D(IntReader & reader) :
+        _dim1(reader.getUInt32()),
+        _dim2(reader.getUInt32()),
+        _dim3(reader.getUInt32()),
+        _planeSize(_dim2*_dim3),
+        _data(new T[_dim1 * _dim2 * _dim3]()),
+        _ownerOfData(true)
+    {
+        if (reader.getBool())
+            reader.getData(_data, _dim1 * _dim2 * _dim3 * sizeof(T));
+
+        reader.getMilestone();
+    }
+
+    void
+    exportTo(IntWriter & writer, bool exportData=true)
+    {
+        if (!_ownerOfData)
+            throw WUPException("Bundle can't be automatically exported when it does not own the data.");
+
+        writer.putUInt32(_dim1);
+        writer.putUInt32(_dim2);
+        writer.putUInt32(_dim3);
+
+        writer.putBool(exportData);
+
+        if (exportData)
+            writer.putData(_data, _dim1 * _dim2 * _dim3 * sizeof(T));
+
+        writer.putMilestone();
     }
 
     Bundle3D<T> &

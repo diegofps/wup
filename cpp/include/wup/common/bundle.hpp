@@ -8,6 +8,7 @@
 
 #include <wup/common/msgs.hpp>
 #include <wup/common/generic.hpp>
+#include <wup/common/sbio.hpp>
 
 namespace wup {
 
@@ -106,6 +107,37 @@ public:
     {
         if (_ownerOfData)
             delete [] _data;
+    }
+
+    Bundle(IntReader & reader) :
+        _columns(reader.getUInt32()),
+        _capacity(reader.getUInt32()),
+        _size(reader.getUInt32()),
+        _data(new T[_capacity]),
+        _ownerOfData(true)
+    {
+        if (reader.getBool())
+            reader.getData(_data, _size * sizeof(T));
+
+        reader.getMilestone();
+    }
+
+    void
+    exportTo(IntWriter & writer, bool exportData=true)
+    {
+        if (!_ownerOfData)
+            throw WUPException("Bundle can't be automatically exported when it does not own the data.");
+
+        writer.putUInt32(_columns);
+        writer.putUInt32(_capacity);
+        writer.putUInt32(_size);
+
+        writer.putBool(exportData);
+
+        if (exportData)
+            writer.putData(_data, _size * sizeof(T));
+
+        writer.putMilestone();
     }
 
     Bundle<T> & operator=(const Bundle<T> & other)
@@ -460,7 +492,7 @@ std::ostream & operator<<(std::ostream & o, const wup::Bundle<T> & bundle)
 {
     for (uint i=0; i<bundle.numRows(); ++i)
     {
-        o << bundle(i, 0);
+        o << bundle(i, uint(0));
 
         for (uint j=1; j<bundle.numCols(); ++j)
             o << "," << bundle(i, j);

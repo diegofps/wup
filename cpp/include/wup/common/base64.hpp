@@ -23,8 +23,8 @@ public:
 
     base64()
     {
-        for (int i=0;i!=64;++i)
-            char2binary[binary2char[i]] = i;
+        for (uchar i=0;i!=64;++i)
+            char2binary[uint(binary2char[i])] = i;
         
         char2binary['+'] = char2binary['-'];
         char2binary['/'] = char2binary['_'];

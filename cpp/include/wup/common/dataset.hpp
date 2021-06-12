@@ -28,7 +28,7 @@ public:
     
     Feature(Bundle<double> &data, const uint row) :
         _size(data.numCols()),
-        _mem(&data(row, 0))
+        _mem(&data(row, uint(0)))
     {
 
     }

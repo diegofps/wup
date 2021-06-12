@@ -644,12 +644,19 @@ public:
         return src.get();
     }
 
+    void
+    getMilestone()
+    {
+        if (getInt32() != -1)
+            throw WUPException("Corrupted file");
+    }
+
     std::string
     getString()
     {
-        const uint64_t numBytes = getSize();
+        uint64_t const numBytes = getSize();
         std::string tmp(numBytes, 'a');
-        getBytes((char*)tmp.c_str(), numBytes);
+        getData((char*)tmp.c_str(), numBytes);
         return tmp;
     }
 
@@ -741,17 +748,18 @@ public:
         return getUInt64();
     }
 
-    void *
-    getBytes()
+    template <typename T>
+    T *
+    getArray()
     {
-        const uint64_t numBytes = getSize();
-        uint8_t * buffer = new uint8_t[numBytes];
-        getBytes(buffer, numBytes);
+        uint64_t const eltos = getSize();
+        T * buffer = new T[eltos];
+        getData(buffer, eltos * sizeof(T));
         return buffer;
     }
 
     void
-    getBytes(void * _buffer, uint64_t numBytes)
+    getData(void * const _buffer, uint64_t numBytes)
     {
         uint8_t * buffer = (uint8_t *) _buffer;
         const uint64_t eltos = numBytes / sizeof(int32_t);
@@ -804,6 +812,12 @@ public:
     put(const int32_t & v)
     {
         snk.put(v);
+    }
+
+    void
+    putMilestone()
+    {
+        putInt32(-1);
     }
 
     void
@@ -876,28 +890,50 @@ public:
     void
     putString(const string & str)
     {
-        putBytes(str.data(), str.size());
+        putSize(str.size());
+        putData(str.data(), str.size());
     }
 
     template <typename T>
     void
-    putBytes(const T * const data, const uint64_t len)
+    putArray(const T * const data, const uint64_t eltos)
     {
-        const uint64_t bytes = len * sizeof(T);
+        uint64_t const bytes = eltos * sizeof(T);
 
-        const uint8_t * data2 = (uint8_t*) data;
-        const int32_t * data3 = (const int32_t*)data;
+        uint8_t const * const data2 = (uint8_t*) data;
+        int32_t const * const data3 = (const int32_t*)data;
 
-        const int eltos = bytes / sizeof(int32_t);
+        uint64_t const intEltos = bytes / sizeof(int32_t);
 
-        putUInt64(bytes);
-        snk.putMany(data3, eltos);
+        putSize(eltos);
+        snk.putMany(data3, intEltos);
 
         if (bytes % sizeof(int32_t))
         {
             int32_t tmp = 0;
 
-            for (uint i=eltos*sizeof(int32_t);i!=bytes;++i)
+            for (uint64_t i=intEltos*sizeof(int32_t);i!=bytes;++i)
+                tmp = (tmp << 8) | data2[i];
+
+            snk.put(tmp);
+        }
+    }
+
+    void
+    putData(void const * const data, uint64_t const bytes)
+    {
+        uint8_t const * const data2 = (uint8_t const *) data;
+        int32_t const * const data3 = (int32_t const *) data;
+
+        int const intEltos = bytes / sizeof(int32_t);
+
+        snk.putMany(data3, intEltos);
+
+        if (bytes % sizeof(int32_t))
+        {
+            int32_t tmp = 0;
+
+            for (uint i=intEltos*sizeof(int32_t);i!=bytes;++i)
                 tmp = (tmp << 8) | data2[i];
 
             snk.put(tmp);
