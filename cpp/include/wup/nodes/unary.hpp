@@ -8,6 +8,7 @@
 #ifndef INCLUDE_WUP_NODES_UNARY_HPP_
 #define INCLUDE_WUP_NODES_UNARY_HPP_
 
+#include <wup/common/math.hpp>
 #include <wup/nodes/node.hpp>
 
 namespace wup {
@@ -21,7 +22,7 @@ private:
 
     template <typename DST> void
     termometer(DST * const dst, const double value, const int termBits) {
-        const int threshold = wmin((value + 1.0) / 2.0 * termBits, termBits);
+        const int threshold = math::min((value + 1.0) / 2.0 * termBits, termBits);
         int i=0;
         while (i<threshold) dst[i++] = 0;
         while (i<termBits)  dst[i++] = 1;

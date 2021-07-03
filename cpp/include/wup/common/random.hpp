@@ -2,6 +2,9 @@
 #define __WUP_RANDOM_HPP
 
 #include "wup/common/generic.hpp"
+#include "wup/common/ranges.hpp"
+#include "wup/common/array.hpp"
+#include "wup/common/str.hpp"
 
 #include <cstdlib>
 #include <cmath>
@@ -220,7 +223,7 @@ public:
     inline T *
     randperm(const uint n, T * const indexes)
     {
-        range(n, indexes);
+        arr::range(n, indexes);
         shuffle(indexes, n);
         return indexes;
     }
@@ -281,6 +284,19 @@ public:
         uint * const indexes = range3DCell(rows, cols, depth, rowStride);
         shuffle(indexes, rows * cols * depth);
         return indexes;
+    }
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////
+    // Strings
+    ////////////////////////////////////////////////////////////////////////////////////////
+
+    inline string
+    uuid()
+    {
+        string tmp = boost::uuids::to_string(boost::uuids::random_generator()());
+        str::removeChar(tmp, '-');
+        return tmp;
     }
 
 };

@@ -2,6 +2,7 @@
 #define THREADS_HPP
 
 #include <wup/common/generic.hpp>
+#include <wup/common/math.hpp>
 #include <functional>
 #include <thread>
 #include <mutex>
@@ -10,11 +11,14 @@
 namespace wup
 {
 
-using std::thread;
-using std::mutex;
-
 class Semaphore
 {
+private:
+
+    std::mutex _mutex1;
+    std::mutex _mutex2;
+    int _counter;
+
 public:
 
     Semaphore() :
@@ -30,7 +34,8 @@ public:
             _mutex2.lock();
     }
 
-    void acquire()
+    void
+    acquire()
     {
         _mutex2.lock();
         _mutex1.lock();
@@ -43,7 +48,8 @@ public:
         _mutex1.unlock();
     }
 
-    void release()
+    void
+    release()
     {
         _mutex1.lock();
         ++_counter;
@@ -54,7 +60,8 @@ public:
         _mutex1.unlock();
     }
 
-    void add(const int n)
+    void
+    add(const int n)
     {
         _mutex1.lock();
 
@@ -81,34 +88,20 @@ public:
         return _counter;
     }
 
-private:
-
-    mutex _mutex1;
-    mutex _mutex2;
-    int _counter;
-
 };
+
 
 class Barrier
 {
-public:
-
-    Barrier(const int health) :
-        sem(1 - health)
-    {
-
-    }
-
-    void hit()
-    {
-        sem.release();
-    }
-
 private:
-
     Semaphore sem;
 
+public:
+    Barrier(const int health) : sem(1 - health) { }
+    void hit() { sem.release(); }
+
 };
+
 
 template <typename T>
 class Pipe {
@@ -125,7 +118,8 @@ public:
         delete [] _mem;
     }
 
-    Pipe &send(const T &data)
+    Pipe &
+    send(T const & data)
     {
         _semWrite.acquire();
             m.lock();
@@ -137,7 +131,8 @@ public:
         return *this;
     }
 
-    T get()
+    T
+    get()
     {
         _semRead.acquire();
             m.lock();
@@ -157,7 +152,7 @@ private:
     int _posRead;
     Semaphore _semRead;
     Semaphore _semWrite;
-    mutex m;
+    std::mutex m;
 
 };
 
@@ -165,6 +160,12 @@ private:
 template <typename T>
 class WeightedPipe
 {
+private:
+
+    std::priority_queue<T, std::vector<T>, std::function<bool(const T &, const T &)>> queue;
+    Semaphore _semRead;
+    std::mutex m;
+
 public:
 
     WeightedPipe(std::function<bool(const T &, const T &)> & func) :
@@ -194,18 +195,16 @@ public:
         return tmp;
     }
 
-private:
-
-    priority_queue<T, std::vector<T>, std::function<bool(const T &, const T &)>> queue;
-    Semaphore _semRead;
-    mutex m;
-
 };
 
+
 template <typename F>
-void parallel_thread(Pipe<int> * const p, F f, const int tid)
+void parallel_thread(Pipe<int> * const p,
+                     F f,
+                     int32_t const tid)
 {
     int jobId = p->get();
+
     while(jobId >= 0)
     {
         f(tid, jobId);
@@ -213,23 +212,26 @@ void parallel_thread(Pipe<int> * const p, F f, const int tid)
     }
 }
 
+
 // Runs a Pool of jobs in parallel
 //
 // numThreads: Number of threads. If 0 we will use thread::hardware_concurrency()
 // jobs: The number of jobs to run in parallel
 // F: void (*)(const int threadId, const int jobId)
 template <typename F>
-void parallel(uint threads, const size_t jobs, F f)
+void parallel(uint32_t threads,
+              size_t const jobs,
+              F f)
 {
     if (threads == 0)
-        threads = thread::hardware_concurrency();
+        threads = std::thread::hardware_concurrency();
 
     Pipe<int> p;
-    thread *pool = new thread[threads];
+    std::thread * pool = new std::thread[threads];
 
     for (uint t=0;t!=threads;++t) {
         auto func = parallel_thread<F>;
-        pool[t] = thread(func, &p, f, t);
+        pool[t] = std::thread(func, &p, f, t);
     }
 
     for (size_t jobId=0;jobId!=jobs;++jobId)
@@ -246,13 +248,17 @@ void parallel(uint threads, const size_t jobs, F f)
 
 
 template <typename F>
-void parallel_blocks_thread(Pipe<int> * const p, F f, const int tid, const size_t jobs, const size_t blockSize)
+void parallel_blocks_thread(Pipe<int> * const p,
+                            F f,
+                            int const tid,
+                            size_t const jobs,
+                            size_t const blockSize)
 {
     int blockId = p->get();
     while(blockId >= 0)
     {
         const size_t first = blockId * blockSize;
-        const size_t last  = wmin(first + blockSize, jobs);
+        const size_t last  = math::min(first + blockSize, jobs);
 
         f(tid, blockId, first, last);
         blockId = p->get();
@@ -261,16 +267,19 @@ void parallel_blocks_thread(Pipe<int> * const p, F f, const int tid, const size_
 
 
 template <typename F>
-void parallelBlocks(const uint threads, const size_t jobs, const size_t blockSize, F f)
+void parallelBlocks(uint32_t const threads,
+                    size_t const jobs,
+                    size_t const blockSize,
+                    F f)
 {
     const size_t numBlocks = jobs % blockSize
             ? jobs / blockSize + 1
             : jobs / blockSize;
 
     Pipe<int> p;
-    thread *pool = new thread[threads];
+    std::thread * pool = new std::thread[threads];
 
-    for (uint t=0;t!=threads;++t) {
+    for (uint32_t t=0;t!=threads;++t) {
         auto func = parallel_blocks_thread<F>;
         pool[t] = thread(func, &p, f, t, jobs, blockSize);
     }
@@ -278,10 +287,10 @@ void parallelBlocks(const uint threads, const size_t jobs, const size_t blockSiz
     for (size_t blockId=0;blockId!=numBlocks;++blockId)
         p.send(int(blockId));
 
-    for (uint t=0;t!=threads;++t)
+    for (uint32_t t=0;t!=threads;++t)
         p.send(-1);
 
-    for (uint t=0;t!=threads;++t)
+    for (uint32_t t=0;t!=threads;++t)
         pool[t].join();
 
     delete [] pool;

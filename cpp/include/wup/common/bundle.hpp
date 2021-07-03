@@ -7,6 +7,10 @@
 #include <fstream>
 
 #include <wup/common/msgs.hpp>
+#include <wup/common/math.hpp>
+#include <wup/common/array.hpp>
+#include <wup/common/parsers.hpp>
+#include <wup/common/str.hpp>
 #include <wup/common/generic.hpp>
 #include <wup/common/sbio.hpp>
 
@@ -89,7 +93,7 @@ public:
             if (rows <= ignoreRows) continue;
 
             // Quebra a linha em celulas
-            split(line, delimiter, cells);
+            str::split(line, delimiter, cells);
 
             // Guarda o numero de colunas
             if (_columns == 0)
@@ -97,7 +101,7 @@ public:
 
             // Guarda os dados
             for (uint i=0;i<cells.size();++i)
-                push_back( parse_double(cells[i]) );
+                push_back( parseDouble(cells[i]) );
         }
 
         file_in.close();
@@ -156,7 +160,7 @@ public:
 
     template <typename T2, typename I2>
     void
-    importRow(const vector<T2> & other, const I2 dstI)
+    importRow(const std::vector<T2> & other, const I2 dstI)
     {
         const T2 * srcv = other.data();
         T * dstv = & (*this)(dstI,0);
@@ -180,7 +184,7 @@ public:
 
     template <typename T2, typename I1>
     void
-    exportRow(const I1 srcI, vector<T2> & other) const
+    exportRow(const I1 srcI, std::vector<T2> & other) const
     {
         const T * const srcv = & (*this)(srcI,0);
         T2 * const dstv = other.data();
@@ -347,7 +351,7 @@ public:
         return _data + _size;
     }
 
-    void exportTo(const std::string filename) const
+    void exportTo(std::string const filename) const
     {
         std::ofstream fout;
         fout.open(filename.c_str(), std::ios::out);
@@ -359,7 +363,7 @@ public:
         return _data;
     }
 
-    const T * data() const
+    T const * data() const
     {
         return _data;
     }
@@ -375,7 +379,7 @@ public:
 private:
 
     void
-    require(const int quantity)
+    require(int const quantity)
     {
         if (_size + quantity <= _capacity)
             return;
@@ -383,10 +387,10 @@ private:
         if (!_ownerOfData)
             throw WUPException("This Bundle can't be resized. It does not own the data");
 
-        int newCap = max(_capacity + quantity, _capacity * 2);
+        int newCap = math::max(_capacity + quantity, _capacity * 2);
         T * newData = new T[newCap];
 
-        copy(_data, _data + _size, newData);
+        std::copy(_data, _data + _size, newData);
 
         delete [] _data;
         _capacity = newCap;
@@ -401,14 +405,13 @@ class BundleView
 public:
 
     T * data;
-
     uint rows;
-
     uint cols;
-
     uint stride;
 
-    BundleView(Bundle<T> & _bundle, const uint _rows, const uint _cols) :
+    BundleView(Bundle<T> & _bundle,
+               uint const _rows,
+               uint const _cols) :
         data(&_bundle(0, 0)),
         cols(_cols),
         rows(_rows),
@@ -417,7 +420,11 @@ public:
 
     }
 
-    BundleView(Bundle<T> & bundle, const uint i1, const uint j1, const uint i2, const uint j2) :
+    BundleView(Bundle<T> & bundle,
+               uint const i1,
+               uint const j1,
+               uint const i2,
+               uint const j2) :
         data(&bundle(i1, j1)),
         cols(j2-j1),
         rows(i2-i1),
@@ -429,7 +436,10 @@ public:
 #endif
     }
 
-    BundleView(const T * const _data, const uint _rows, const uint _cols, const uint _stride) :
+    BundleView(T const * const _data,
+               uint const _rows,
+               uint const _cols,
+               uint const _stride) :
         data(_data),
         rows(_rows),
         cols(_cols),
@@ -439,7 +449,7 @@ public:
     }
 
     T &
-    operator()(const uint i, const uint j)
+    operator()(uint const i, uint const j)
     {
 #ifndef WUP_UNSAFE
         if (j >= cols || i >= rows || i < 0 || j < 0)
@@ -449,8 +459,8 @@ public:
         return data[index];
     }
 
-    const T &
-    operator()(const uint i, const uint j) const
+    T const &
+    operator()(uint const i, uint const j) const
     {
 #ifndef WUP_UNSAFE
         if (j >= cols || i >= rows || i < 0 || j < 0)
@@ -461,15 +471,15 @@ public:
         return data[index];
     }
 
-    const T &
-    operator[](const uint index) const
+    T const &
+    operator[](uint const index) const
     {
 #ifndef WUP_UNSAFE
         if (index >= cols * rows || index < 0)
             throw WUPException("Out of bounds");
 #endif
-        const uint i = index / cols;
-        const uint j = index % cols;
+        uint const i = index / cols;
+        uint const j = index % cols;
         return (*this)(i, j);
     }
 
@@ -480,15 +490,16 @@ public:
         if (index >= cols * rows || index < 0)
             throw WUPException("Out of bounds");
 #endif
-        const uint i = index / cols;
-        const uint j = index % cols;
+        uint const i = index / cols;
+        uint const j = index % cols;
         return (*this)(i, j);
     }
 
 };
 
 template <typename T>
-std::ostream & operator<<(std::ostream & o, const wup::Bundle<T> & bundle)
+std::ostream & operator<<(std::ostream & o,
+                          wup::Bundle<T> const & bundle)
 {
     for (uint i=0; i<bundle.numRows(); ++i)
     {
@@ -504,7 +515,8 @@ std::ostream & operator<<(std::ostream & o, const wup::Bundle<T> & bundle)
 }
 
 template <typename T>
-std::ostream & operator<<(std::ostream & o, const wup::BundleView<T> & view)
+std::ostream & operator<<(std::ostream & o,
+                          wup::BundleView<T> const & view)
 {
     for (uint i=0; i<view.rows; ++i)
     {
@@ -520,16 +532,16 @@ std::ostream & operator<<(std::ostream & o, const wup::BundleView<T> & view)
 
 template <typename T>
 T
-wmin(const Bundle<T> & data)
+min(Bundle<T> const & data)
 {
-    return arrayMin(&data(0,0), data.size());
+    return arr::min(&data(0,0), data.size());
 }
 
 template <typename T>
 T
-wmax(const Bundle<T> & data)
+max(Bundle<T> const & data)
 {
-    return arrayMax(&data(0,0), data.size());
+    return arr::max(&data(0,0), data.size());
 }
 
 }

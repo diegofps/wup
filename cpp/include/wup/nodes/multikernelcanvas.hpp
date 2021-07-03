@@ -10,6 +10,7 @@
 
 #include <wup/nodes/node.hpp>
 #include <wup/models/kernelcanvas.hpp>
+#include <wup/common/math.hpp>
 #include <cmath>
 
 namespace wup {
@@ -46,7 +47,7 @@ public:
 
         while(i != size)
         {
-            const uint dims = min(kernelDims, size-i);
+            const uint dims = math::min(kernelDims, size-i);
             _kcs.push_back(new KC(kernelDims, numKernels, activation, bits));
             i += dims;
         }

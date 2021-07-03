@@ -24,6 +24,7 @@ private:
 	std::string _msg;
 };
 
+
 class ParsersException : public std::exception {
 public:
 	ParsersException(const char * const m) : _msg(m) 
@@ -41,6 +42,7 @@ public:
 private:
 	std::string _msg;
 };
+
 
 class WUPException : public std::exception {
 public:
@@ -60,6 +62,7 @@ private:
     std::string _msg;
 
 };
+
 
 class WUPNotImplemented : public std::exception
 {

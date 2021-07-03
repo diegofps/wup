@@ -85,7 +85,7 @@ public:
 
         for (uint i=0; i!=_numKernels; ++i)
         {
-            _boxes[i].w = -wup::sdistance(_tmp, _kernels[i], _dims);
+            _boxes[i].w = -math::sdistance(_tmp, _kernels[i], _dims);
             _boxes[i].id = i;
         }
 

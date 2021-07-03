@@ -8,6 +8,8 @@
 
 #include <wup/common/exceptions.hpp>
 #include <wup/common/sbio.hpp>
+#include <wup/common/random.hpp>
+#include <wup/common/math.hpp>
 #include <wup/models/decoders/binarydecoder.hpp>
 #include <wup/models/decoders/graydecoder.hpp>
 #include <wup/models/decoders/basendecoder.hpp>
@@ -65,7 +67,7 @@ public:
         for (int i=0;i<_numRams;++i) 
         {
             const int start = i*_numRamBits;
-            const int end   = min((i+1)*_numRamBits, numInputBits);
+            const int end   = math::min((i+1)*_numRamBits, numInputBits);
             Decoder d(_shuffling + start, end - start);
             _decoders[i] = d;
         }
@@ -153,7 +155,7 @@ public:
             for (int i=0;i<_numRams;++i)
             {
                 const int start = i * _numRamBits;
-                const int end   = min((i+1) * _numRamBits, _numInputBits);
+                const int end   = math::min((i+1) * _numRamBits, _numInputBits);
                 const int len   = end-start;
 
                 Decoder d(_shuffling + start, len);

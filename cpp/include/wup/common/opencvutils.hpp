@@ -4,6 +4,7 @@
 #include <wup/common/bundle3d.hpp>
 #include <wup/common/generic.hpp>
 #include <wup/common/bundle.hpp>
+#include <wup/common/math.hpp>
 #include <opencv2/opencv.hpp>
 #include <vector>
 
@@ -234,8 +235,8 @@ public:
     void
     intersection(const Region & other, Region & result)
     {
-        intersect1D(other.x, other.width, x, width, result.x, result.width);
-        intersect1D(other.y, other.height, y, height, result.y, result.height);
+        math::intersect1D(other.x, other.width, x, width, result.x, result.width);
+        math::intersect1D(other.y, other.height, y, height, result.y, result.height);
     }
     
 };
@@ -849,11 +850,11 @@ selectROI(const char * window, cv::Mat & img, Region & roi, const int minSize=0)
         }
     }
 
-    const int x0 = wmin(points[1].x, points[2].x);
-    const int x1 = wmax(points[1].x, points[2].x);
+    const int x0 = math::min(points[1].x, points[2].x);
+    const int x1 = math::max(points[1].x, points[2].x);
 
-    const int y0 = wmin(points[1].y, points[2].y);
-    const int y1 = wmax(points[1].y, points[2].y);
+    const int y0 = math::min(points[1].y, points[2].y);
+    const int y1 = math::max(points[1].y, points[2].y);
 
     roi.x = x0;
     roi.y = y0;

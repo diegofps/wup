@@ -10,6 +10,7 @@
 
 #include <wup/common/exceptions.hpp>
 #include <wup/common/generic.hpp>
+#include <wup/common/math.hpp>
 
 using std::ofstream;
 using std::ifstream;
@@ -46,7 +47,7 @@ saveBytes(const string filename,
 /// size - Number of bytes read (this is not the number of elements)
 template <typename T>
 void
-loadBytes(const string filename,
+loadBytes(const std::string filename,
           T *& data,
           uint64_t & size)
 {
@@ -78,7 +79,7 @@ loadBytes(const string filename,
                 uint64_t newCapacity = (size + read) * 2;
                 uint8_t * newData = new uint8_t[newCapacity];
 
-                copy(tmpData, tmpData + size, newData);
+                std::copy(tmpData, tmpData + size, newData);
 
                 delete [] tmpData;
 
@@ -86,14 +87,14 @@ loadBytes(const string filename,
                 tmpData = newData;
             }
 
-            copy(buffer, buffer + read, tmpData + size);
+            std::copy(buffer, buffer + read, tmpData + size);
             size += read;
         }
 
         if (size != capacity)
         {
             uint8_t * newData = new uint8_t[size];
-            copy(tmpData, tmpData+size, newData);
+            std::copy(tmpData, tmpData+size, newData);
             delete [] tmpData;
             tmpData = newData;
         }
@@ -332,11 +333,11 @@ class VectorSink : public Sink<T>
 {
 private:
 
-    vector<T> & mem;
+    std::vector<T> & mem;
 
 public:
 
-    VectorSink(vector<T> & mem, const bool clearVector=true) :
+    VectorSink(std::vector<T> & mem, const bool clearVector=true) :
         mem(mem)
     {
         if (clearVector)
@@ -443,7 +444,7 @@ public:
 
             const uint64_t remaining = len - pos;
             const uint64_t available = _content - _current;
-            const uint64_t toRead = min(available, remaining);
+            const uint64_t toRead = math::min(available, remaining);
 
             std::copy(_buffer + _current,
                       _buffer + _current + toRead,
@@ -559,7 +560,7 @@ public:
         {
             const uint64_t required = len - pos;
             const uint64_t available = _capacity - _current;
-            const uint64_t toWrite = min(required, available);
+            const uint64_t toWrite = math::min(required, available);
 
             std::copy(ptr + pos, ptr + pos + toWrite, _buffer + _current);
 
@@ -888,7 +889,7 @@ public:
     }
 
     void
-    putString(const string & str)
+    putString(const std::string & str)
     {
         putSize(str.size());
         putData(str.data(), str.size());

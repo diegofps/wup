@@ -126,7 +126,13 @@ public:
         return _matrix(i, j);
     }
 
-    void
+    double
+    operator()(const uint i, const uint j) const
+    {
+        return _matrix(i, j);
+    }
+
+    ConfusionMatrix &
     update()
     {
         const uint len = _matrix.numCols()-1;
@@ -145,6 +151,8 @@ public:
         const double diag = diagonal();
         _matrix(len, len) = sum == 0 ? 1.0 : diag / sum;
         _requiresUpdate = false;
+
+        return *this;
     }
 
 private:
@@ -160,7 +168,8 @@ private:
 
 #ifndef JNI_H_
 inline std::ostream &
-operator << (std::ostream &o, ConfusionMatrix & confusion)
+operator << (std::ostream & o,
+             const ConfusionMatrix & confusion)
 {
     o << YELLOW;
     for (uint j=0; j!=confusion.classes(); ++j)
@@ -168,12 +177,14 @@ operator << (std::ostream &o, ConfusionMatrix & confusion)
     o << std::endl;
 
     for (uint i=0;i!=confusion.classes();++i) {
-        o << BLUE << i << '\t' << (i==0?GREEN:confusion(i, 0)<0.0001?NORMAL:RED) << confusion(i, 0);
+        o << BLUE << i << '\t' << (i==0?GREEN:confusion(i, 0)<0.001?NORMAL:RED) << confusion(i, 0);
+
+        o << std::defaultfloat;
 
         for (uint j=1;j!=confusion.classes();++j)
-            o << '\t' << (i==j?GREEN:confusion(i, j)<0.0001?NORMAL:RED) << confusion(i, j);
+            o << '\t' << (i==j?GREEN:confusion(i, j)<0.001?NORMAL:RED) << confusion(i, j);
 
-        o << std::fixed << std::setprecision(3);
+        o << std::fixed << std::setprecision(4);
 
         const double value = confusion(i, confusion.classes());
 
@@ -183,7 +194,7 @@ operator << (std::ostream &o, ConfusionMatrix & confusion)
 
     o << BLUE << std::fixed << std::setprecision(3);
 
-    for (uint j=0; j!=confusion.classes(); ++j) {
+    for (uint j=0; j<=confusion.classes(); ++j) {
         const double value = confusion(confusion.classes(), j);
         o << '\t' << (value == 1.0 ? GREEN : value < .5 ? RED : BLUE) << value;
     }

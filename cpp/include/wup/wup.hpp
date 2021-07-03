@@ -27,6 +27,12 @@
 #include <wup/common/random.hpp>
 #include <wup/common/cronus.hpp>
 #include <wup/common/threads.hpp>
+#include <wup/common/priorityflow.hpp>
+#include <wup/common/array.hpp>
+#include <wup/common/bits.hpp>
+#include <wup/common/math.hpp>
+#include <wup/common/os.hpp>
+#include <wup/common/str.hpp>
 
 #ifndef WUP_NO_ZIP
 #include <wup/common/zip.hpp>

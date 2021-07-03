@@ -116,8 +116,8 @@ public:
             double highest = -1.0;
             for (uint j=0; j<_columns.size(); ++j)
             {
-                meanNstd(_cache.size()/f.size(),
-                        _s1[j], _s2[j], _s1[j], _s2[j]);
+                math::meanNstd(_cache.size()/f.size(),
+                               _s1[j], _s2[j], _s1[j], _s2[j]);
 
                 if (_s2[j] > highest)
                     highest = _s2[j];
@@ -137,8 +137,8 @@ public:
         else
         {
             for (uint j=0;j <_columns.size(); ++j)
-                meanNstd(_cache.size()/f.size(),
-                        _s1[j], _s2[j], _s1[j], _s2[j]);
+                math::meanNstd(_cache.size()/f.size(),
+                               _s1[j], _s2[j], _s1[j], _s2[j]);
 
             for (ulong i=0; i<_cache.size(); i+=f.size())
             {

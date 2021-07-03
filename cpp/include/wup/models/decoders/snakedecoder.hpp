@@ -4,6 +4,7 @@
 #include <cstring>
 #include <cstdlib>
 
+#include <wup/common/bits.hpp>
 #include <wup/common/generic.hpp>
 #include <wup/common/exceptions.hpp>
 #include <wup/models/decoders/basedecoder.hpp>
@@ -59,7 +60,7 @@ public:
     {
         size_t h = 0;
         for (uint i=0;i<patternSize();++i)
-            h = rotl32(h,3) ^ (pattern()[i]?2:3);
+            h = bits::rotateLeft(h,3) ^ (pattern()[i]?2:3);
 
         hash(h);
     }

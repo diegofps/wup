@@ -2,7 +2,9 @@
 #define __WUP__COMMON__PARAMS
 
 #include <wup/third_party/json.hpp>
+#include <wup/common/parsers.hpp>
 #include <wup/common/generic.hpp>
+#include <wup/common/str.hpp>
 #include <vector>
 #include <string>
 #include <map>
@@ -10,14 +12,11 @@
 namespace wup
 {
 
-using json = nlohmann::json;
-
-
 template <typename TYPE>
-json
+nlohmann::json
 map_to_json(std::map<std::string, TYPE*> & mapping)
 {
-    json data;
+    nlohmann::json data;
 
     for (auto & p : mapping)
         data[p.first] = p.second->to_json();
@@ -26,10 +25,10 @@ map_to_json(std::map<std::string, TYPE*> & mapping)
 }
 
 template <typename TYPE>
-json
+nlohmann::json
 map_to_json(std::map<std::string, TYPE> & mapping)
 {
-    json data;
+    nlohmann::json data;
 
     for (auto & p : mapping)
         data[p.first] = p.second;
@@ -39,7 +38,9 @@ map_to_json(std::map<std::string, TYPE> & mapping)
 
 template <typename TYPE>
 void
-map_from_json(json & data, std::map<std::string, TYPE*> & mapping, bool deleteData=true)
+map_from_json(nlohmann::json & data,
+              std::map<std::string, TYPE*> & mapping,
+              bool deleteData=true)
 {
     if (deleteData)
         for (auto & p : mapping)
@@ -53,7 +54,7 @@ map_from_json(json & data, std::map<std::string, TYPE*> & mapping, bool deleteDa
 
 template <typename TYPE>
 void
-map_from_json(json & data, std::map<std::string, TYPE> & mapping)
+map_from_json(nlohmann::json & data, std::map<std::string, TYPE> & mapping)
 {
     mapping.clear();
     for (auto & p : data.items())
@@ -61,10 +62,10 @@ map_from_json(json & data, std::map<std::string, TYPE> & mapping)
 }
 
 template <typename TYPE>
-json
+nlohmann::json
 vector_to_json(std::vector<TYPE*> & listing)
 {
-    json data;
+    nlohmann::json data;
 
     for (auto & v : listing)
         data.push_back(v->to_json());
@@ -73,7 +74,7 @@ vector_to_json(std::vector<TYPE*> & listing)
 }
 
 template <typename TYPE>
-json
+nlohmann::json
 vector_to_json(std::vector<TYPE> & listing)
 {
     return json(listing);
@@ -81,7 +82,9 @@ vector_to_json(std::vector<TYPE> & listing)
 
 template <typename TYPE>
 void
-vector_from_json(json & data, std::vector<TYPE*> & listing, bool deleteData=true)
+vector_from_json(nlohmann::json & data,
+                 std::vector<TYPE*> & listing,
+                 bool deleteData=true)
 {
     if (deleteData)
         for (auto & v : listing)
@@ -95,7 +98,8 @@ vector_from_json(json & data, std::vector<TYPE*> & listing, bool deleteData=true
 
 template <typename TYPE>
 void
-vector_from_json(json & data, std::vector<TYPE> & listing)
+vector_from_json(nlohmann::json & data,
+                 std::vector<TYPE> & listing)
 {
     listing.clear();
     for (auto & v : data)
@@ -118,16 +122,16 @@ public:
 
     }
 
-    Param(json & data)
+    Param(nlohmann::json & data)
     {
         active = data["active"].get<bool>();
         vector_from_json(data["args"], args);
     }
 
-    json
+    nlohmann::json
     to_json()
     {
-        json data;
+        nlohmann::json data;
         data["active"] = active;
         data["args"] = args;
         return data;
@@ -156,16 +160,16 @@ public:
             delete it.second;
     }
 
-    ParamNameSpace(json & data)
+    ParamNameSpace(nlohmann::json & data)
     {
         name = data["name"].get<string>();
         map_from_json(data["mem"], mem);
     }
 
-    json
+    nlohmann::json
     to_json()
     {
-        json data;
+        nlohmann::json data;
         data["name"] = name;
         data["mem"] = map_to_json(mem);
         return data;
@@ -180,7 +184,7 @@ private:
 
 private:
 
-    std::map<string, ParamNameSpace*> namespaces;
+    std::map<std::string, ParamNameSpace*> namespaces;
     ParamNameSpace * ns;
 
 public:
@@ -249,22 +253,22 @@ public:
             delete it.second;
     }
 
-    Params(json & data)
+    Params(nlohmann::json & data)
     {
         map_from_json(data["namespaces"], namespaces);
         ns = namespaces["_"];
     }
 
-    json
+    nlohmann::json
     to_json()
     {
-        json data;
+        nlohmann::json data;
         data["namespaces"] = map_to_json(namespaces);
         return data;
     }
 
     void
-    show(ostream & o) const
+    show(std::ostream & o) const
     {
         for (auto it : namespaces)
         {
@@ -357,48 +361,48 @@ public:
 
 
     // getStrings
-    const string getStringAt(const char * const cmd, const int index) const
+    const std::string getStringAt(const char * const cmd, const int index) const
     {
         if (misses(cmd, index)) missingCommand( cmd );
         return ns->mem.at(cmd)->args[index].c_str();
     }
 
-    void setStringAt(const char * const cmd, const int index, const string str)
+    void setStringAt(const char * const cmd, const int index, const std::string str)
     {
         if (misses(cmd, index)) missingCommand( cmd );
         ns->mem.at(cmd)->args[index] = str;
     }
 
-    const string getStringAt(const char * const cmd, const int index, const string default_value) const
+    const std::string getStringAt(const char * const cmd, const int index, const std::string default_value) const
     {
         if (misses(cmd, index)) return default_value.c_str();
         return ns->mem.at(cmd)->args[index].c_str();
     }
 
-    const string getString(const char * const cmd) const
+    const std::string getString(const char * const cmd) const
     { return getStringAt(cmd, 0); }
 
-    const string getString(const char * const cmd, const string default_value) const
+    const std::string getString(const char * const cmd, const std::string default_value) const
     { return getStringAt(cmd, 0, default_value); }
 
     void getResolution(const char * const cmd, const char * const defValue, uint & width, uint & height) const
     {
         vector<string> cells;
         const string vp = getString(cmd, defValue);
-        split(vp, 'x', cells);
+        str::split(vp, 'x', cells);
 
         try
         {
             if (cells.size() == 2)
             {
-                width  = parse_uint(cells[0]);
-                height = parse_uint(cells[1]);
+                width  = parseUInt(cells[0]);
+                height = parseUInt(cells[1]);
                 return;
             }
 
             else if (cells.size() == 1)
             {
-                width  = parse_uint(cells[0]);
+                width  = parseUInt(cells[0]);
                 height = width;
                 return;
             }
@@ -409,94 +413,94 @@ public:
 
     // get long
     long getLongAt(const char * const cmd, const int index) const
-    { return parseValueAt(cmd, index, wup::parse_long); }
+    { return parseValueAt(cmd, index, wup::parseLong); }
 
     long getLongAt(const char * const cmd, const int index, const long default_value) const
-    { return parseValueAt(cmd, index, default_value, wup::parse_long); }
+    { return parseValueAt(cmd, index, default_value, wup::parseLong); }
 
     long getLong(const char * const &cmd) const
-    { return parseValue(cmd, wup::parse_long); }
+    { return parseValue(cmd, wup::parseLong); }
 
     long getLong(const char * const &cmd, const long default_value) const
-    { return parseValue(cmd, default_value, wup::parse_long); }
+    { return parseValue(cmd, default_value, wup::parseLong); }
 
 
     // get ulong
     ulong getULongAt(const char * const cmd, const int index) const
-    { return parseValueAt(cmd, index, wup::parse_ulong); }
+    { return parseValueAt(cmd, index, wup::parseULong); }
 
     ulong getULongAt(const char * const cmd, const int index, const ulong default_value) const
-    { return parseValueAt(cmd, index, default_value, wup::parse_ulong); }
+    { return parseValueAt(cmd, index, default_value, wup::parseULong); }
 
     ulong getULong(const char * const &cmd) const
-    { return parseValue(cmd, wup::parse_ulong); }
+    { return parseValue(cmd, wup::parseULong); }
 
     ulong getULong(const char * const &cmd, const ulong default_value) const
-    { return parseValue(cmd, default_value, wup::parse_ulong); }
+    { return parseValue(cmd, default_value, wup::parseULong); }
 
 
     // get int
     int getIntAt(const char * const cmd, const int index) const
-    { return parseValueAt(cmd, index, wup::parse_int); }
+    { return parseValueAt(cmd, index, wup::parseInt); }
 
     int getIntAt(const char * const cmd, const int index, const int default_value) const
-    { return parseValueAt(cmd, index, default_value, wup::parse_int); }
+    { return parseValueAt(cmd, index, default_value, wup::parseInt); }
 
     int getInt(const char * const &cmd) const
-    { return parseValue(cmd, wup::parse_int); }
+    { return parseValue(cmd, wup::parseInt); }
 
     int getInt(const char * const &cmd, const int default_value) const
-    { return parseValue(cmd, default_value, wup::parse_int); }
+    { return parseValue(cmd, default_value, wup::parseInt); }
 
 
     // get uint
     uint getUIntAt(const char * const cmd, const int index) const
-    { return parseValueAt(cmd, index, wup::parse_uint); }
+    { return parseValueAt(cmd, index, wup::parseUInt); }
 
     uint getUIntAt(const char * const cmd, const int index, const uint default_value) const
-    { return parseValueAt(cmd, index, default_value, wup::parse_uint); }
+    { return parseValueAt(cmd, index, default_value, wup::parseUInt); }
 
     uint getUInt(const char * const &cmd) const
-    { return parseValue(cmd, wup::parse_uint); }
+    { return parseValue(cmd, wup::parseUInt); }
 
     uint getUInt(const char * const &cmd, const uint default_value) const
-    { return parseValue(cmd, default_value, wup::parse_uint); }
+    { return parseValue(cmd, default_value, wup::parseUInt); }
 
 
     // get short
     short getShortAt(const char * const cmd, const int index) const
-    { return parseValueAt(cmd, index, wup::parse_short); }
+    { return parseValueAt(cmd, index, wup::parseShort); }
 
     short getShortAt(const char * const cmd, const int index, const short default_value) const
-    { return parseValueAt(cmd, index, default_value, wup::parse_short); }
+    { return parseValueAt(cmd, index, default_value, wup::parseShort); }
 
     short getShort(const char * const &cmd) const
-    { return parseValue(cmd, wup::parse_short); }
+    { return parseValue(cmd, wup::parseShort); }
 
     short getShort(const char * const &cmd, const short default_value) const
-    { return parseValue(cmd, default_value, wup::parse_short); }
+    { return parseValue(cmd, default_value, wup::parseShort); }
 
 
     // get ushort
     ushort getUShortAt(const char * const cmd, const int index) const
-    { return parseValueAt(cmd, index, wup::parse_ushort); }
+    { return parseValueAt(cmd, index, wup::parseUShort); }
 
     ushort getUShortAt(const char * const cmd, const int index, const ushort default_value) const
-    { return parseValueAt(cmd, index, default_value, wup::parse_ushort); }
+    { return parseValueAt(cmd, index, default_value, wup::parseUShort); }
 
     ushort getUShort(const char * const &cmd) const
-    { return parseValue(cmd, wup::parse_ushort); }
+    { return parseValue(cmd, wup::parseUShort); }
 
     ushort getUShort(const char * const &cmd, const ushort default_value) const
-    { return parseValue(cmd, default_value, wup::parse_ushort); }
+    { return parseValue(cmd, default_value, wup::parseUShort); }
 
 
     // getBools
     bool getBoolAt(const char * const cmd, const int index) const
-    { return parseValueAt(cmd, index, wup::parse_bool); }
+    { return parseValueAt(cmd, index, wup::parseBool); }
 
     bool getBoolAt(const char * const cmd, const int index, const bool default_value) const
-    { return parseValueAt(cmd, index, default_value, wup::parse_bool); }
+    { return parseValueAt(cmd, index, default_value, wup::parseBool); }
 
     bool getBool(const char * const &cmd, const bool default_value) const
     {
@@ -506,7 +510,7 @@ public:
         if (len(cmd) == 0)
             return true;
 
-        return parse_bool(ns->mem.at(cmd)->args[0]);
+        return parseBool(ns->mem.at(cmd)->args[0]);
     }
 
     bool getBool(const char * const &cmd) const
@@ -516,36 +520,36 @@ public:
 
     // get double
     double getDoubleAt(const char * const cmd, const int index) const
-    { return parseValueAt(cmd, index, parse_double); }
+    { return parseValueAt(cmd, index, parseDouble); }
 
     double getDoubleAt(const char * const cmd, const int index, const double default_value) const
-    { return parseValueAt(cmd, index, default_value, wup::parse_double); }
+    { return parseValueAt(cmd, index, default_value, wup::parseDouble); }
 
     double getDouble(const char * const cmd) const
-    { return parseValue(cmd, parse_double); }
+    { return parseValue(cmd, parseDouble); }
 
     double getDouble(const char * const cmd, const double default_value) const
-    { return parseValue(cmd, default_value, wup::parse_double); }
+    { return parseValue(cmd, default_value, wup::parseDouble); }
 
 
     // get float
     float getFloatAt(const char * const cmd, const int index) const
-    { return parseValueAt(cmd, index, parse_float); }
+    { return parseValueAt(cmd, index, parseFloat); }
 
     float getFloatAt(const char * const cmd, const int index, const float default_value) const
-    { return parseValueAt(cmd, index, default_value, wup::parse_float); }
+    { return parseValueAt(cmd, index, default_value, wup::parseFloat); }
 
     float getFloat(const char * const cmd) const
-    { return parseValue(cmd, parse_float); }
+    { return parseValue(cmd, parseFloat); }
 
     float getFloat(const char * const cmd, const float default_value) const
-    { return parseValue(cmd, default_value, wup::parse_float); }
+    { return parseValue(cmd, default_value, wup::parseFloat); }
 
 
     // get enum
     template <typename KEY_TYPE, typename ENUM_TYPE>
     ENUM_TYPE getEnum(const char * const cmd,
-                      map<KEY_TYPE, ENUM_TYPE> & decoder,
+                      std::map<KEY_TYPE, ENUM_TYPE> & decoder,
                       const ENUM_TYPE defaultValue) const
     {
         if (misses(cmd)) return defaultValue;
@@ -554,7 +558,7 @@ public:
 
     template <typename KEY_TYPE, typename ENUM_TYPE>
     ENUM_TYPE getEnum(const char * const cmd,
-                      map<KEY_TYPE, ENUM_TYPE> & decoder) const
+                      std::map<KEY_TYPE, ENUM_TYPE> & decoder) const
     {
         auto value = getString(cmd);
         auto it = decoder.find(value);

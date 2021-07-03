@@ -7,6 +7,7 @@
 #include <wup/common/generic.hpp>
 #include <wup/common/bundle.hpp>
 #include <wup/common/seq.hpp>
+#include <wup/common/math.hpp>
 #include <wup/common/ref_vector.hpp>
 
 namespace wup {
@@ -301,7 +302,7 @@ inline double
 sdistance(const wup::Feature & f1, const wup::Feature & f2)
 {
     if (f1.size() != f2.size()) throw wup::WUPException("Features size differ");
-    return sdistance(f1.data(), f2.data(), f1.size());
+    return math::sdistance(f1.data(), f2.data(), f1.size());
 }
 
 inline double

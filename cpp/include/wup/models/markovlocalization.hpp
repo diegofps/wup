@@ -8,6 +8,9 @@
 #ifndef __WUP_MARKOV_LOCALIZATION
 #define __WUP_MARKOV_LOCALIZATION
 
+#include <wup/common/ranges.hpp>
+#include <wup/common/array.hpp>
+
 namespace wup {
 
 template <typename MoveFunc>
@@ -61,7 +64,7 @@ public:
 			dst[i] += _noise;
 
 		// Normaliza os valores probabilisticos
-		const double total = sum(dst, _numStates);
+        const double total = arr::sum(dst, _numStates);
 		for (auto &i : xrange(_numStates))
 			dst[i] /= total;
 	}
@@ -74,7 +77,7 @@ public:
 			current[i] = current[i] * (1.0 - _learnrate) +
 					current[i] * readings[i] * _learnrate;
 
-		double total = sum(current, _numStates);
+        double total = arr::sum(current, _numStates);
 		if (total == 0) total = 1.0;
 		for (auto &i : xrange(_numStates))
 			current[i] /= total;

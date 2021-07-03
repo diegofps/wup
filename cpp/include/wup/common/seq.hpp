@@ -2,6 +2,7 @@
 #define SEQ_HPP
 
 #include <wup/common/exceptions.hpp>
+#include <wup/common/math.hpp>
 
 #include <initializer_list>
 #include <iostream>
@@ -60,7 +61,7 @@ public:
 
         else {
             T * newmem = new T[size];
-            memcpy(newmem, _mem, sizeof(T) * min(size, _size));
+            memcpy(newmem, _mem, sizeof(T) * math::min(size, _size));
             delete [] _mem;
 
             _mem = newmem;

@@ -13,6 +13,7 @@
 #include <vector>
 #include <cmath>
 
+#include <wup/common/math.hpp>
 #include <wup/common/sbio.hpp>
 #include <wup/common/generic.hpp>
 
@@ -125,7 +126,7 @@ namespace kernelgens {
             }
 
         for (const double * kernel : actives) {
-            if (wup::sdistance(candidate, kernel, dims) < rSquared) {
+            if (math::sdistance(candidate, kernel, dims) < rSquared) {
     //				debug("Invalid, distance to active is ", euclidianDistance(candidate, kernel), ", min is ", rSquared);
                 return false;
             } else {
@@ -134,7 +135,7 @@ namespace kernelgens {
         }
 
         for (const double * kernel : inactives) {
-            if (wup::sdistance(candidate, kernel, dims) < rSquared) {
+            if (math::sdistance(candidate, kernel, dims) < rSquared) {
     //				debug("Invalid, distance to inactive is ", euclidianDistance(candidate, kernel), ", min is ", rSquared);
                 return false;
             } else {
@@ -239,7 +240,7 @@ namespace kernelgens {
 
                     minI = -1;
                     for (int i2=0;i2<i;++i2) {
-                        distance = sdistance(_tmpKernels[s], kernels[i2], dims);
+                        distance = math::sdistance(_tmpKernels[s], kernels[i2], dims);
 
                         if (minI == -1 || distance < minD) {
                             minI = i2;

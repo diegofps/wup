@@ -4,7 +4,7 @@ CONFIG -= app_bundle
 CONFIG -= qt
 DEFINES += "WUP_NO_MPICH"
 
-INCLUDEPATH += ./cpp/include ./c/include
+INCLUDEPATH += ./cpp/include ./c/include /usr/include/opencv4
 
 SOURCES += \
     c/examples/test1.c \
@@ -21,6 +21,8 @@ DISTFILES += \
 HEADERS += \
     c/include/wup/cwisard.h \
     c/include/wup/wup.h \
+    cpp/include/wup/common/array.hpp \
+    cpp/include/wup/common/bits.hpp \
     cpp/include/wup/common/bundle.hpp \
     cpp/include/wup/common/bundle3d.hpp \
     cpp/include/wup/common/clock.hpp \
@@ -31,15 +33,20 @@ HEADERS += \
     cpp/include/wup/common/generic.hpp \
     cpp/include/wup/common/iterators.hpp \
     cpp/include/wup/common/kfold.hpp \
+    cpp/include/wup/common/math.hpp \
     cpp/include/wup/common/mpichutils.hpp \
     cpp/include/wup/common/msgs.hpp \
     cpp/include/wup/common/opencvutils.hpp \
+    cpp/include/wup/common/os.hpp \
     cpp/include/wup/common/params.hpp \
+    cpp/include/wup/common/parsers.hpp \
+    cpp/include/wup/common/priorityflow.hpp \
     cpp/include/wup/common/random.hpp \
     cpp/include/wup/common/ranges.hpp \
     cpp/include/wup/common/ref_vector.hpp \
     cpp/include/wup/common/sbio.hpp \
     cpp/include/wup/common/seq.hpp \
+    cpp/include/wup/common/str.hpp \
     cpp/include/wup/common/threads.hpp \
     cpp/include/wup/common/topk.hpp \
     cpp/include/wup/models/decoders/basedecoder.hpp \
