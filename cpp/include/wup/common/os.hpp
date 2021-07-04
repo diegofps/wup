@@ -46,6 +46,12 @@ createPath(std::string const & folderpath)
     system(cat("mkdir -p ", folderpath).c_str());
 }
 
+inline void
+rmDir(std::string const & folderpath)
+{
+    system(cat("rm -rf ", folderpath).c_str());
+}
+
 inline std::vector<std::string> &
 dirFiles(char const * path,
          std::vector<std::string> & list)

@@ -120,14 +120,14 @@ public:
     }
 
     double
-    operator()(const uint i, const uint j)
+    operator()(uint const i, uint const j)
     {
         checkUpdate();
         return _matrix(i, j);
     }
 
     double
-    operator()(const uint i, const uint j) const
+    operator()(uint const i, uint const j) const
     {
         return _matrix(i, j);
     }
