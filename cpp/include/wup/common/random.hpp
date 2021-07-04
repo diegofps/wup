@@ -220,7 +220,7 @@ public:
     }
 
     template <typename T>
-    inline T *
+    T *
     randperm(const uint n, T * const indexes)
     {
         arr::range(n, indexes);
@@ -228,13 +228,13 @@ public:
         return indexes;
     }
 
-    inline uint *
+    uint *
     randperm(const uint n)
     {
         return randperm(n, new uint[n]);
     }
 
-    inline uint *
+    uint *
     randperm2D(const uint rows, const uint cols, const uint rowStride)
     {
         uint * const indexes = range2D(rows, cols, rowStride);
@@ -256,7 +256,7 @@ public:
         rowStride - Number of elements in the Row of the full matrix.
         planeStride - Number of elements in the Plane of the full matrix. Like Rows * Cols.
     */
-    inline uint *
+    uint *
     randperm3DPlane(const uint rows, const uint cols, const uint depth,
                const uint rowStride, const uint planeStride)
     {
@@ -277,7 +277,7 @@ public:
         depth - depth of the cell, or the number of elements in it. For RGB it is 3.
         rowStride - Number of elements in the Row of the full matrix. Like Rows * depth.
     */
-    inline uint *
+    uint *
     randperm3DCell(const uint rows, const uint cols, const uint depth,
                const uint rowStride)
     {
@@ -286,15 +286,47 @@ public:
         return indexes;
     }
 
+    int *
+    randomPattern(int const length,
+                  int const n=2)
+    {
+        auto array = new int[length];
+        for (int i=0;i<length;++i)
+            array[i] = uniformInt(n);
+        return array;
+    }
+
+    void
+    addNoise(int * const pattern,
+             int const length,
+             double const noise,
+             int const n=2)
+    {
+        for (int i=0;i<length;++i)
+            if (unfairCoin(noise))
+                pattern[i] = uniformInt(n);
+    }
+
+    template <typename T>
+    void
+    addNoiseFlip(T * const pattern,
+                 int const length,
+                 double const noise,
+                 T const max=1)
+    {
+        for (int i=0;i<length;++i)
+            if (unfairCoin(noise))
+                pattern[i] = max - pattern[i];
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////
     // Strings
     ////////////////////////////////////////////////////////////////////////////////////////
 
-    inline string
+    std::string
     uuid()
     {
-        string tmp = boost::uuids::to_string(boost::uuids::random_generator()());
+        std::string tmp = boost::uuids::to_string(boost::uuids::random_generator()());
         str::removeChar(tmp, '-');
         return tmp;
     }

@@ -26,39 +26,6 @@ range(uint const n)
     return range(n, new uint[n]);
 }
 
-inline int *
-randomPattern(int const length,
-              int const n=2)
-{
-    auto array = new int[length];
-    for (int i=0;i<length;++i)
-        array[i] = rand() % n;
-    return array;
-}
-
-inline void
-addNoise(int * const pattern,
-         int const length,
-         double const noise,
-         int const n=2)
-{
-    for (int i=0;i<length;++i)
-        if (rand() / double(RAND_MAX) < noise)
-            pattern[i] = rand() % n;
-}
-
-template <typename T>
-void
-addNoiseFlip(T * const pattern,
-             int const length,
-             double const noise,
-             T const max=1)
-{
-    for (int i=0;i<length;++i)
-        if (rand() / double(RAND_MAX) < noise)
-            pattern[i] = max - pattern[i];
-}
-
 template<typename T>
 T *
 clone(T const * const src,

@@ -3,6 +3,7 @@
 
 #include <wup/common/threads.hpp>
 #include <wup/common/bundle.hpp>
+#include <wup/common/clock.hpp>
 
 #include <mutex>
 #include <vector>
@@ -78,16 +79,12 @@ public:
 
 };
 
-class CommonJob
+struct CommonJob
 {
-public:
-
     uint tid; // thread id
     int nid; // node id
     uint first; // first element in block (included)
     uint last; // last element in block (excluded)
-
-public:
 
     CommonJob() :
         tid(0), nid(-1), first(0), last(0) { }
@@ -97,6 +94,9 @@ public:
 
     CommonJob(const int nid, const uint first, const uint last) :
         nid(nid), first(first), last(last) { }
+
+    std::string toString() const
+        { return cat("tid:", tid, ", nid:", nid, ", first:", first, ", last:", last); }
 
 };
 
@@ -148,18 +148,32 @@ public:
 template <typename J>
 void
 priority_flow_thread(WeightedPipe<J> * pipe,
-                  std::vector<Node<J>*> * nodes,
-                  uint32_t const tid)
+                     std::vector<Node<J>*> * nodes,
+                     Semaphore * sem,
+                     uint32_t const tid)
 {
+    Clock c;
     J job = pipe->get();
     job.tid = tid;
 //    print("tid", tid, "job nid", job.nid, job.model, job.first, job.last);
 
     while(job.nid != -1)
     {
+//        print("executing", job.toString());
+        c.start();
+        auto nid = job.nid;
         (*nodes)[job.nid]->body(job);
+        auto ellapsed1 = c.lap_milli();
+
+        sem->release();
+        auto ellapsed2 = c.lap_milli();
+
         job = pipe->get();
+        auto ellapsed3 = c.lap_milli();
         job.tid = tid;
+
+//        printn(cat("tid:", tid, ", nid:", nid, ", 1:", ellapsed1, ", 2:", ellapsed2, ", 3:", ellapsed3, "\n"));
+        fflush(stdout);
     }
 }
 
@@ -186,13 +200,14 @@ private:
         for (uint32_t t=0;t!=_threads;++t)
         {
             auto f = priority_flow_thread<JOB_TYPE>;
-            pool[t] = std::thread(f, &pipe, &nodes, t);
+            pool[t] = std::thread(f, &pipe, &nodes, &sem, t);
         }
     }
 
 public:
 
     PriorityFlow() :
+        sem(1),
         pipe(job_comparer),
         _threads(std::thread::hardware_concurrency())
     {
@@ -200,6 +215,7 @@ public:
     }
 
     PriorityFlow(uint32_t const threads) :
+        sem(1),
         pipe(job_comparer),
         _threads(threads)
     {
@@ -209,6 +225,7 @@ public:
     PriorityFlow(uint32_t const threads,
                  std::function<bool(const JOB_TYPE &, const JOB_TYPE &)> comparator) :
 
+        sem(1),
         pipe(comparator),
         _threads(threads)
     {
@@ -250,16 +267,17 @@ public:
     void
     schedule(JOB_TYPE const & job)
     {
+//        print("scheduling", job.toString());
+        sem.add(-1);
         pipe.send(job);
     }
 
-    int
+    void
     scheduleMany(JOB_TYPE job,
                  uint64_t const jobsPerThread,
                  uint64_t const samples)
     {
         uint64_t first = 0;
-        int n = 0;
 
         while (first + jobsPerThread <= samples)
         {
@@ -267,7 +285,6 @@ public:
             job.last = first + jobsPerThread;
             schedule(job);
             first += jobsPerThread;
-            ++n;
         }
 
         if (first != samples)
@@ -275,38 +292,22 @@ public:
             job.first = first;
             job.last = samples;
             schedule(job);
-            ++n;
         }
-
-        return n;
     }
 
-    int
+    void
     scheduleMany(int32_t const nodeId,
                  uint64_t const jobsPerThread,
                  uint64_t const samples)
     {
         JOB_TYPE tmp;
         tmp.nid = nodeId;
-        return scheduleMany(tmp, jobsPerThread, samples);
+        scheduleMany(tmp, jobsPerThread, samples);
     }
 
     void
-    release()
+    wait()
     {
-        sem.release();
-    }
-
-    void
-    release(const int n)
-    {
-        sem.add(n);
-    }
-
-    void
-    wait(const int n)
-    {
-        sem.add(1 - n);
         sem.acquire();
     }
 

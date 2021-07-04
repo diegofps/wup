@@ -175,7 +175,7 @@ public:
 
     }
 
-    WeightedPipe & send(const T & data)
+    WeightedPipe & send(T const & data)
     {
         m.lock();
             queue.push(data);
