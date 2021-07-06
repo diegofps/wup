@@ -22,6 +22,7 @@ HEADERS += \
     c/include/wup/cwisard.h \
     c/include/wup/wup.h \
     cpp/include/wup/common/array.hpp \
+    cpp/include/wup/common/base64.hpp \
     cpp/include/wup/common/bits.hpp \
     cpp/include/wup/common/bundle.hpp \
     cpp/include/wup/common/bundle3d.hpp \
@@ -81,6 +82,8 @@ HEADERS += \
     cpp/include/wup/nodes/tanh.hpp \
     cpp/include/wup/nodes/unary.hpp \
     cpp/include/wup/nodes/zscore.hpp \
+    cpp/include/wup/third_party/httplib.h \
+    cpp/include/wup/third_party/json.hpp \
     cpp/include/wup/wup.hpp \
     cpp/tests/test_generic.hpp \
     cpp/tests/test_opencvutils.hpp \

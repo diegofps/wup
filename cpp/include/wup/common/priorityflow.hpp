@@ -100,7 +100,7 @@ struct CommonJob
 
 };
 
-std::ostream &
+inline std::ostream &
 operator<<(std::ostream & o,
            CommonJob const & j)
 {
@@ -109,7 +109,7 @@ operator<<(std::ostream & o,
 }
 
 
-bool
+inline bool
 job_comparer(CommonJob const & l,
              CommonJob const & r)
 {

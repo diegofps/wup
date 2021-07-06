@@ -144,7 +144,7 @@ class ParamNameSpace
 {
 public:
 
-    string name;
+    std::string name;
     std::map<std::string, Param*> mem;
 
 public:
@@ -162,7 +162,7 @@ public:
 
     ParamNameSpace(nlohmann::json & data)
     {
-        name = data["name"].get<string>();
+        name = data["name"].get<std::string>();
         map_from_json(data["mem"], mem);
     }
 
@@ -387,8 +387,8 @@ public:
 
     void getResolution(const char * const cmd, const char * const defValue, uint & width, uint & height) const
     {
-        vector<string> cells;
-        const string vp = getString(cmd, defValue);
+        std::vector<std::string> cells;
+        const std::string vp = getString(cmd, defValue);
         str::split(vp, 'x', cells);
 
         try

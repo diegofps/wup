@@ -297,6 +297,14 @@ public:
     }
 
     void
+    randomPattern(std::vector<int> & data,
+                  int const n=2)
+    {
+        for (size_t i=0;i<data.size();++i)
+            data[i] = uniformInt(n);
+    }
+
+    void
     addNoise(int * const pattern,
              int const length,
              double const noise,

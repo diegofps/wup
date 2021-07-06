@@ -12,9 +12,6 @@
 #include <wup/common/generic.hpp>
 #include <wup/common/math.hpp>
 
-using std::ofstream;
-using std::ifstream;
-
 namespace wup
 {
 
@@ -27,7 +24,7 @@ namespace wup
 /// size - Number of bytes to be saved (this is not the number of elements)
 template <typename T>
 void
-saveBytes(const string filename,
+saveBytes(const std::string filename,
           const T * const data,
           const uint64_t size)
 {
@@ -482,7 +479,7 @@ private:
 
 private:
 
-    ifstream _stream;
+    std::ifstream _stream;
 
     T * _buffer;
 
@@ -499,7 +496,7 @@ class FileSink : public Sink<T>
 {
 private:
 
-    ofstream _stream;
+    std::ofstream _stream;
 
     T * _buffer;
 

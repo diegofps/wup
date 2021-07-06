@@ -1,15 +1,13 @@
+#ifndef WUP_BASE64_HPP
+#define WUP_BASE64_HPP
+
+#include <wup/common/msgs.hpp>
 #include <string>
 #include <vector>
 #include <cmath>
 
-#include <wup/common/msgs.hpp>
-using namespace wup;
-
-
-using std::string;
-using std::vector;
-typedef unsigned char uchar;
-
+namespace wup
+{
 
 class base64
 {
@@ -17,13 +15,14 @@ class base64
 public:
 
     const char *binary2char = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
-    uchar char2binary[256];
+    unsigned char char2binary[256];
 
 public:
 
     base64()
     {
-        for (uchar i=0;i!=64;++i)
+
+        for (unsigned char i=0;i!=64;++i)
             char2binary[uint(binary2char[i])] = i;
         
         char2binary['+'] = char2binary['-'];
@@ -32,23 +31,23 @@ public:
     }
     
     template <typename T>
-    int encode(const vector<T> & data, const size_t size, string & chars)
+    int encode(const std::vector<T> & data, const size_t size, std::string & chars)
     {
         return encode(&data[0], data.size() * sizeof(T), chars);
     }
 
-    int encode(const void * const data, const size_t size, string & chars)
+    int encode(const void * const data, const size_t size, std::string & chars)
     {
         chars.resize(0);
         chars.reserve(ceil(chars.size() * 6.0 / 8.0) + 3);
         
-        uchar * _data = (uchar*) data;
+        unsigned char * _data = (unsigned char*) data;
         int bufferPos = 0;
-        uchar buffer;
+        unsigned char buffer;
         
         for (size_t i=0;i!=size;++i)
         {
-            uchar const & c = _data[i];
+            unsigned char const & c = _data[i];
 
             if (bufferPos == 0)
             {
@@ -92,17 +91,18 @@ public:
         return chars.size();
     }
 
-    int decode(const string & chars, vector<uchar> & bits)
+    int
+    decode(std::string const & chars, std::vector<unsigned char> & bits)
     {
         bits.resize(0);
         bits.reserve(ceil(chars.size() * 6.0 / 8.0));
     
         int bufferPos = 0;
-        uchar buffer;
+        unsigned char buffer;
         
-        for (const uchar & c : chars)
+        for (unsigned char const & c : chars)
         {
-            uchar b = char2binary[c];
+            unsigned char b = char2binary[c];
             
             if (bufferPos == 0)
             {
@@ -148,4 +148,6 @@ public:
 
 };
 
+}
 
+#endif /* WUP_BASE64_HPP */

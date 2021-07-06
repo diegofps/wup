@@ -466,6 +466,29 @@ print(char const * const prefix,
 }
 
 
+template <typename A, typename B>
+bool
+equal(A const * const a, size_t const lenA,
+      B const * const b, size_t const lenB)
+{
+    if (lenA != lenB)
+        return false;
+
+    for (size_t i=0;i!=lenA;++i)
+        if (a[i] != b[i])
+            return false;
+
+    return true;
+}
+
+template <typename A, typename B>
+bool
+equal(std::vector<A> & a,
+      std::vector<B> & b)
+{
+    return equal(a.data(), a.size(), b.data(), b.size());
+}
+
 }
 }
 
