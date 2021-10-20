@@ -426,16 +426,16 @@ public:
 
 
     // get ulong
-    ulong getULongAt(const char * const cmd, const int index) const
+    unsigned long getULongAt(const char * const cmd, const int index) const
     { return parseValueAt(cmd, index, wup::parseULong); }
 
-    ulong getULongAt(const char * const cmd, const int index, const ulong default_value) const
+    unsigned long getULongAt(const char * const cmd, const int index, const unsigned long default_value) const
     { return parseValueAt(cmd, index, default_value, wup::parseULong); }
 
-    ulong getULong(const char * const &cmd) const
+    unsigned long getULong(const char * const &cmd) const
     { return parseValue(cmd, wup::parseULong); }
 
-    ulong getULong(const char * const &cmd, const ulong default_value) const
+    unsigned long getULong(const char * const &cmd, const unsigned long default_value) const
     { return parseValue(cmd, default_value, wup::parseULong); }
 
 
@@ -482,16 +482,16 @@ public:
 
 
     // get ushort
-    ushort getUShortAt(const char * const cmd, const int index) const
+    unsigned short getUShortAt(const char * const cmd, const int index) const
     { return parseValueAt(cmd, index, wup::parseUShort); }
 
-    ushort getUShortAt(const char * const cmd, const int index, const ushort default_value) const
+    unsigned short getUShortAt(const char * const cmd, const int index, const unsigned short default_value) const
     { return parseValueAt(cmd, index, default_value, wup::parseUShort); }
 
-    ushort getUShort(const char * const &cmd) const
+    unsigned short getUShort(const char * const &cmd) const
     { return parseValue(cmd, wup::parseUShort); }
 
-    ushort getUShort(const char * const &cmd, const ushort default_value) const
+    unsigned short getUShort(const char * const &cmd, const unsigned short default_value) const
     { return parseValue(cmd, default_value, wup::parseUShort); }
 
 

@@ -84,7 +84,7 @@ public:
     {
         for (KC * kc : _kcs)
         {
-            const ulong length = (ulong)(kc->binary_output_size());
+            const unsigned long length = (unsigned long)(kc->binary_output_size());
             memcpy(dst, kc->binary_output(), sizeof(int) * length);
             dst += length;
         }

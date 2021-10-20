@@ -158,6 +158,40 @@ public:
         return *this;
     }
 
+    const Bundle<T> & operator=(const T & value)
+    {
+        T * cur = _data;
+        const T * const end = _data + _size;
+
+        while (cur != end)
+        {
+            *cur = value;
+            ++cur;
+        }
+
+        return *this;
+    }
+
+    template <typename T2>
+    void
+    importAll(Bundle<T2> const & other)
+    {
+        if (_size != other._size || _columns != other._columns || !_ownerOfData)
+        {
+            if (_ownerOfData)
+                delete [] _data;
+
+            _columns = other._columns;
+            _capacity = other._capacity;
+            _size = other._size;
+            _ownerOfData = true;
+
+            _data = new T[_capacity];
+        }
+
+        std::copy(other._data, other._data + other._size, _data);
+    }
+
     template <typename T2, typename I2>
     void
     importRow(const std::vector<T2> & other, const I2 dstI)
@@ -262,21 +296,6 @@ public:
 #endif
 
         return _data[index];
-    }
-
-
-    const Bundle<T> & operator=(const T & value)
-    {
-        T * cur = _data;
-        const T * const end = _data + _size;
-
-        while (cur != end)
-        {
-            *cur = value;
-            ++cur;
-        }
-
-        return *this;
     }
 
     void reshape(const uint cols)

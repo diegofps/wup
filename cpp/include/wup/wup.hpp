@@ -39,11 +39,15 @@
 #endif
 
 #ifndef WUP_NO_OPENCV
+#ifndef __ANDROID_API__
 #include <wup/common/opencvutils.hpp>
+#endif
 #endif
 
 #ifndef WUP_NO_MPICH
+#ifndef __ANDROID_API__
 #include <wup/common/mpichutils.hpp>
+#endif
 #endif
 
 #include <wup/models/wisard.hpp>

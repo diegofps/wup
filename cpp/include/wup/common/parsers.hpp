@@ -59,14 +59,14 @@ inline double parseDouble(char const * const str) { return parseBasicType<double
 inline long parseLong(std::string const & str) { return parseBasicType<long>(str); }
 inline long parseLong(char const * const str) { return parseBasicType<long>(str); }
 
-inline ulong parseULong(std::string const & str) { return parseBasicType<ulong>(str); }
-inline ulong parseULong(char const * const str) { return parseBasicType<ulong>(str); }
+inline unsigned long parseULong(std::string const & str) { return parseBasicType<unsigned long>(str); }
+inline unsigned long parseULong(char const * const str) { return parseBasicType<unsigned long>(str); }
 
 inline int parseInt(std::string const & str) { return parseBasicType<int>(str); }
 inline int parseInt(char const * const str) { return parseBasicType<int>(str); }
 
-inline uint parseUInt(std::string const & str) { return parseBasicType<uint>(str); }
-inline uint parseUInt(char const * const str) { return parseBasicType<uint>(str); }
+inline unsigned int parseUInt(std::string const & str) { return parseBasicType<unsigned int>(str); }
+inline unsigned int parseUInt(char const * const str) { return parseBasicType<unsigned int>(str); }
 
 inline float parseFloat(std::string const & str) { return parseBasicType<float>(str); }
 inline float parseFloat(char const * const str) { return parseBasicType<float>(str); }
@@ -74,8 +74,8 @@ inline float parseFloat(char const * const str) { return parseBasicType<float>(s
 inline short parseShort(std::string const & str) { return parseBasicType<short>(str); }
 inline short parseShort(char const * const str) { return parseBasicType<short>(str); }
 
-inline ushort parseUShort(std::string const & str) { return parseBasicType<ushort>(str); }
-inline ushort parseUShort(char const * const str) { return parseBasicType<ushort>(str); }
+inline unsigned short parseUShort(std::string const & str) { return parseBasicType<unsigned short>(str); }
+inline unsigned short parseUShort(char const * const str) { return parseBasicType<unsigned short>(str); }
 
 }
 

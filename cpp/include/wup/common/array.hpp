@@ -400,6 +400,13 @@ min(std::vector<A> const & data)
     return min(data.data(), data.size());
 }
 
+template <typename A>
+A
+mean(std::vector<A> const & data)
+{
+    return mean(data.data(), data.size());
+}
+
 template <typename A, typename B>
 void
 stats(std::vector<B> const & data,

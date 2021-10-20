@@ -29,6 +29,7 @@ getHostname(std::string & dst)
     dst.resize(i);
 }
 
+#ifndef __ANDROID_API__
 inline void
 getUsername(std::string & dst)
 {
@@ -39,6 +40,7 @@ getUsername(std::string & dst)
     while (i!=HOST_NAME_MAX && dst[i] != '\0') ++i;
     dst.resize(i);
 }
+#endif
 
 inline void
 createPath(std::string const & folderpath)

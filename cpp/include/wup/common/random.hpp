@@ -12,6 +12,11 @@
 #include <chrono>
 #include <random>
 
+#ifndef __ANDROID_API__
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#endif
+
 namespace wup {
 
 template <typename PRECISION>
@@ -278,8 +283,10 @@ public:
         rowStride - Number of elements in the Row of the full matrix. Like Rows * depth.
     */
     uint *
-    randperm3DCell(const uint rows, const uint cols, const uint depth,
-               const uint rowStride)
+    randperm3DCell(uint const rows,
+                   uint const cols,
+                   uint const depth,
+                   uint const rowStride)
     {
         uint * const indexes = range3DCell(rows, cols, depth, rowStride);
         shuffle(indexes, rows * cols * depth);
@@ -287,21 +294,27 @@ public:
     }
 
     int *
-    randomPattern(int const length,
+    randomPattern(size_t const length,
                   int const n=2)
     {
-        auto array = new int[length];
-        for (int i=0;i<length;++i)
-            array[i] = uniformInt(n);
-        return array;
+        return randomPattern(new int[length], length, n);
     }
 
     void
     randomPattern(std::vector<int> & data,
                   int const n=2)
     {
-        for (size_t i=0;i<data.size();++i)
-            data[i] = uniformInt(n);
+        randomPattern(data.data(), data.size());
+    }
+
+    int *
+    randomPattern(int * array,
+                  size_t const length,
+                  int const n=2)
+    {
+        for (int i=0;i!=length;++i)
+            array[i] = uniformInt(n);
+        return array;
     }
 
     void
@@ -327,10 +340,20 @@ public:
                 pattern[i] = max - pattern[i];
     }
 
+    template <typename T>
+    void
+    addNoiseFlip(std::vector<T> & pattern,
+                 double const noise,
+                 T const max=1)
+    {
+        addNoiseFlip(pattern.data(), pattern.size(), noise, max);
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////
     // Strings
     ////////////////////////////////////////////////////////////////////////////////////////
 
+#ifndef __ANDROID_API__
     std::string
     uuid()
     {
@@ -338,6 +361,7 @@ public:
         str::removeChar(tmp, '-');
         return tmp;
     }
+#endif
 
 };
 

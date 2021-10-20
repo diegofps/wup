@@ -89,9 +89,14 @@ public:
 #ifdef __ANDROID_API__
             std::stringstream ss;
             ss << _label.c_str() << ": ";
+            
             for (int j=0;j<input.size(); ++j)
                 ss << input[j] << " ";
-            LOGE("<Sample id=%d label=%s>%s</sample>", _onlySample, _label, ss.str().c_str());
+            
+            LOGE("<Sample id=%d label=%s>%s</sample>", 
+                        _onlySample, 
+                        _label.c_str(), 
+                        ss.str().c_str());
 #else
             print("<sample id=", _onlySample, " label=", _label ,">", input, "</sample>");
 #endif

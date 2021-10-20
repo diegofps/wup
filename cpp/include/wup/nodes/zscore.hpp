@@ -102,7 +102,7 @@ public:
         for (uint j=0; j!=_columns.size(); ++j)
             _s1[j] = _s2[j] = 0.0;
 
-        for (ulong i=0; i<_cache.size(); i+=f.size())
+        for (unsigned long i=0; i<_cache.size(); i+=f.size())
         {
             for (uint j=0;j<_columns.size();++j)
             {
@@ -123,7 +123,7 @@ public:
                     highest = _s2[j];
             }
 
-            for (ulong i=0; i < _cache.size(); i+= f.size())
+            for (unsigned long i=0; i < _cache.size(); i+= f.size())
             {
                 for (uint j=0;j<f.size();++j)
                     f[j] = _cache[i+j];
@@ -140,7 +140,7 @@ public:
                 math::meanNstd(_cache.size()/f.size(),
                                _s1[j], _s2[j], _s1[j], _s2[j]);
 
-            for (ulong i=0; i<_cache.size(); i+=f.size())
+            for (unsigned long i=0; i<_cache.size(); i+=f.size())
             {
                 for (uint j=0;j<f.size();++j)
                     f[j] = _cache[i+j];

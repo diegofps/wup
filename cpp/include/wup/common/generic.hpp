@@ -10,8 +10,8 @@
 #include <stdint.h>
 #include <limits.h>
 
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
+//#include <boost/uuid/uuid_generators.hpp>
+//#include <boost/uuid/uuid_io.hpp>
 
 #include <wup/common/exceptions.hpp>
 #include <wup/common/msgs.hpp>

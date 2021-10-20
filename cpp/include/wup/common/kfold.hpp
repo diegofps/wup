@@ -13,10 +13,6 @@
 #include <wup/common/msgs.hpp>
 #include <wup/common/random.hpp>
 
-#ifndef ulong
-//#define ulong unsigned long
-#endif
-
 namespace wup {
 
 class KFold;
@@ -124,7 +120,7 @@ private:
 
         uint lengthTrain;
         uint lengthTest;
-        ulong id;
+        unsigned long id;
 
         stream >> _numFolds;
         if (stream) createFolds(_numFolds);
@@ -151,7 +147,7 @@ private:
             }
         }
 
-        ulong total = 0;
+        unsigned long total = 0;
         for (uint i=0;i<_numFolds;++i)
             total += _folds[i].trainingSamples().size() +
                      _folds[i].testingSamples().size();
@@ -234,7 +230,7 @@ private:
         //auto classes = ds.toUnorderedMap([](const Sample &sample){ return sample.id(); });
 
         std::map< int, ref_vector<const Sample> > classes;
-        for (ulong i=0;i<ds.size();++i)
+        for (unsigned long i=0;i<ds.size();++i)
             classes[ds[i].subtarget()].push_back(&ds[i]);
 
         // Divide os grupos nos folds
