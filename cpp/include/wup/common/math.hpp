@@ -107,7 +107,7 @@ stddev(const int n,
 
 template <typename T>
 void
-meanNstd(int const & n,
+meanNStd(int const & n,
          T const s1,
          T const s2,
          T & mean,
@@ -119,7 +119,7 @@ meanNstd(int const & n,
 
 template<typename T>
 void
-meanNstd(T const * signal,
+meanNStd(T const * signal,
          int const length,
          double & mean,
          double & _std)
@@ -132,7 +132,7 @@ meanNstd(T const * signal,
         s2 += signal[i] * signal[i];
     }
 
-    meanNstd(length, s1, s2, mean, _std);
+    meanNStd(length, s1, s2, mean, _std);
 }
 
 template <typename A>

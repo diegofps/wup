@@ -2,6 +2,7 @@
 #define ARRAY_HPP
 
 #include <wup/common/msgs.hpp>
+#include <wup/common/math.hpp>
 #include <cstdlib>
 #include <cstring>
 #include <vector>
@@ -321,7 +322,7 @@ meanNStd(B const * const data,
         s2 += data[i] * data[i];
     }
 
-    meanNstd(len, s1, s2, mean, std);
+    wup::math::meanNStd(len, s1, s2, mean, std);
 }
 
 template <typename A, typename B>
@@ -342,9 +343,9 @@ stats(B const * const data,
     }
     else
     {
-        minimum = arrayMin(data, len);
-        maximum = arrayMax(data, len);
-        arrayMeanNStd(data, len, mean, std);
+        minimum = arr::min(data, len);
+        maximum = arr::max(data, len);
+        arr::meanNStd(data, len, mean, std);
     }
 }
 

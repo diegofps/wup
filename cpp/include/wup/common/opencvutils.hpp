@@ -937,7 +937,7 @@ drawObjectRegion(cv::Mat & canvas,
 
 void
 drawLabel(cv::Mat & canvas,
-          const string name,
+          const std::string name,
           const int x,
           const int y,
           const double scale=0.7,
