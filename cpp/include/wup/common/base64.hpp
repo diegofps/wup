@@ -21,13 +21,12 @@ public:
 
     base64()
     {
-
         for (unsigned char i=0;i!=64;++i)
             char2binary[uint(binary2char[i])] = i;
         
-        char2binary['+'] = char2binary['-'];
-        char2binary['/'] = char2binary['_'];
-        char2binary['='] = 0;
+        char2binary[(unsigned char)'+'] = char2binary[(unsigned char)'-'];
+        char2binary[(unsigned char)'/'] = char2binary[(unsigned char)'_'];
+        char2binary[(unsigned char)'='] = 0;
     }
     
     template <typename T>
@@ -100,9 +99,9 @@ public:
         int bufferPos = 0;
         unsigned char buffer;
         
-        for (unsigned char const & c : chars)
+        for (char const & c : chars)
         {
-            unsigned char b = char2binary[c];
+            unsigned char b = char2binary[(unsigned char)c];
             
             if (bufferPos == 0)
             {

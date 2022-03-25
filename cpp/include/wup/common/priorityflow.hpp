@@ -163,13 +163,13 @@ priority_flow_thread(WeightedPipe<J> * pipe,
         c.start();
         auto nid = job.nid;
         (*nodes)[job.nid]->body(job);
-        auto ellapsed1 = c.lap_milli();
+        // auto ellapsed1 = c.lap_milli();
 
         sem->release();
-        auto ellapsed2 = c.lap_milli();
+        // auto ellapsed2 = c.lap_milli();
 
         job = pipe->get();
-        auto ellapsed3 = c.lap_milli();
+        // auto ellapsed3 = c.lap_milli();
         job.tid = tid;
 
 //        printn(cat("tid:", tid, ", nid:", nid, ", 1:", ellapsed1, ", 2:", ellapsed2, ", 3:", ellapsed3, "\n"));
