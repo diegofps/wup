@@ -342,7 +342,7 @@ public:
         std::map<double, int> folds;
         for (uint i=0;i<attributes.numRows();++i)
         {
-            const double key = attributes( i+1, 3 );
+            const double key = attributes( i+1, uint(3) );
             if (folds.find(key) == folds.end())
                 folds[key] = folds.size();
         }
@@ -352,7 +352,7 @@ public:
 
         for (uint i=0;i<attributes.numRows();++i)
         {
-            const uint f = folds[attributes( i+1, 3 )];
+            const uint f = folds[attributes( i+1, uint(3) )];
             for (uint j=0; j<_numFolds; ++j)
             {
                 if (j == f)

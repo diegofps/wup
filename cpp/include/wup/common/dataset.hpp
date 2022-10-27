@@ -215,16 +215,16 @@ public:
         _data(prefix + "_data"),
         _attr(prefix + "_attr")
     {
-        const int attr_rows = _attr.numRows();
-        const int attr_cols = _attr.numCols();
+        const uint attr_rows = _attr.numRows();
+        const int attr_cols  = _attr.numCols();
         
         _classes = -1;
         int start = 0;
-        for (int i=0;i<attr_rows;++i) {
-            const int target    = _attr(i, 0);
-            const int end       = attr_cols > 1 ? start + _attr(i, 1) : 1;
-            const int group     = attr_cols > 2 ? _attr(i, 2) : 0;
-            const int subtarget = attr_cols > 3 ? _attr(i, 3) : target;
+        for (uint i=0;i<attr_rows;++i) {
+            const int target    = _attr(i, uint(0));
+            const int end       = attr_cols > 1 ? start + _attr(i, uint(1)) : 1;
+            const int group     = attr_cols > 2 ? _attr(i, uint(2)) : 0;
+            const int subtarget = attr_cols > 3 ? _attr(i, uint(3)) : target;
             
             Sample * newSample = new Sample(i, target, subtarget, group, _data, start, end);
             push_back(newSample);
