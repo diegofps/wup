@@ -8,7 +8,7 @@
 #include <opencv2/opencv.hpp>
 #include <vector>
 
-#include "../../../tinyml/wisard_cmd/priorityflow.hpp"
+//#include "../../../tinyml/wisard_cmd/priorityflow.hpp"
 
 namespace wup
 {

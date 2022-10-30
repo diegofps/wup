@@ -55,7 +55,7 @@ public:
     {
         stop();
 
-        t = new thread([&]() {
+        t = new std::thread([&]() {
             run();
         });
     }
@@ -63,7 +63,7 @@ public:
     void
     run()
     {
-        vector<uint8_t> buffer;
+        std::vector<uint8_t> buffer;
         MPI_Status status;
         int count;
         int flag;
@@ -93,7 +93,7 @@ public:
             }
             else
             {
-                this_thread::sleep_for(chrono::milliseconds(delay));
+                std::this_thread::sleep_for(std::chrono::milliseconds(delay));
             }
         }
     }
