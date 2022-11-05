@@ -32,6 +32,8 @@
 #include <wup/common/bits.hpp>
 #include <wup/common/math.hpp>
 #include <wup/common/os.hpp>
+#include <wup/common/repr.hpp>
+#include <wup/common/config.hpp>
 #include <wup/common/str.hpp>
 
 #ifndef WUP_NO_ZIP

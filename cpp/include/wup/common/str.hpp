@@ -5,6 +5,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <regex>
 
 namespace wup {
 namespace str {
@@ -159,6 +160,48 @@ removeChar(std::string & data,
            char const c)
 {
     data.resize(removeChar(&data[0], data.size(), c));
+}
+
+inline int
+replaceOne(std::string & str,
+           std::string const & from,
+           std::string const & to)
+{
+    size_t start_pos = str.find(from);
+
+    if(start_pos == std::string::npos)
+        return 0;
+
+    str.replace(start_pos, from.length(), to);
+
+    return 1;
+}
+
+inline int
+replaceAll(std::string & str,
+           std::string const & from,
+           std::string const & to)
+{
+    if(from.empty())
+        return 0;
+
+    size_t start_pos = 0;
+    int replaces = 0;
+
+    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
+        str.replace(start_pos, from.length(), to);
+
+        start_pos += to.length();
+        replaces  += 1;
+    }
+
+    return replaces;
+}
+
+inline void
+replaceRegex(std::string & src, std::string from, std::string to)
+{
+    std::string result = std::regex_replace(src, std::regex(from), to);
 }
 
 }

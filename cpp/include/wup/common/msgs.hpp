@@ -239,6 +239,27 @@ WRAP_LOGPREFIX(info, _info)
 WRAP_LOGPREFIX(warn, _warn)
 WRAP_LOGPREFIX(error, _error)
 
+template <typename P1, typename P2>
+void _printEventArgs(const P1 &p1, const P2 &p2)
+{
+    std::cout << p1 << "=" << p2 << std::endl;
+}
+
+template <typename P1, typename P2, typename... Args>
+void _printEventArgs(const P1 &p1, const P2 &p2, const Args&... args)
+{
+    std::cout << p1 << "=" << p2 << ", ";
+    _printEventArgs(args...);
+}
+
+template <typename P1, typename... Args>
+void printEvent(const P1 &p1, const Args&... args)
+{
+    std::cout << p1 << ":\n  ";
+    _printEventArgs(args...);
+    print();
+}
+
 inline void
 pressEnter()
 {

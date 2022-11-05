@@ -13,49 +13,55 @@
 namespace wup
 {
 
-const uchar KEY_LEFT  = 81;
-const uchar KEY_UP    = 82;
-const uchar KEY_RIGHT = 83;
-const uchar KEY_DOWN  = 84;
-const uchar KEY_HOME  = 80;
-const uchar KEY_END   = 87;
+const uchar KEY_LEFT   = 81;
+const uchar KEY_UP     = 82;
+const uchar KEY_RIGHT  = 83;
+const uchar KEY_DOWN   = 84;
+const uchar KEY_HOME   = 80;
+const uchar KEY_END    = 87;
+const uchar KEY_INSERT = 99;
+const uchar KEY_PGUP   = 85;
+const uchar KEY_PGDOWN = 86;
 
-const uchar KEY_NUMPAD_ON_1 = 177;
-const uchar KEY_NUMPAD_ON_2 = 178;
-const uchar KEY_NUMPAD_ON_3 = 179;
-const uchar KEY_NUMPAD_ON_4 = 180;
-const uchar KEY_NUMPAD_ON_5 = 181;
-const uchar KEY_NUMPAD_ON_6 = 182;
-const uchar KEY_NUMPAD_ON_7 = 183;
-const uchar KEY_NUMPAD_ON_8 = 184;
-const uchar KEY_NUMPAD_ON_9 = 185;
-const uchar KEY_NUMPAD_ON_0 = 176;
+const uchar KEY_NUMPAD_ON_1   = 177;
+const uchar KEY_NUMPAD_ON_2   = 178;
+const uchar KEY_NUMPAD_ON_3   = 179;
+const uchar KEY_NUMPAD_ON_4   = 180;
+const uchar KEY_NUMPAD_ON_5   = 181;
+const uchar KEY_NUMPAD_ON_6   = 182;
+const uchar KEY_NUMPAD_ON_7   = 183;
+const uchar KEY_NUMPAD_ON_8   = 184;
+const uchar KEY_NUMPAD_ON_9   = 185;
+const uchar KEY_NUMPAD_ON_0   = 176;
 const uchar KEY_NUMPAD_ON_DOT = 172;
 
-const uchar KEY_NUMPAD_OFF_END = 156;
-const uchar KEY_NUMPAD_OFF_DOWN = 153;
+const uchar KEY_NUMPAD_OFF_END    = 156;
+const uchar KEY_NUMPAD_OFF_DOWN   = 153;
 const uchar KEY_NUMPAD_OFF_PGDOWN = 155;
-const uchar KEY_NUMPAD_OFF_LEFT = 150;
-const uchar KEY_NUMPAD_OFF_5 = 157;
-const uchar KEY_NUMPAD_OFF_RIGHT = 152;
-const uchar KEY_NUMPAD_OFF_HOME = 149;
-const uchar KEY_NUMPAD_OFF_UP = 151;
-const uchar KEY_NUMPAD_OFF_PGUP = 154;
-const uchar KEY_NUMPAD_OFF_0 = 158;
-const uchar KEY_NUMPAD_OFF_DOT = 159;
+const uchar KEY_NUMPAD_OFF_LEFT   = 150;
+const uchar KEY_NUMPAD_OFF_5      = 157;
+const uchar KEY_NUMPAD_OFF_RIGHT  = 152;
+const uchar KEY_NUMPAD_OFF_HOME   = 149;
+const uchar KEY_NUMPAD_OFF_UP     = 151;
+const uchar KEY_NUMPAD_OFF_PGUP   = 154;
+const uchar KEY_NUMPAD_OFF_0      = 158;
+const uchar KEY_NUMPAD_OFF_DOT    = 159;
 
-const uchar KEY_NUMPAD_DIV = 175;
-const uchar KEY_NUMPAD_MUL = 170;
+const uchar KEY_NUMPAD_DIV   = 175;
+const uchar KEY_NUMPAD_MUL   = 170;
 const uchar KEY_NUMPAD_MINUS = 173;
-const uchar KEY_NUMPAD_PLUS = 171;
+const uchar KEY_NUMPAD_PLUS  = 171;
 const uchar KEY_NUMPAD_ENTER = 141;
 
-const uchar KEY_NONE = 255;
+const uchar KEY_NONE  = 255;
 
-const uchar KEY_ESC = 27;
-const uchar KEY_SPACE = 32;
-const uchar KEY_ENTER = 13;
 const uchar KEY_BACKSPACE = 8;
+const uchar KEY_ENTER     = 13;
+const uchar KEY_ESC       = 27;
+const uchar KEY_SPACE     = 32;
+const uchar KEY_MINUS     = 45;
+const uchar KEY_EQUAL     = 61;
+
 
 const uchar KEY_A = 65;
 const uchar KEY_B = 66;
@@ -241,7 +247,20 @@ public:
     
 };
 
-double
+inline std::ostream &
+operator<<(std::ostream & o, const Region & r) {
+    o << "Rect(x=" << r.x << ", y=" << r.y << ", w=" << r.width << ", h=" << r.height << ")";
+    return o;
+}
+
+//inline std::ostream &
+//operator<<(std::ostream & o, const Region & r)
+//{
+//    o << "(" << r.x << "," << r.y << " " << r.width << "," << r.height << ")";
+//    return o;
+//}
+
+inline double
 distance(const cv::Point2i p1, const cv::Point2i p2)
 {
     const int dx = p1.x - p2.x;
@@ -249,11 +268,7 @@ distance(const cv::Point2i p1, const cv::Point2i p2)
     return sqrt(dx*dx + dy*dy);
 }
 
-std::ostream & operator<<(std::ostream & o, const Region & r)
-{
-    o << "(" << r.x << "," << r.y << " " << r.width << "," << r.height << ")";
-    return o;
-}
+
 
 template <typename T, typename INDEX>
 inline uint
@@ -264,7 +279,7 @@ sumRegion(const T & view,
     return view(i2, j2) + view(i1, j1) - view(i2, j1) - view(i1, j2);
 }
 
-void
+inline void
 calculateImageIntegral1(const cv::Mat & image, wup::Bundle3D<uint> & ii)
 {
     ii.reshape(image.rows, image.cols);
@@ -314,7 +329,7 @@ calculateImageIntegral1(const cv::Mat & image, wup::Bundle3D<uint> & ii)
     }
 }
 
-void
+inline void
 calculateImageIntegral(const cv::Mat & image, wup::Bundle<uint> & ii)
 {
     ii.reshape(static_cast<uint>(image.rows),
@@ -378,7 +393,7 @@ calculateImageIntegral(const cv::Mat & image, wup::Bundle<uint> & ii)
     }
 }
 
-void
+inline void
 calculateImageIntegral3(const cv::Mat & image, wup::Bundle3D<uint> & ii)
 {
     ii.reshape(static_cast<uint>(image.rows),
@@ -401,7 +416,7 @@ calculateImageIntegral3(const cv::Mat & image, wup::Bundle3D<uint> & ii)
     }
 }
 
-void
+inline void
 calculateImageIntegral4(const cv::Mat & image, wup::Bundle3D<uint> & ii)
 {
     ii.reshape(image.rows, image.cols);
@@ -452,7 +467,7 @@ calculateImageIntegral4(const cv::Mat & image, wup::Bundle3D<uint> & ii)
     }
 }
 
-void
+inline void
 calculateImageIntegral5(const cv::Mat & image, wup::Bundle3D<int> & ii)
 {
     ii.reshape(static_cast<uint>(image.rows+1),
@@ -462,7 +477,7 @@ calculateImageIntegral5(const cv::Mat & image, wup::Bundle3D<int> & ii)
     cv::integral(image, tmp);
 }
 
-void
+inline void
 calculateImageIntegral6(const cv::Mat & image, wup::Bundle3D<uint> & ii)
 {
     ii.reshape(static_cast<uint>(image.rows),
@@ -510,7 +525,7 @@ calculateImageIntegral6(const cv::Mat & image, wup::Bundle3D<uint> & ii)
     });
 }
 
-void
+inline void
 calculateImageIntegral3D1(const cv::Mat & image, wup::Bundle3D<int> & ii)
 {
     if (image.type() != CV_8UC3)
@@ -592,7 +607,7 @@ calculateImageIntegral3D1(const cv::Mat & image, wup::Bundle3D<int> & ii)
     }
 }
 
-void
+inline void
 calculateImageIntegral3D(const cv::Mat & image, wup::Bundle3D<uint> & ii)
 {
     if (image.type() != CV_8UC3)
@@ -804,7 +819,7 @@ projectPoint(const T1 & src, T2 & dst,
     dst.y = src.y * sizeDst.height / sizeSrc.height;
 }
 
-void
+inline void
 __selectPoints(int event, int x, int y, int flags, void * userdata)
 {
     std::vector<cv::Point2i> * points = static_cast<std::vector<cv::Point2i>*>(userdata);
@@ -812,11 +827,13 @@ __selectPoints(int event, int x, int y, int flags, void * userdata)
     if  ( event == cv::EVENT_LBUTTONDOWN )
         points->push_back(cv::Point2i(x, y));
 
+    // The first point is the hover point. It represents the current mouse
+    // position and helps the drawing process.
     (*points)[0].x = x;
     (*points)[0].y = y;
 }
 
-bool
+inline bool
 selectROI(const char * window, cv::Mat & img, Region & roi, const int minSize=0)
 {
     std::vector<cv::Point2i> points(1, cv::Point2i(0,0));
@@ -856,9 +873,9 @@ selectROI(const char * window, cv::Mat & img, Region & roi, const int minSize=0)
     const int y0 = math::min(points[1].y, points[2].y);
     const int y1 = math::max(points[1].y, points[2].y);
 
-    roi.x = x0;
-    roi.y = y0;
-    roi.width = x1 - x0;
+    roi.x      = x0;
+    roi.y      = y0;
+    roi.width  = x1 - x0;
     roi.height = y1 - y0;
 
     cv::setMouseCallback(window, nullptr, nullptr);
@@ -869,7 +886,52 @@ selectROI(const char * window, cv::Mat & img, Region & roi, const int minSize=0)
         return true;
 }
 
-void
+inline bool
+selectPoints(const char * window,
+             cv::Mat & img,
+             std::vector<cv::Point2i> & points)
+{
+    cv::Scalar color2(255,255,255);
+    cv::Scalar color1(0,0,0);
+    cv::Mat img2;
+
+    points.clear();
+    points.push_back(cv::Point2i(0,0));
+
+    setMouseCallback(window, __selectPoints, & points);
+
+    while(true)
+    {
+        img.copyTo(img2);
+
+        for (auto & point : points) {
+            circle(img2, point, 3, color2);
+        }
+
+        imshow(window, img2);
+
+        const uchar key = cv::waitKey(16) & 0xFF;
+
+        if (key == KEY_ESC)
+        {
+            cv::setMouseCallback(window, nullptr, nullptr);
+            points.clear();
+            return false;
+        }
+
+        else if (key == KEY_ENTER)
+        {
+            for (size_t i=1;i<points.size();++i)
+                points[i-1] = points[i];
+
+            cv::setMouseCallback(window, nullptr, nullptr);
+            points.resize(points.size()-1);
+            return true;
+        }
+    }
+}
+
+inline void
 bundleToMat(wup::Bundle<uint> & src, cv::Mat & dst, const uint srcMax)
 {
     if (uint(dst.rows) != src.numRows())
@@ -935,7 +997,7 @@ drawObjectRegion(cv::Mat & canvas,
     }
 }
 
-void
+inline void
 drawLabel(cv::Mat & canvas,
           const std::string name,
           const int x,
