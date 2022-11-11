@@ -118,7 +118,7 @@ public:
 
     int _w2;
 
-    KernelWisard(ireader &reader) :
+    KernelWisard(IntReader &reader) :
         _kernelSpace(reader)
     {
 
@@ -254,8 +254,9 @@ public:
     wup::models::KernelWisard<EuclidianKernels> w;
 
 
-    KernelWisardNode(Node * const parent, ireader & reader) :
-            Node(parent, reader)
+    KernelWisardNode(Node * const parent, IntReader & reader) :
+            Node(parent, reader),
+            w(reader)
     {
 
     }
@@ -280,7 +281,7 @@ public:
     onDigest(const Feature & input)
     {
         double * out = output().data();
-        w.
+        // w.
 
         publish(output());
     }
@@ -290,7 +291,7 @@ public:
 
     }
 
-    virtual void onExport(iwriter & writer)
+    virtual void onExport(IntWriter & writer)
     {
         throw WUPException("Not implemented");
     }

@@ -20,15 +20,6 @@ public:
             throw WUPException(cat("Can't replicate ", times, " times"));
     }
 
-    ShortMemory(const ShortMemory & other) :
-        Node(other),
-        _times(other._times),
-        _mem(new double[other.output().size()]),
-        _current(other._current)
-    {
-        memcpy(_mem, other._mem, sizeof(double) * other.output().size());
-    }
-
     ShortMemory(Node * const parent, IntReader & reader) :
         Node(parent, reader),
         _times(reader.getUInt32()),
@@ -36,6 +27,15 @@ public:
         _current(reader.get())
     {
 
+    }
+
+    ShortMemory(const ShortMemory & other) :
+        Node(other),
+        _times(other._times),
+        _mem(new double[other.output().size()]),
+        _current(other._current)
+    {
+        memcpy(_mem, other._mem, sizeof(double) * other.output().size());
     }
 
     virtual ~ShortMemory()

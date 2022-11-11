@@ -5,6 +5,7 @@
 #include <wup/common/generic.hpp>
 #include <wup/common/bundle.hpp>
 #include <wup/common/math.hpp>
+#include <wup/common/threads.hpp>
 #include <opencv2/opencv.hpp>
 #include <vector>
 
@@ -53,7 +54,7 @@ const uchar KEY_NUMPAD_MINUS = 173;
 const uchar KEY_NUMPAD_PLUS  = 171;
 const uchar KEY_NUMPAD_ENTER = 141;
 
-const uchar KEY_NONE  = 255;
+const uchar KEY_NONE      = 255;
 
 const uchar KEY_BACKSPACE = 8;
 const uchar KEY_ENTER     = 13;
@@ -133,7 +134,127 @@ const uchar KEY_9 = 57;
 namespace wup
 {
 
-// CLASS SIMILAR TO Rect2i, REPRESENTS A REGION OF INTEREST
+template <typename POINT1, typename POINT2, typename A, typename B>
+void
+projectPoint(POINT1 const & src,
+             POINT2 & dst,
+             A const fromWidth,
+             A const fromHeight,
+             B const toWidth,
+             B const toHeight)
+{
+    dst.x = src.x * toWidth  / fromWidth;
+    dst.y = src.y * toHeight / fromHeight;
+}
+
+template <typename POINT, typename A, typename B>
+void
+projectPoint(POINT & p,
+             A const fromWidth,
+             A const fromHeight,
+             B const toWidth,
+             B const toHeight)
+{
+    projectPoint(p, p, fromWidth, fromHeight, toWidth, toHeight);
+}
+
+template <typename RECT1, typename RECT2, typename A, typename B>
+void
+projectRect(RECT1 const & src,
+            RECT2 & dst,
+            A const fromWidth,
+            A const fromHeight,
+            B const toWidth,
+            B const toHeight)
+{
+    dst.x      = src.x * toWidth  / fromWidth;
+    dst.y      = src.y * toHeight / fromHeight;
+    dst.width  = src.width * toWidth  / fromWidth;
+    dst.height = src.height * toHeight / fromHeight;
+}
+
+template <typename RECT, typename A, typename B>
+void
+projectRect(RECT & rect,
+            A const fromWidth,
+            A const fromHeight,
+            B const toWidth,
+            B const toHeight)
+{
+    projectRect(rect, rect, fromWidth, fromHeight, toWidth, toHeight);
+}
+
+template <typename POINT1, typename POINT2, typename SIZE1, typename SIZE2>
+void
+projectPoint(POINT1 const & src,
+             POINT2 & dst,
+             SIZE1 const & fromSize,
+             SIZE2 const & toSize)
+{
+    projectPoint(src, dst, fromSize.width, fromSize.height, toSize.width, toSize.height);
+}
+
+template <typename POINT, typename POINT2, typename SIZE1, typename SIZE2>
+void
+projectPoint(POINT & point,
+             SIZE1 const & fromSize,
+             SIZE2 const & toSize)
+{
+    projectPoint(point, point, fromSize.width, fromSize.height, toSize.width, toSize.height);
+}
+
+template <typename RECT1, typename RECT2, typename SIZE1, typename SIZE2>
+void
+projectRect(RECT1 const & src,
+            RECT2 & dst,
+            SIZE1 const & fromSize,
+            SIZE2 const & toSize)
+{
+    projectRect(src, dst, fromSize.width, fromSize.height, toSize.width, toSize.height);
+}
+
+template <typename RECT, typename POINT2, typename SIZE1, typename SIZE2>
+void
+projectRect(RECT & rect,
+            SIZE1 const & fromSize,
+            SIZE2 const & toSize)
+{
+    projectRect(rect, rect, fromSize.width, fromSize.height, toSize.width, toSize.height);
+}
+
+
+template <typename RECT1, typename RECT2>
+bool
+intersectsRect(RECT1 const & r1,
+               RECT2 const & r2)
+{
+    return (r2.x + r2.width  >= r1.x && r2.x < r1.x + r1.width ) &&
+           (r2.y + r2.height >= r1.y && r2.y < r1.y + r1.height);
+}
+
+template <typename RECT, typename POINT>
+bool
+intersectsPoint(RECT const & r,
+                POINT const & p)
+{
+    return (p.x >= r.x && p.x < r.x + r.width ) &&
+           (p.y >= r.y && p.y < r.y + r.height);
+}
+
+template <typename RECT1, typename RECT2>
+void
+copyRect(RECT1 & dst,
+         RECT2 const & src)
+{
+    dst.x      = src.x;
+    dst.y      = src.y;
+    dst.width  = src.width;
+    dst.height = src.height;
+}
+
+
+// CLASS SIMILAR TO Rect2i, REPRESENTS A REGION OF INTEREST BUT ADDS CUSTOM METHODS
+
 class Region
 {
 public:
@@ -195,28 +316,49 @@ public:
     void
     updateSizeButKeepCenter(const int newHeight, const int newWidth)
     {
-        y = y + height / 2 - newHeight / 2;
-        x = x + width / 2 - newWidth / 2;
+        y      = y + height / 2 - newHeight / 2;
+        x      = x + width / 2 - newWidth / 2;
         height = newHeight;
         width  = newWidth;
     }
 
-    void
-    projectTo(Region & dst, cv::Size2i & srcSize, cv::Size2i & dstSize) const
-    {
-        dst.x = x * dstSize.width / srcSize.width;
-        dst.y = y * dstSize.height / srcSize.height;
-        dst.width  = width * dstSize.width / srcSize.width;
-        dst.height = height * dstSize.height / srcSize.height;
-    }
+//    void
+//    projectTo(Region & dst, cv::Size2i & srcSize, cv::Size2i & dstSize) const
+//    {
+//        projectTo(dst, srcSize.width, srcSize.height, dstSize.width, dstSize.height);
+//    }
+
+//    template <typename A, typename B>
+//    void
+//    projectTo(Region & r, A fromWidth, A fromHeight, B toWidth, B toHeight) const
+//    {
+//        projectrect(r, )
+//        r.x      = r.x * toWidth  / fromWidth;
+//        r.y      = r.y * toHeight / fromHeight;
+//        r.width  = r.width * toWidth  / fromWidth;
+//        r.height = r.height * toHeight / fromHeight;
+//    }
+
+//    void
+//    projectTo(cv::Size2i & srcSize, cv::Size2i & dstSize)
+//    {
+//        projectTo(*this, srcSize.width, srcSize.height, dstSize.width, dstSize.height);
+//    }
+
+//    template <typename A, typename B>
+//    void
+//    projectTo(A fromWidth, A fromHeight, B toWidth, B toHeight)
+//    {
+//        projectTo(*this, fromWidth, fromHeight, toWidth, toHeight);
+//    }
 
     template <typename RECT>
     void
     toRect(RECT & r)
     {
-        r.x = x;
-        r.y = y;
-        r.width = width;
+        r.x      = x;
+        r.y      = y;
+        r.width  = width;
         r.height = height;
     }
     
@@ -224,9 +366,9 @@ public:
     void
     fromRect(const RECT & r)
     {
-        x = r.x;
-        y = r.y;
-        width = r.width;
+        x      = r.x;
+        y      = r.y;
+        width  = r.width;
         height = r.height;
     }
     
@@ -285,7 +427,8 @@ calculateImageIntegral1(const cv::Mat & image, wup::Bundle3D<uint> & ii)
     ii.reshape(image.rows, image.cols);
 
     const uchar * const final = &image.at<uchar>(0, image.cols);
-    const uchar * j = &image.at<uchar>(0, 0);
+    const uchar * j           = &image.at<uchar>(0, 0);
+
     uint * b = &ii(0,0);
     uint * a = b;
 
@@ -342,9 +485,9 @@ calculateImageIntegral(const cv::Mat & image, wup::Bundle<uint> & ii)
     const uchar * finalRowPixel = currPixel + imgWidth;
     const uchar * finalPixel = currPixel + imgWidth * imgHeight;
 
-    uint * currPos = ii.data();
+    uint * currPos     = ii.data();
     uint * startRowPos = currPos;
-    uint * leftPos = currPos;
+    uint * leftPos     = currPos;
     uint * diagPos;
     uint * topPos;
 
@@ -400,7 +543,7 @@ calculateImageIntegral3(const cv::Mat & image, wup::Bundle3D<uint> & ii)
                static_cast<uint>(image.cols));
 
     const int imgHeight = image.rows;
-    const int imgWidth = image.cols;
+    const int imgWidth  = image.cols;
 
     ii(0,0) = image.at<uchar>(0,0);
 
@@ -422,7 +565,8 @@ calculateImageIntegral4(const cv::Mat & image, wup::Bundle3D<uint> & ii)
     ii.reshape(image.rows, image.cols);
 
     const uchar * const finalRowPixel = &image.at<uchar>(0, image.cols);
-    const uchar * currPixel = &image.at<uchar>(0, 0);
+    const uchar * currPixel           = &image.at<uchar>(0, 0);
+
     uint * currPos = &ii(0,0);
     uint * leftPos = currPos;
 
@@ -484,7 +628,7 @@ calculateImageIntegral6(const cv::Mat & image, wup::Bundle3D<uint> & ii)
                static_cast<uint>(image.cols));
 
     const int imgHeight = image.rows;
-    const int imgWidth = image.cols;
+    const int imgWidth  = image.cols;
 
     ii(0,0) = image.at<uchar>(0,0);
 
@@ -810,15 +954,6 @@ calculateImageIntegral3D(const cv::Mat & image, wup::Bundle3D<uint> & ii)
 //    }
 //}
 
-template <typename T1, typename T2>
-void
-projectPoint(const T1 & src, T2 & dst,
-             const cv::Size2i & sizeSrc, const cv::Size2i & sizeDst)
-{
-    dst.x = src.x * sizeDst.width / sizeSrc.width;
-    dst.y = src.y * sizeDst.height / sizeSrc.height;
-}
-
 inline void
 __selectPoints(int event, int x, int y, int flags, void * userdata)
 {
@@ -834,7 +969,12 @@ __selectPoints(int event, int x, int y, int flags, void * userdata)
 }
 
 inline bool
-selectROI(const char * window, cv::Mat & img, Region & roi, const int minSize=0)
+selectROI(const char * window,
+          cv::Mat & img,
+          Region & roi,
+          cv::MouseCallback mouseCallback=nullptr,
+          void * mouseCallbackData=nullptr,
+          const int minSize=0)
 {
     std::vector<cv::Point2i> points(1, cv::Point2i(0,0));
     cv::Scalar color2(255,255,255);
@@ -862,7 +1002,7 @@ selectROI(const char * window, cv::Mat & img, Region & roi, const int minSize=0)
 
         if (key == 27)
         {
-            cv::setMouseCallback(window, nullptr, nullptr);
+            cv::setMouseCallback(window, mouseCallback, mouseCallbackData);
             return false;
         }
     }
@@ -878,7 +1018,7 @@ selectROI(const char * window, cv::Mat & img, Region & roi, const int minSize=0)
     roi.width  = x1 - x0;
     roi.height = y1 - y0;
 
-    cv::setMouseCallback(window, nullptr, nullptr);
+    cv::setMouseCallback(window, mouseCallback, mouseCallbackData);
 
     if (roi.width < minSize || roi.height < minSize)
         return false;
@@ -889,7 +1029,9 @@ selectROI(const char * window, cv::Mat & img, Region & roi, const int minSize=0)
 inline bool
 selectPoints(const char * window,
              cv::Mat & img,
-             std::vector<cv::Point2i> & points)
+             std::vector<cv::Point2i> & points,
+             cv::MouseCallback mouseCallback=nullptr,
+             void * mouseCallbackData=nullptr)
 {
     cv::Scalar color2(255,255,255);
     cv::Scalar color1(0,0,0);
@@ -914,7 +1056,7 @@ selectPoints(const char * window,
 
         if (key == KEY_ESC)
         {
-            cv::setMouseCallback(window, nullptr, nullptr);
+            cv::setMouseCallback(window, mouseCallback, mouseCallbackData);
             points.clear();
             return false;
         }
@@ -924,7 +1066,7 @@ selectPoints(const char * window,
             for (size_t i=1;i<points.size();++i)
                 points[i-1] = points[i];
 
-            cv::setMouseCallback(window, nullptr, nullptr);
+            cv::setMouseCallback(window, mouseCallback, mouseCallbackData);
             points.resize(points.size()-1);
             return true;
         }

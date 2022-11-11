@@ -162,15 +162,15 @@ private:
         // Load the ids
         int numFolds;
         stream >> numFolds;
-        print(numFolds);
+        // print(numFolds);
         std::vector<std::vector<uint>> foldIds(numFolds);
-        print(numFolds);
+        // print(numFolds);
 
         for (int f=0;f!=numFolds;++f)
         {
             int numEltos;
             stream >> numEltos;
-            print(numEltos);
+            // print(numEltos);
 
             for (int e=0;e!=numEltos;++e)
             {

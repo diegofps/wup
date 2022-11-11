@@ -21,16 +21,22 @@ class KernelCanvas : public Node {
 public:
 
     KernelCanvas(Node * const parent, IntReader & reader) :
+
             Node(parent, reader),
+            
             _kc(reader)
     {
 
     }
 
-    KernelCanvas(Node * const parent, const uint numKernels,
-                 const double activation, const uint termBits,
+    KernelCanvas(Node * const parent, 
+                 const uint numKernels,
+                 const double activation, 
+                 const uint termBits,
                  double ** kernels=NULL) :
+
         Node(parent),
+
         _kc(parent->output().size(), numKernels, activation, termBits, kernels)
     {
 
@@ -62,16 +68,12 @@ public:
     virtual void
     toPattern(int * dst)
     {
-        memcpy(dst, _kc.binary_output(),
-                sizeof(int) * _kc.binary_output_size());
-//        memcpy(dst, _kc.timestamp_output(),
-//                sizeof(int) * _kc.timestap_output_size());
+        memcpy(dst, _kc.binary_output(), sizeof(int) * _kc.binary_output_size());
     }
 
     virtual uint patternSize()
     {
         return _kc.binary_output_size();
-//        return _kc.timestap_output_size();
     }
 
 
@@ -87,7 +89,8 @@ public:
 
 private:
 
-    wup::KernelCanvas<EuclidianKernels> _kc;
+    // wup::KernelCanvas<EuclidianKernels> _kc;
+    wup::KernelCanvas<HashedKernelSpace> _kc;
     //legacy::KernelCanvas _kc;
 
 };

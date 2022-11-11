@@ -165,12 +165,12 @@ public:
     }
 
     template <typename A>
-    A & as()
+    A * as()
     {
 //        return static_cast<A>(*this);
 //        return dynamic_cast<A>(*this);
 //        return *dynamic_cast<A*>(this);
-        return (A&)(*this);
+        return (A*)(this);
     }
 
     template <typename T>

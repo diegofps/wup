@@ -22,23 +22,26 @@ namespace wup {
 namespace kernelgens {
 
     inline double *
-    __createRandomKernel(const uint dims)
+    __createRandomKernel(size_t const dims)
     {
         double * kernel = new double[dims];
-        for (uint j=0;j!=dims;++j)
+        for (size_t j=0;j!=dims;++j)
             kernel[j] = rand() / double(RAND_MAX) * 2.0 - 1.0;
         return kernel;
     }
 
     inline void
-    createRandomKernels(const uint dims, uint &numKernels, double** &kernels)
+    createRandomKernels(size_t const dims, 
+                        size_t & numKernels, 
+                        double **& kernels)
     {
         kernels = new double*[numKernels];
-        for (uint i=0;i!=numKernels;++i)
+
+        for (size_t i=0;i!=numKernels;++i)
         {
             double * v = new double[dims];
 
-            for (uint j=0;j!=dims;++j)
+            for (size_t j=0;j!=dims;++j)
                 v[j] = rand() / double(RAND_MAX) * 2.0 - 1.0;
 
             kernels[i] = v;
@@ -46,49 +49,58 @@ namespace kernelgens {
     }
 
     inline void
-    importKernels(wup::IntReader & reader, uint &dims, uint &numKernels, double** &kernels)
+    importKernels(wup::IntReader & reader, 
+                  size_t & dims, 
+                  size_t & numKernels, 
+                  double **& kernels)
     {
         dims = reader.getUInt32();
         numKernels = reader.getUInt32();
         kernels = new double*[numKernels];
 
-        for (uint i=0; i!=numKernels; ++i)
+        for (size_t i=0; i!=numKernels; ++i)
         {
             double * v = new double[dims];
-            for (uint j=0; j!=dims; ++j)
+
+            for (size_t j=0; j!=dims; ++j)
                 v[j] = reader.getDouble();
+
             kernels[i] = v;
         }
     }
 
     inline void
-    exportKernels(wup::IntWriter & writer, const uint dims, uint numKernels, double** &kernels)
+    exportKernels(wup::IntWriter & writer, 
+                  const size_t dims, 
+                  size_t numKernels, 
+                  double **& kernels)
     {
         writer.putUInt32(dims);
         writer.putUInt32(numKernels);
 
-        for (uint i=0; i!=numKernels; ++i)
+        for (size_t i=0; i!=numKernels; ++i)
         {
             auto v = kernels[i];
-            for (uint j=0; j!=dims; ++j)
+            for (size_t j=0; j!=dims; ++j)
                 writer.putDouble(v[j]);
         }
     }
 
     inline double *
-    __createZeroKernel(const uint dims)
+    __createZeroKernel(const size_t dims)
     {
         double * kernel = new double[dims];
 
-        for (uint j=0; j!=dims; ++j)
+        for (size_t j=0; j!=dims; ++j)
             kernel[j] = 0.0;
 
         return kernel;
     }
 
     inline double *
-    __createBridsonsKernelNeighbor(const uint dims, const double * const kernel,
-            const double r)
+    __createBridsonsKernelNeighbor(const size_t dims, 
+                                   const double * const kernel,
+                                   const double r)
     {
         double * const candidate = new double[dims];
         double sumSquares;
@@ -96,7 +108,7 @@ namespace kernelgens {
         while (true) {
             sumSquares = 0.0;
 
-            for (uint j=0;j!=dims;++j) {
+            for (size_t j=0;j!=dims;++j) {
                 candidate[j] = rand() / double(RAND_MAX) * 2.0 - 1.0;
                 sumSquares += candidate[j] * candidate[j];
             }
@@ -107,17 +119,18 @@ namespace kernelgens {
         sumSquares = sqrt(sumSquares);
         const double newLength = r * (1.0 + rand() / double(RAND_MAX));
 
-        for (uint j=0;j!=dims;++j)
+        for (size_t j=0;j!=dims;++j)
             candidate[j] = kernel[j] + candidate[j] / sumSquares * newLength;
 
         return candidate;
     }
 
     inline bool
-    isValidBridsonsKernel(const uint dims, const double * const candidate,
-            const std::vector<double*> &actives,
-            const std::vector<double*> &inactives,
-            const double rSquared)
+    isValidBridsonsKernel(const uint dims, 
+                          const double * const candidate,
+                          const std::vector<double*> & actives,
+                          const std::vector<double*> & inactives,
+                          const double rSquared)
     {
         for (uint i=0;i!=dims;++i)
             if (candidate[i] < -1.0 || candidate[i] > +1.0) {
@@ -151,8 +164,12 @@ namespace kernelgens {
     }
 
     inline void
-    createBridsonsKernels(const uint dims, const double r, const uint tries,
-            const uint maxKernels, uint &numKernels, double ** &kernels)
+    createBridsonsKernels(const uint dims,
+                          const double r,
+                          const uint tries,
+                          const uint maxKernels,
+                          uint &numKernels,
+                          double ** &kernels)
     {
         debug("Applying bridson's algorithm");
     //	debug("r was ", r);
@@ -207,40 +224,48 @@ namespace kernelgens {
         print("Created ", inactives.size(), " kernels");
     }
 
+    //////////////////////////////////////////////////////
+    /// \brief createBestCandidateKernels
+    ///
+    /// \param dims dimensionality of kernels
+    /// \param samples number of candidate kernels generated for each kernel. The best sample is selected
+    /// \param numKernels the number of kernels in kernels
+    /// \param kernels array of arrays that will contain the kernels
+    ///
     inline void
-    createBestCandidateKernels(const int dims, const int samples,
-            int &numKernels, double ** &kernels)
+    createBestCandidateKernels(const size_t dims,
+                               const size_t numCandidates,
+                               size_t & numKernels,
+                               double **& kernels)
     {
-        debug("Applying Mitchell's algorithm");
+        // debug("Applying Mitchell's algorithm");
 
         int minI, maxI;
         double minD, maxD, distance;
-        double **_tmpKernels;
+        double **_candidates;
 
-        _tmpKernels = new double*[samples];
+        _candidates = new double*[numCandidates];
         kernels = new double*[numKernels];
 
-        for (int s=0;s<samples;++s)
-            _tmpKernels[s] = new double[dims];
+        for (size_t s=0;s<numCandidates;++s)
+            _candidates[s] = new double[dims];
 
-        for (int i=0;i<numKernels;++i) {
+        for (size_t i=0;i<numKernels;++i) {
             double * v = new double[dims];
 
             if (i == 0) {
-                for (int j=0;j<dims;++j) {
+                for (size_t j=0;j<dims;++j) {
                     v[j] = rand() / double(RAND_MAX) * 2.0 - 1.0;
                 }
             } else {
                 maxI = -1;
-                for (int s=0;s<samples;++s) {
-                    for (int j=0;j<dims;++j) {
-                        _tmpKernels[s][j] =
-                                rand() / double(RAND_MAX) * 2.0 - 1.0;
-                    }
+                for (size_t s=0;s<numCandidates;++s) {
+                    for (size_t j=0;j<dims;++j)
+                        _candidates[s][j] = rand() / double(RAND_MAX) * 2.0 - 1.0;
 
                     minI = -1;
-                    for (int i2=0;i2<i;++i2) {
-                        distance = math::sdistance(_tmpKernels[s], kernels[i2], dims);
+                    for (size_t i2=0;i2<i;++i2) {
+                        distance = math::sdistance(_candidates[s], kernels[i2], dims);
 
                         if (minI == -1 || distance < minD) {
                             minI = i2;
@@ -255,7 +280,7 @@ namespace kernelgens {
                 }
 
                 for (int j=0;j<dims;++j) {
-                    v[j] = _tmpKernels[maxI][j];
+                    v[j] = _candidates[maxI][j];
                 }
             }
 
@@ -263,10 +288,10 @@ namespace kernelgens {
             kernels[i] = v;
         }
 
-        for (int s=0;s<samples;++s)
-            delete [] _tmpKernels[s];
+        for (size_t s=0;s<numCandidates;++s)
+            delete [] _candidates[s];
 
-        delete [] _tmpKernels;
+        delete [] _candidates;
     }
 
     inline void

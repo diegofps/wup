@@ -13,17 +13,17 @@ class Replicate : public Node {
 
 public:
 
-    Replicate(Node * const parent, IntReader & reader) :
-            Node(parent, reader)
-    {
-        _times = reader.getUInt32();
-    }
-
     Replicate(Node * const parent, const uint times) :
         Node(parent, parent->output().size() * times),
         _times(times)
     {
 
+    }
+
+    Replicate(Node * const parent, IntReader & reader) :
+            Node(parent, reader)
+    {
+        _times = reader.getUInt32();
     }
 
     virtual void

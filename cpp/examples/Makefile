@@ -1,37 +1,44 @@
+CC=clang++
+PARAMS=-std=c++11 -Wall
+LIBS=-lpthread -I/usr/include/opencv4/ -DWUP_NO_MPICH
+
 all: btest1 btest2 btest3 btest4
 	echo "Completed"
 
 t1:
-	clang++ -std=c++14 test1.cpp -o test1 -Wall -O3
+	$(CC) test1.cpp -o test1 $(PARAMS) $(LIBS) -O3
 
 t2:
-	clang++ -std=c++14 test2.cpp -o test2 -Wall -O3
+	$(CC) test2.cpp -o test2 $(PARAMS) $(LIBS) -O3
 
 t3:
-	clang++ -std=c++14 test3.cpp -o test3 -Wall -O3
+	$(CC) test3.cpp -o test3 $(PARAMS) $(LIBS) -O3
 
 t4:
-	clang++ -std=c++11 test4.cpp -o test4 -Wall -O3
+	$(CC) test4.cpp -o test4 $(PARAMS) $(LIBS) -O3
 
 t5:
-	clang++ test5.cpp -o test5 -Wall -std=c++11 -O3 -DWUP_NO_OPENCV -lpthread
+	$(CC) test5.cpp -o test5 $(PARAMS) $(LIBS) -O3 -DWUP_NO_OPENCV -lpthread
 
-dtest1:
-	clang++ -std=c++14 test1.cpp -o test1 -Wall -g
 
-dtest2:
-	clang++ -std=c++14 test2.cpp -o test2 -Wall -g
+d1:
+	$(CC) test1.cpp -o test1 $(PARAMS) $(LIBS) -g
 
-dtest3:
-	clang++ -std=c++14 test3.cpp -o test3 -Wall -g
+d2:
+	$(CC) test2.cpp -o test2 $(PARAMS) $(LIBS) -g
 
-dtest4:
-	clang++ -std=c++14 test4.cpp -o test4 -Wall -g
+d3:
+	$(CC) test3.cpp -o test3 $(PARAMS) $(LIBS) -g
+
+d4:
+	$(CC) test4.cpp -o test4 $(PARAMS) $(LIBS) -g
 	gdb test4
 
-vtest4:
-	clang++ -std=c++14 test4.cpp -o test4 -Wall -g
+
+v4:
+	clang++ test4.cpp -o test4 $(PARAMS) $(LIBS) -g
 	valgrind --leak-check=full --show-leak-kinds=all ./test4
+
 
 clean:
 	rm -f test1 test2 test3 test4 test5
