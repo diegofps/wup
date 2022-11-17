@@ -172,7 +172,7 @@ public:
         _eltos = 0;
     }
     
-    W base_weight() const
+    W & base_weight() const
     {
         if (_eltos == 0)
             throw TopKException("TopK is empty.");
@@ -180,12 +180,18 @@ public:
         return _mem[0].weight;
     }
     
-    T base_data() const
+    T & base_data() const
     {
         if (_eltos == 0)
             throw TopKException("TopK is empty.");
         
         return _mem[0].data;
+    }
+
+    Node &
+    base() const
+    {
+        return _mem[0];
     }
     
     void dumpTo(ostream &file_out)

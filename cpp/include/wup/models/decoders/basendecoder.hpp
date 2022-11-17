@@ -48,7 +48,7 @@ public:
     {
         size_t h = 0;
         for (uint i=0;i<patternSize();++i)
-            h = bits::rotateLeft(h,3) ^ (pattern()[i]);
+            h = rotateLeft(h,3) ^ (pattern()[i]);
         hash(h);
     }
 

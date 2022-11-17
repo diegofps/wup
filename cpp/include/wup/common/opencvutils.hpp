@@ -194,7 +194,7 @@ projectPoint(POINT1 const & src,
     projectPoint(src, dst, fromSize.width, fromSize.height, toSize.width, toSize.height);
 }
 
-template <typename POINT, typename POINT2, typename SIZE1, typename SIZE2>
+template <typename POINT, typename SIZE1, typename SIZE2>
 void
 projectPoint(POINT & point,
              SIZE1 const & fromSize,
@@ -213,7 +213,7 @@ projectRect(RECT1 const & src,
     projectRect(src, dst, fromSize.width, fromSize.height, toSize.width, toSize.height);
 }
 
-template <typename RECT, typename POINT2, typename SIZE1, typename SIZE2>
+template <typename RECT, typename SIZE1, typename SIZE2>
 void
 projectRect(RECT & rect,
             SIZE1 const & fromSize,
@@ -1105,6 +1105,116 @@ drawCross(cv::Mat & canvas,
 }
 
 inline void
+drawLabel(cv::Mat & canvas,
+          const std::string name,
+          const int x,
+          const int y,
+          const int width=-1,
+          const int height=-1,
+          const double scale=0.7,
+          const cv::Scalar backColor=cv::Scalar(0,0,0),
+          const cv::Scalar textColor=cv::Scalar(255,255,255),
+          const int pl=5, // padding left
+          const int pt=5, // padding top
+          const int pr=5, // padding right
+          const int pb=5, // padding bottom
+          const int font=cv::FONT_HERSHEY_DUPLEX,
+          const int thickness=1,
+          const int lineType=cv::LINE_AA)
+{
+
+    // Get text size
+
+    int baseline;
+    cv::Size s = cv::getTextSize(name, font, scale, thickness, &baseline);
+    s.width  += pl + pr;
+    s.height += pt + pb;
+
+    // These will hold the label and text coordinates
+
+    cv::Point2i p1; // rect topleft
+    cv::Point2i p2; // rect bottomright
+    cv::Point2i p3; // text
+
+    // Calculate x coordinates
+
+    if (width == -1)
+    {
+        p1.x = x;
+        p2.x = x + s.width;
+        p3.x = p1.x + pl;
+    }
+    else if (s.width <= width)
+    {
+        p1.x = x;
+        p2.x = p1.x + width;
+        p3.x = p1.x + pl + (width - s.width) / 2;
+    }
+    else
+    {
+        p1.x = x + width / 2 - s.width / 2;
+        p2.x = p1.x + s.width;
+        p3.x = p1.x + pl;
+    }
+
+    // Calculate y coordinates
+
+    if (height == -1)
+    {
+        p1.y = y;
+        p2.y = y + s.height;
+        p3.y = p1.y + s.height - pb;
+    }
+    else if (s.height <= height)
+    {
+        p1.y = y;
+        p2.y = p1.y + height;
+        p3.y = p1.y + s.height - pb + (height - s.height) / 2;
+    }
+    else
+    {
+        p1.y = y + height / 2 - s.height / 2;
+        p2.y = p1.y + s.height;
+        p3.y = p1.y + s.height - pb;
+    }
+
+    // Draw label background
+
+    rectangle(canvas, p1, p2, backColor, -1);
+
+    // Draw label text
+
+    cv::putText(canvas, name, p3, font, scale, textColor, thickness, lineType, false);
+}
+
+template <typename RECT>
+void
+drawNamedRect(cv::Mat & canvas,
+              char const * name,
+              RECT & rect,
+              cv::Scalar const & rectColor=cv::Scalar(0,0,255),
+              int const rectThickness=3,
+              cv::Scalar const & textColor=cv::Scalar(255,255,255),
+              double const & textScale=0.3,
+              int const offset=0,
+              int const maxOffset=1)
+{
+    // Draw rect rectangle
+
+    cv::Point p1(rect.x, rect.y);
+    cv::Point p2(rect.x + rect.width, rect.y + rect.height);
+    rectangle(canvas, p1, p2, rectColor, rectThickness);
+
+    // Draw label
+
+    int const x = rect.x + rect.width * offset / maxOffset;
+    int const y = rect.y + rect.height;
+    int const w = offset == -1 ? -1 : rect.width  * (offset+1) / maxOffset - (rect.width  * offset / maxOffset);
+
+    drawLabel(canvas, name, x, y, w, 25, textScale, rectColor, textColor);
+}
+
+inline void
 drawObjectRegion(cv::Mat & canvas,
                const uint scanX, const uint scanY,
                const uint scanWidth, const uint scanHeight,
@@ -1137,35 +1247,6 @@ drawObjectRegion(cv::Mat & canvas,
 
         yy += stepHeight;
     }
-}
-
-inline void
-drawLabel(cv::Mat & canvas,
-          const std::string name,
-          const int x,
-          const int y,
-          const double scale=0.7,
-          const cv::Scalar backColor=cv::Scalar(0,0,0),
-          const cv::Scalar textColor=cv::Scalar(255,255,255),
-          const int pl=5,
-          const int pt=5,
-          const int pr=5,
-          const int pb=5,
-          const int font=cv::FONT_HERSHEY_DUPLEX,
-          const int thickness=1,
-          const int lineType=cv::LINE_AA)
-{
-
-    int baseline;
-    cv::Size s = cv::getTextSize(name, font, scale, thickness, &baseline);
-
-    cv::Point2i p1(x, y);
-    cv::Point2i p2(x + s.width + pr + pl, y + s.height + pt + pb);
-
-    rectangle(canvas, p1, p2, backColor, -1);
-
-    cv::Point2i p3(p1.x + pl, p1.y + pt + s.height);
-    cv::putText(canvas, name, p3, font, scale, textColor, thickness, lineType, false);
 }
 
 } /* wup */

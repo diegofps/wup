@@ -5,7 +5,6 @@
 #include <limits.h>
 
 namespace wup {
-namespace bits {
 
 inline uint32_t
 rotateLeft(uint32_t n,
@@ -32,7 +31,6 @@ swapUInt32(uint32_t val)
     return (val << 16) | (val >> 16);
 }
 
-}
 }
 
 #endif // BITS_HPP

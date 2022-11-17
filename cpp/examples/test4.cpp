@@ -162,7 +162,7 @@ testArabic(Params & params, double activation, double smooth, int memory)
                         .add<Direction>()
                         .add<ZScore>(ui{0l, 1l}, false)
                         .add<Tanh>(ui{0l, 1l})
-                        .add<ShortMemory>(memory) // 3
+                        .add<ShortMemory>(memory) // 2
                 
                         .add<node::KernelCanvas>(2048, activation, 32).actAsPattern()
 
@@ -177,7 +177,7 @@ testArabic(Params & params, double activation, double smooth, int memory)
 
         ConfusionMatrix confusion(dataset.classes());
         for (const Fold &fold : kfold)
-            evaluateFold(fold, confusion, *encoder, 32);
+            evaluateFold(fold, confusion, *encoder, 32); // 32
 
         confusion.update();
         // print("Avg Confusion Matrix:");

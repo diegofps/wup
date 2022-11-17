@@ -65,7 +65,7 @@ public:
 
         size_t h = 0;
         for (uint i=0;i<patternSize();++i)
-            h = bits::rotateLeft(h,3) ^ (pattern()[i]?2:3);
+            h = rotateLeft(h,3) ^ (pattern()[i]?2:3);
 
         /*_hash = 1;
         for (int i=0;i<_size;++i)

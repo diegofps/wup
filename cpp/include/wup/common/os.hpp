@@ -5,9 +5,10 @@
 #include <dirent.h>
 #include <unistd.h>
 #include <string>
+#include <sys/stat.h>
+
 
 namespace wup {
-namespace os {
 
 inline void
 getEnv(char const * const envVar,
@@ -42,21 +43,34 @@ getUsername(std::string & dst)
 }
 #endif
 
+inline bool
+fileExists(const char * filepath)
+{
+    struct stat buffer;
+    return (stat (filepath, &buffer) == 0);
+}
+
+inline bool
+fileDelete(const char * filepath)
+{
+    return remove(filepath) == 0;
+}
+
 inline void
-createPath(std::string const & folderpath)
+dirCreatePath(std::string const & folderpath)
 {
     system(cat("mkdir -p ", folderpath).c_str());
 }
 
 inline void
-rmDir(std::string const & folderpath)
+dirRemove(std::string const & folderpath)
 {
     system(cat("rm -rf ", folderpath).c_str());
 }
 
 inline std::vector<std::string> &
-dirFiles(char const * path,
-         std::vector<std::string> & list)
+dirListFiles(char const * path,
+             std::vector<std::string> & list)
 {
     DIR *dir;
     struct dirent *ent;
@@ -79,12 +93,12 @@ dirFiles(char const * path,
 }
 
 inline std::vector<std::string> &
-dirFiles(std::string const & path,
-         std::vector<std::string> & list)
+dirListFiles(std::string const & path,
+             std::vector<std::string> & list)
 {
-    return dirFiles(path.c_str(), list);
+    return dirListFiles(path.c_str(), list);
 }
 
 }
-}
+
 #endif // OS_HPP

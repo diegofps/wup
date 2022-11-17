@@ -291,7 +291,7 @@ max(A const * const array,
 template <typename A>
 A
 min(A const * const array,
-      int const length)
+    int const length)
 {
     return array[indexOfMin(array, length)];
 }
