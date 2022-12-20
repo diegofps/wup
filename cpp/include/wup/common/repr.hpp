@@ -9,7 +9,8 @@ class Repr
 {
 public:
 
-    virtual std::string repr() const = 0;
+    virtual std::string 
+    repr() const = 0;
 
 };
 

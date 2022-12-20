@@ -240,6 +240,12 @@ public:
             dstv[i] = srcv[i];
     }
 
+    size_t
+    index(size_t const i, size_t const j) const
+    {
+        return i * _columns + j;
+    }
+
     template <typename I1, typename I2>
     T &
     operator()(const I1 & i, const I2 & j)

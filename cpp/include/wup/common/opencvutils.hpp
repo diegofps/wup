@@ -6,6 +6,7 @@
 #include <wup/common/bundle.hpp>
 #include <wup/common/math.hpp>
 #include <wup/common/threads.hpp>
+#include <wup/common/repr.hpp>
 #include <opencv2/opencv.hpp>
 #include <vector>
 
@@ -129,10 +130,6 @@ const uchar KEY_7 = 55;
 const uchar KEY_8 = 56;
 const uchar KEY_9 = 57;
 
-} /* wup */
-
-namespace wup
-{
 
 template <typename POINT1, typename POINT2, typename A, typename B>
 void
@@ -255,7 +252,7 @@ copyRect(RECT1 & dst,
 
 // CLASS SIMILAR TO Rect2i, REPRESENTS A REGION OF INTEREST BUT ADDS CUSTOM METHODS
 
-class Region
+class Region : public wup::Repr
 {
 public:
 
@@ -287,6 +284,30 @@ public:
         x(x), y(y), width(w), height(h)
     {
 
+    }
+
+    int 
+    left() const
+    {
+        return x;
+    }
+
+    int
+    right() const
+    {
+        return x + width;
+    }
+
+    int
+    top() const
+    {
+        return y;
+    }
+
+    int
+    bottom() const
+    {
+        return y + height;
     }
 
     cv::Point2i
@@ -354,7 +375,7 @@ public:
 
     template <typename RECT>
     void
-    toRect(RECT & r)
+    toRect(RECT & r) const
     {
         r.x      = x;
         r.y      = y;
@@ -381,19 +402,26 @@ public:
     }
 
     void
-    intersection(const Region & other, Region & result)
+    intersection(const Region & other, Region & result) const
     {
         math::intersect1D(other.x, other.width, x, width, result.x, result.width);
         math::intersect1D(other.y, other.height, y, height, result.y, result.height);
     }
-    
+
+    std::string
+    repr() const
+    {
+        return wup::cat("Rect(x=", x, ", y=", y, ", w=", width, ", h=", height, ")");
+    }
+
 };
 
-inline std::ostream &
-operator<<(std::ostream & o, const Region & r) {
-    o << "Rect(x=" << r.x << ", y=" << r.y << ", w=" << r.width << ", h=" << r.height << ")";
-    return o;
-}
+//inline std::ostream &
+//operator<<(std::ostream & o, const Region & r)
+//{
+//    o << "Rect(x=" << r.x << ", y=" << r.y << ", w=" << r.width << ", h=" << r.height << ")";
+//    return o;
+//}
 
 //inline std::ostream &
 //operator<<(std::ostream & o, const Region & r)
@@ -957,6 +985,12 @@ calculateImageIntegral3D(const cv::Mat & image, wup::Bundle3D<uint> & ii)
 inline void
 __selectPoints(int event, int x, int y, int flags, void * userdata)
 {
+    wup::printEvent("mouse event",
+                    "event", event,
+                    "x", x,
+                    "y", y,
+                    "flags", flags);
+
     std::vector<cv::Point2i> * points = static_cast<std::vector<cv::Point2i>*>(userdata);
 
     if  ( event == cv::EVENT_LBUTTONDOWN )
@@ -998,12 +1032,16 @@ selectROI(const char * window,
 
         imshow(window, img2);
 
-        const uchar key = cv::waitKey(16) & 0xFF;
+        uchar const key = cv::waitKey(16) & 0xFF;
 
-        if (key == 27)
+        if (key == KEY_ESC)
         {
             cv::setMouseCallback(window, mouseCallback, mouseCallbackData);
             return false;
+        }
+        else if (key != KEY_NONE)
+        {
+            wup::print("Unknown key", uint(key));
         }
     }
 
@@ -1074,7 +1112,9 @@ selectPoints(const char * window,
 }
 
 inline void
-bundleToMat(wup::Bundle<uint> & src, cv::Mat & dst, const uint srcMax)
+bundleToMat(wup::Bundle<uint> & src,
+            cv::Mat & dst,
+            uint const srcMax)
 {
     if (uint(dst.rows) != src.numRows())
         wup::error("Number of rows differ");
@@ -1097,7 +1137,8 @@ bundleToMat(wup::Bundle<uint> & src, cv::Mat & dst, const uint srcMax)
 
 inline void
 drawCross(cv::Mat & canvas,
-          const uint x, const uint y,
+          uint const x,
+          uint const y,
           cv::Scalar & color)
 {
     line(canvas, cv::Point(0, y), cv::Point(canvas.cols, y), color, 1);

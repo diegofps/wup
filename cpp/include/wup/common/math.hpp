@@ -113,8 +113,16 @@ meanNStd(int const & n,
          T & mean,
          T & _std)
 {
-    mean = s1 / n;
-    stddev(n, s1, s2, _std);
+    if (n == 0)
+    {
+        mean = 0;
+        _std = 0;
+    }
+    else
+    {
+        mean = s1 / n;
+        stddev(n, s1, s2, _std);
+    }
 }
 
 template<typename T>

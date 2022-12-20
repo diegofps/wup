@@ -205,7 +205,7 @@ private:
 };
 
 inline uint64_t
-time_micro()
+time_now_in_micro()
 {
     struct timeval v;
     gettimeofday(&v, nullptr);
@@ -213,15 +213,15 @@ time_micro()
 }
 
 inline uint64_t
-time_milli()
+time_now_in_milli()
 {
-    return time_micro() / uint64_t(1000);
+    return time_now_in_micro() / uint64_t(1000);
 }
 
 inline uint64_t
-time_seconds()
+time_now_in_seconds()
 {
-    return time_micro() / uint64_t(1000000);
+    return time_now_in_micro() / uint64_t(1000000);
 }
 
 }; /* wup */
