@@ -7,7 +7,7 @@
 #include <map>
 
 #include <wup/common/exceptions.hpp>
-#include <wup/common/sbio.hpp>
+#include <wup/common/io.hpp>
 #include <wup/common/random.hpp>
 #include <wup/common/math.hpp>
 #include <wup/models/decoders/binarydecoder.hpp>

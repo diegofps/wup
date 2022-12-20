@@ -12,7 +12,7 @@
 
 #include <wup/models/kernelgens.hpp>
 #include <wup/common/exceptions.hpp>
-#include <wup/common/sbio.hpp>
+#include <wup/common/io.hpp>
 #include <wup/common/generic.hpp>
 
 namespace wup {

@@ -5,12 +5,14 @@
 #include <vector>
 #include <cstdint>
 
-#include <wup/common/sbio.hpp>
+#include <wup/common/io.hpp>
 
-namespace wup {
+namespace wup
+{
 
 template <typename T>
-class Bundle3D {
+class Bundle3D
+{
 private:
 
     uint32_t _dim1;
@@ -28,7 +30,7 @@ public:
 
     }
 
-    Bundle3D(const uint32_t dim1) :
+    Bundle3D(uint32_t const dim1) :
         _dim1(dim1),
         _dim2(1),
         _dim3(1),
@@ -39,7 +41,9 @@ public:
 
     }
 
-    Bundle3D(const uint32_t dim1, const uint32_t dim2) :
+    Bundle3D(uint32_t const dim1,
+             uint32_t const dim2) :
+
         _dim1(dim1),
         _dim2(dim2),
         _dim3(1),
@@ -50,7 +54,10 @@ public:
 
     }
 
-    Bundle3D(const uint32_t dim1, const uint32_t dim2, const uint32_t dim3) :
+    Bundle3D(uint32_t const dim1,
+             uint32_t const dim2,
+             uint32_t const dim3) :
+
         _dim1(dim1),
         _dim2(dim2),
         _dim3(dim3),
@@ -61,7 +68,9 @@ public:
 
     }
 
-    Bundle3D(T * data, const uint32_t dim1) :
+    Bundle3D(T * data,
+             uint32_t const dim1) :
+
         _dim1(dim1),
         _dim2(1),
         _dim3(1),
@@ -72,7 +81,10 @@ public:
 
     }
 
-    Bundle3D(T * data, const uint32_t dim1, const uint32_t dim2) :
+    Bundle3D(T * data,
+             uint32_t const dim1,
+             uint32_t const dim2) :
+
         _dim1(dim1),
         _dim2(dim2),
         _dim3(1),
@@ -83,7 +95,11 @@ public:
 
     }
 
-    Bundle3D(T * data, const uint32_t dim1, const uint32_t dim2, const uint32_t dim3) :
+    Bundle3D(T * data,
+             uint32_t const dim1,
+             uint32_t const dim2,
+             uint32_t const dim3) :
+
         _dim1(dim1),
         _dim2(dim2),
         _dim3(dim3),
@@ -115,7 +131,8 @@ public:
     }
 
     void
-    exportTo(IntWriter & writer, bool exportData=true)
+    exportTo(IntWriter & writer,
+             bool exportData=true)
     {
         if (!_ownerOfData)
             throw WUPException("Bundle can't be automatically exported when it does not own the data.");
@@ -264,19 +281,22 @@ public:
     }
 
     void
-    reshape(const uint32_t & dim1)
+    reshape(uint32_t const & dim1)
     {
         reshape(dim1, 1, 1);
     }
 
     void
-    reshape(const uint32_t & dim1, const uint32_t & dim2)
+    reshape(uint32_t const & dim1,
+            uint32_t const & dim2)
     {
         reshape(dim1, dim2, 1);
     }
 
     void
-    reshape(const uint32_t & dim1, const uint32_t & dim2, const uint32_t & dim3)
+    reshape(uint32_t const & dim1,
+            uint32_t const & dim2,
+            uint32_t const & dim3)
     {
         const uint64_t oldSize = size();
 
@@ -292,7 +312,7 @@ public:
         if (dim3 != _dim3)
             _dim3 = dim3;
 
-        const uint64_t newSize =
+        uint64_t const newSize =
                 static_cast<uint64_t>(_dim1) *
                 static_cast<uint64_t>(_dim2) *
                 static_cast<uint64_t>(_dim3);

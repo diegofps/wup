@@ -12,7 +12,7 @@
 #include <wup/common/parsers.hpp>
 #include <wup/common/str.hpp>
 #include <wup/common/generic.hpp>
-#include <wup/common/sbio.hpp>
+#include <wup/common/io.hpp>
 
 namespace wup {
 

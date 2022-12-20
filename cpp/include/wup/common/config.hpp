@@ -6,17 +6,20 @@
 #include <wup/common/str.hpp>
 #include <wup/common/parsers.hpp>
 #include <wup/common/repr.hpp>
+#include <wup/common/io.hpp>
 #include <unordered_set>
 
 
-namespace wup {
+namespace wup
+{
 
 using json = nlohmann::json;
 
 template<class T>
 using has_config_constructor = std::is_constructible<T, json*>;
 
-class ConfigReader {
+class ConfigReader
+{
 public:
 
     json _data;
@@ -25,7 +28,7 @@ public:
     ConfigReader(std::string filepath="./configs.json") :
         data(nullptr)
     {
-        info("Creating ConfigBuilder from file in", filepath);
+        info("Creating ConfigReader from file '", filepath, "'");
 
         std::ifstream f(filepath);
         _data = json::parse(f);
@@ -39,6 +42,25 @@ public:
         }
 
         while(replaceReferences(_data, configurations));
+    }
+
+    ConfigReader(IntReader & reader)
+    {
+        info("Creating ConfigReader from reader");
+
+        std::string jsonStr = reader.getString();
+        _data = json::parse(jsonStr);
+        data = &_data;
+
+        reader.getMilestone();
+    }
+
+    void
+    exportTo(IntWriter & writer)
+    {
+        std::string jsonStr = _data.dump();
+        writer.putString(jsonStr);
+        writer.putMilestone();
     }
 
     bool
@@ -72,7 +94,9 @@ public:
         return found_one_or_more;
     }
 
-    void update(const std::vector<std::string> & pairs) {
+    void
+    update(const std::vector<std::string> & pairs)
+    {
         if (data == nullptr)
             error("Trying to update an empty config object");
 
@@ -132,13 +156,16 @@ public:
     }
 
     template <typename CONFIG>
-    CONFIG * parse() {
+    CONFIG *
+    parse()
+    {
         return new CONFIG(data);
     }
 
 };
 
-class Config : public Repr {
+class Config : public Repr
+{
 public:
 
     json _data;
@@ -174,10 +201,12 @@ public:
     }
 
     template <typename T>
-    void getArray(const char * key, std::vector<T> & ds) {
+    void getArray(const char * key, std::vector<T> & ds)
+    {
         ds.clear();
 
-        if (data != nullptr && data->contains(key)) {
+        if (data != nullptr && data->contains(key))
+        {
             json arr = (*data)[key];
 
             if (arr.is_array())
@@ -189,52 +218,67 @@ public:
     }
 
     template <typename T>
-    void get(const char * key, T & attr) {
-        if (data != nullptr && data->contains(key) && !(*data)[key].is_null()) {
-            try {
+    void get(const char * key, T & attr)
+    {
+        if (data != nullptr && data->contains(key) && !(*data)[key].is_null())
+        {
+            try
+            {
                 attr = (*data)[key].get<T>();
                 visited.insert(key);
-            } catch(nlohmann::detail::type_error &e) {
+            }
+            catch(nlohmann::detail::type_error &e)
+            {
                 error("Failed to retrieve value from", key, "-", e.what());
             }
         }
     }
 
-    void getBool(const char * key, bool & attr) {
+    void getBool(const char * key, bool & attr)
+    {
         get<bool>(key, attr);
     }
 
-    void getInt(const char * key, int & attr) {
+    void getInt(const char * key, int & attr)
+    {
         get<int>(key, attr);
     }
 
-    void getUInt(const char * key, unsigned int & attr) {
+    void getUInt(const char * key, unsigned int & attr)
+    {
         get<unsigned int>(key, attr);
     }
 
-    void getString(const char * key, std::string & attr) {
+    void getString(const char * key, std::string & attr)
+    {
         get<std::string>(key, attr);
     }
 
-    void getDouble(const char * key, double & attr) {
+    void getDouble(const char * key, double & attr)
+    {
         get<double>(key, attr);
     }
 
-    void getFloat(const char * key, float & attr) {
+    void getFloat(const char * key, float & attr)
+    {
         get<float>(key, attr);
     }
 
     template <typename CONFIG>
-    void getConfig(const char * key, CONFIG *& attr) {
-        if (data != nullptr && data->contains(key)) {
-
+    void
+    getConfig(const char * key, CONFIG *& attr)
+    {
+        if (data != nullptr && data->contains(key))
+        {
             if constexpr (has_config_constructor<CONFIG>::value)
                 attr = new CONFIG(&(*data)[key]);
             else
                 createConfig(&(*data)[key], attr);
 
             visited.insert(key);
-        } else {
+        }
+        else
+        {
             warn(name, "is missing config key", key);
             if constexpr (has_config_constructor<CONFIG>::value)
                 attr = new CONFIG(nullptr);
@@ -243,7 +287,9 @@ public:
         }
     }
 
-    void finish() {
+    void
+    finish()
+    {
         if (data != nullptr)
             for (auto & pair : data->items())
                 if (visited.find(pair.key()) == visited.end())

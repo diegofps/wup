@@ -6,7 +6,7 @@
 #include <typeinfo>
 
 #include <wup/common/dataset.hpp>
-#include <wup/common/sbio.hpp>
+#include <wup/common/io.hpp>
 
 namespace wup {
 

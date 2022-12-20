@@ -14,7 +14,7 @@
 #include <cmath>
 
 #include <wup/common/math.hpp>
-#include <wup/common/sbio.hpp>
+#include <wup/common/io.hpp>
 #include <wup/common/generic.hpp>
 
 namespace wup {

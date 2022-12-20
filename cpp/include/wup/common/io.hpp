@@ -948,13 +948,21 @@ public:
 
     FileSource<int32_t> src;
 
-    IntFileReader(const std::string & filename, const uint64_t capacity=1024*1024, bool abortOnOpenFail=true) :
+    IntFileReader(const std::string & filename,
+                  const uint64_t capacity=1024*1024,
+                  bool abortOnOpenFail=true) :
+
         IntReader(src),
         src( filename, capacity, abortOnOpenFail )
-    { }
+    {
 
-    virtual ~IntFileReader()
-    { }
+    }
+
+    virtual
+    ~IntFileReader()
+    {
+
+    }
 };
 
 class IntFileWriter : public IntWriter
@@ -963,14 +971,22 @@ public:
 
     FileSink<int32_t> snk;
 
-    IntFileWriter(const std::string & filename, const uint64_t capacity=1024*1024, bool abortOnOpenFail=true) :
+    IntFileWriter(const std::string & filename,
+                  const uint64_t capacity=1024*1024,
+                  bool abortOnOpenFail=true) :
+
         IntWriter(snk),
         snk( filename, capacity, abortOnOpenFail )
-    { }
+    {
 
+    }
 
-    virtual ~IntFileWriter()
-    { }
+    virtual
+    ~IntFileWriter()
+    {
+
+    }
+
 };
 
 class IntMemReader : public IntReader

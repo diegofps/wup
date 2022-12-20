@@ -22,7 +22,7 @@
 #include <wup/common/bundle3d.hpp>
 #include <wup/common/confusionmatrix.hpp>
 #include <wup/common/iterators.hpp>
-#include <wup/common/sbio.hpp>
+#include <wup/common/io.hpp>
 #include <wup/common/seq.hpp>
 #include <wup/common/random.hpp>
 #include <wup/common/cronus.hpp>
