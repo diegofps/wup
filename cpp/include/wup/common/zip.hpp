@@ -18,9 +18,14 @@ namespace wup
 /// cSize - Size of the compressed buffer (in bytes).
 template <typename A, typename B>
 void
-zip(const A * const uBuffer, const uint64_t uSize, B *& cBuffer, uint64_t & cSize,
+zip(A const * const uBuffer,
+    uint64_t const uSize,
+    B *& cBuffer,
+    uint64_t & cSize,
     int compressionLevel=Z_DEFAULT_COMPRESSION)
 {
+    // TODO: Make an interface that the output goes to a std::vector<uchar>
+
     uLongf boundSize = sizeof(uint64_t) + compressBound(uSize);
 
     if (boundSize % sizeof(int32_t))
@@ -58,11 +63,14 @@ zip(const A * const uBuffer, const uint64_t uSize, B *& cBuffer, uint64_t & cSiz
 ///
 /// cBuffer - Pointer to the compressed sequence of bytes.
 /// cSize - Size of the compressed buffer (in bytes).
-/// uBuffer - Pointer to the uncompressed buffer (will be allocated by the function with new[]).
+/// uBuffer - Pointer to the uncompressed buffer (you need to free it with delete [] once you are done with it).
 /// uSize - Size of the uncompressed buffer (in bytes).
 template <typename A, typename B>
 void
-unzip(const A * const cBuffer, const uint64_t cSize, B *& uBuffer, uint64_t & uSize)
+unzip(A const * const cBuffer,
+      uint64_t const cSize,
+      B *& uBuffer,
+      uint64_t & uSize)
 {
     uLongf & tmp = *((uLongf*) cBuffer);
 

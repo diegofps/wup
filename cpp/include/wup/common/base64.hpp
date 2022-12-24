@@ -14,7 +14,7 @@ class base64
 
 public:
 
-    const char *binary2char = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+    char const * binary2char = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
     unsigned char char2binary[256];
 
 public:
@@ -30,12 +30,16 @@ public:
     }
     
     template <typename T>
-    int encode(const std::vector<T> & data, const size_t size, std::string & chars)
+    int
+    encode(std::vector<T> const & data,
+           std::string & chars)
     {
         return encode(&data[0], data.size() * sizeof(T), chars);
     }
 
-    int encode(const void * const data, const size_t size, std::string & chars)
+    int encode(void const * const data,
+               size_t const size,
+               std::string & chars)
     {
         chars.resize(0);
         chars.reserve(ceil(chars.size() * 6.0 / 8.0) + 3);
@@ -91,16 +95,26 @@ public:
     }
 
     int
-    decode(std::string const & chars, std::vector<unsigned char> & bits)
+    decode(std::string const & chars,
+           std::vector<unsigned char> & bits)
+    {
+        return decode(chars.data(), chars.size(), bits);
+    }
+
+    int
+    decode(char const * const chars,
+           size_t const size,
+           std::vector<unsigned char> & bits)
     {
         bits.resize(0);
-        bits.reserve(ceil(chars.size() * 6.0 / 8.0));
+        bits.reserve(ceil(size * 6.0 / 8.0));
     
         int bufferPos = 0;
         unsigned char buffer;
         
-        for (char const & c : chars)
+        for (size_t i=0;i!=size;++i)
         {
+            char const c = chars[i];
             unsigned char b = char2binary[(unsigned char)c];
             
             if (bufferPos == 0)

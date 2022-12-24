@@ -116,6 +116,21 @@ filter(T const * const src,
 }
 
 
+//template <typename T, typename SIZE>
+//void
+//indexOfMax(T const * const mem,
+//           SIZE const & length,
+//           SIZE & index,
+//           bool reset=false)
+//{
+//    if (reset)
+//        index = 0;
+
+//    for (SIZE i=0;i!=length;++i)
+//        if (mem[i] > mem[index])
+//            index = i;
+//}
+
 template <typename T, typename SIZE>
 int indexOfMax(T const * const mem,
                SIZE const & length)
