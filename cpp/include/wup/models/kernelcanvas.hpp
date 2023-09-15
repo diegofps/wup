@@ -378,8 +378,8 @@ private:
 
     uint _term_bits;
     KernelSpace _kernelSpace;
-    int * _outputFreq;
-    int * _outputBits;
+    std::vector<int> _outputFreq;
+    std::vector<int> _outputBits;
 
 public:
 
@@ -391,8 +391,8 @@ public:
 
         _term_bits(term_bits),
         _kernelSpace(numKernels, inputs, act, kernels),
-        _outputFreq(new int[_kernelSpace.numKernels()]),
-        _outputBits(new int[_kernelSpace.numKernels() * term_bits])
+        _outputFreq(_kernelSpace.numKernels()),
+        _outputBits(_kernelSpace.numKernels() * term_bits)
     {
 
     }
@@ -401,34 +401,33 @@ public:
 
             _term_bits(reader.getUInt32()),
             _kernelSpace(reader),
-            _outputFreq(new int[_kernelSpace.numKernels()]),
-            _outputBits(new int[_kernelSpace.numKernels() * _term_bits])
+            _outputFreq(_kernelSpace.numKernels()),
+            _outputBits(_kernelSpace.numKernels() * _term_bits)
     {
         if (reader.get() != -1)
             throw WUPException("Could not import kernelcanvas");
     }
 
-    ~KernelCanvas()
+    virtual ~KernelCanvas()
     {
-        delete [] _outputFreq;
-        delete [] _outputBits;
+        
     }
 
     void
     clear()
     {
-        for (uint i=0; i!=_kernelSpace.numKernels(); ++i)
+        for (size_t i=0;i!=_outputFreq.size();++i)
             _outputFreq[i] = 0;
     }
 
     void read(const double * pattern)
     {
-        const int * const ids = _kernelSpace.select( pattern );
+        const int * const ids = _kernelSpace.select(pattern);
         for (uint i=0; i!=_kernelSpace.k(); ++i)
             _outputFreq[ids[i]] = 1;
     }
 
-    int * binary_output()
+    std::vector<int> const & binary_output()
     {
         const int len = _kernelSpace.numKernels();
         int * current = _outputBits;
@@ -442,7 +441,7 @@ public:
         return _outputBits;
     }
 
-    int * real_output()
+    std::vector<int> const & real_output()
     {
         return _outputFreq;
     }

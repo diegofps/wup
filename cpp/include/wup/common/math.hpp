@@ -89,6 +89,20 @@ distance(const double * const v1,
     return sqrt( sdistance(v1, v2, cols) );
 }
 
+template <typename T>
+T distance(T const & x0, T const & y0, T const & x1, T const & y1) 
+{
+    return std::sqrt(sdistance(x0,y0,x1,y1));
+}
+
+template <typename T>
+T sdistance(T const & x0, T const & y0, T const & x1, T const & y1) 
+{
+    T dx = x1-x0;
+    T dy = y1-y0;
+    return dx*dx+dy*dy;
+}
+
 inline double
 logistic(const double x)
 {

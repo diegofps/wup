@@ -349,6 +349,14 @@ public:
             _data[_size++] = array[i];
     }
 
+    void push_back(const T & t, const uint times)
+    {
+        require(times);
+
+        for (uint i=0;i!=times;++i)
+            _data[_size++] = t;
+    }
+
     void push_back(const T & t)
     {
         require(1);
