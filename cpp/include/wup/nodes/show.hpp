@@ -103,7 +103,7 @@ public:
         }
         else
         {
-            _bundle.push_back(input.data(), input.size());
+            _bundle.push_many(input.data(), input.size());
         }
 
         publish(input);

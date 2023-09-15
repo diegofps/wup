@@ -68,7 +68,7 @@ public:
     virtual void
     toPattern(int * dst)
     {
-        memcpy(dst, _kc.binary_output(), sizeof(int) * _kc.binary_output_size());
+        memcpy(dst, _kc.binary_output().data(), sizeof(int) * _kc.binary_output_size());
     }
 
     virtual uint patternSize()

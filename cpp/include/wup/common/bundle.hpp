@@ -101,7 +101,7 @@ public:
 
             // Guarda os dados
             for (uint i=0;i<cells.size();++i)
-                push_back( parseDouble(cells[i]) );
+                push( parseDouble(cells[i]) );
         }
 
         file_in.close();
@@ -341,7 +341,7 @@ public:
         _size = 0;
     }
 
-    void push_back(const T * const array, const uint length)
+    void push_many(const T * const array, const uint length)
     {
         require(length);
 
@@ -349,7 +349,7 @@ public:
             _data[_size++] = array[i];
     }
 
-    void push_back(const T & t, const uint times)
+    void push(const T & t, const uint times)
     {
         require(times);
 
@@ -357,7 +357,7 @@ public:
             _data[_size++] = t;
     }
 
-    void push_back(const T & t)
+    void push(const T & t)
     {
         require(1);
 

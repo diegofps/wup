@@ -57,7 +57,7 @@ public:
     virtual void
     onDigest(const Feature & input)
     {
-        _bundle.push_back(input.data(), input.size());
+        _bundle.push_many(input.data(), input.size());
     }
 
     virtual void onFinish()

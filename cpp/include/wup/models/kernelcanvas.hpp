@@ -430,11 +430,11 @@ public:
     std::vector<int> const & binary_output()
     {
         const int len = _kernelSpace.numKernels();
-        int * current = _outputBits;
+        int * current = _outputBits.data();
 
         for (uint i=0; i!=_term_bits; ++i)
         {
-            std::copy(_outputFreq, _outputFreq + len, current);
+            std::copy(_outputFreq.data(), _outputFreq.data() + len, current);
             current += len;
         }
 
