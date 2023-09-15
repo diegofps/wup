@@ -46,14 +46,14 @@ print(T const * const src,
     if (indexes)
     {
         for (int i=0;i<length;++i)
-            _printn("<", i, ":", src[i], "> ");
-        _print();
+            wup::printn("<", i, ":", src[i], "> ");
+        wup::print();
     }
     else
     {
         for (int i=0;i<length;++i)
-            _printn(src[i], " ");
-        _print();
+            wup::printn(src[i], " ");
+        wup::print();
     }
 }
 
@@ -64,8 +64,7 @@ print(char const * msg,
       int const length,
       bool indexes=false)
 {
-    std::cout << logPrefix;
-    _printn(msg, ": ");
+    printn(msg, ": ");
     print(src, length, indexes);
 }
 

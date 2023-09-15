@@ -64,16 +64,16 @@ private:
 };
 
 
-class WUPNotImplemented : public std::exception
+class WUPNotImplementedException : public std::exception
 {
 
 public:
 
-    WUPNotImplemented() : _msg("") { }
+    WUPNotImplementedException() : _msg("") { }
 
-    WUPNotImplemented(const std::string &msg) : _msg(msg) { }
+    WUPNotImplementedException(const std::string &msg) : _msg(msg) { }
 
-    ~WUPNotImplemented() throw() { }
+    ~WUPNotImplementedException() throw() { }
 
     const char * what() const throw() { return _msg.c_str(); }
 

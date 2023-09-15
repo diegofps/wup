@@ -40,9 +40,7 @@ public:
 
     BaseWisard(const int inputBits, const int ramBits) :
             BaseWisard(inputBits, ramBits, 2)
-    {
-
-    }
+    { }
     
     BaseWisard(const int numInputBits, const int numRamBits, const int numClasses) :
             _confidence(1.0), 
@@ -92,7 +90,7 @@ public:
         int tmp = 0;
         reader.get(tmp);
         if (tmp != -1)
-            throw WUPException("Illegal or corrupted WiSARD file");
+            throw WUPException("Invalid WiSARD file");
 
         // Atributos simples
         reader.get(_maxBleaching);
@@ -100,12 +98,6 @@ public:
         reader.get(_numInputBits);
         reader.get(_numRamBits);
         reader.get(_numRams);
-
-//        LOGD("%s", cat(_maxBleaching).c_str());
-//        LOGD("%s", cat(_activationsCapacity).c_str());
-//        LOGD("%s", cat(_numInputBits).c_str());
-//        LOGD("%s", cat(_numRamBits).c_str());
-//        LOGD("%s", cat(_numRams).c_str());
 
         int thrashSize;
         int thrashItem;
@@ -173,7 +165,7 @@ public:
                 Decoder & decoder = _decoders[r];
 
                 // Pega a ram correspondente (omap)
-                Ram &ram = _rams[r];
+                Ram & ram = _rams[r];
 
                 // Carrega o numero de chaves na ram
                 int numKeys;
@@ -200,29 +192,8 @@ public:
                         reader.get(hits);
                         multidiscriminator[discriminator] = hits;
                     }
-
-//                    if (r == 0) {
-//                        std::stringstream ss;
-//                        for (int i=0;i<input.size();++i)
-//                            ss << input.pattern()[i] << " ";
-//                        LOGE("RAM=0, key=%d, hash=%d, Saving %s", k, input.hash(), ss.str().c_str());
-//                    }
-
-                    //LOGE("I: Ram %d Key %d", r, key);
-                    //ss.clear();
-                    //for (int jj=0;jj<input.size();++jj)
-                    //    ss << input.pattern()[jj] << " ";
-
-                    //LOGE("Ram %d: ---%s", r, ss.str().c_str());
-                    //LOGE("Ram %d, Key %d, Hash %d", r, k, (int)input.hash());
                 }
-
-                //if (r == 0)
-//                    LOGE("Expected %d, ram learned %d addresses", keys, omap.size());
-                //LOGE("I: Ram %d has %d ENDED", r, keys);
             }
-            //delete [] tmp;
-            // Se algo der errado limpe os vetores
         }
         catch (WUPException e) 
         {
@@ -238,7 +209,7 @@ public:
         tmp = 0;
         reader.get(tmp);
         if (tmp != -1)
-            throw WUPException("Illegal or corrupted WiSARD file");
+            throw WUPException("Invalid WiSARD file");
         //LOGE("_7");
     }
 
@@ -457,7 +428,7 @@ public:
                 continue;
 
             if (it->second == 1)
-                multidiscriminator.erase(it);            
+                multidiscriminator.erase(it);
             else
                 it->second = it->second -1;
         }
@@ -707,13 +678,13 @@ public:
         if (_rams->size() != other._rams->size())
             return false;
 
-         if (_maxBleaching != other._maxBleaching)
+        if (_maxBleaching != other._maxBleaching)
             return false;
 
         if (_activationsCapacity != other._activationsCapacity)
             return false;
 
-         if (_numRams != other._numRams)
+        if (_numRams != other._numRams)
             return false;
 
         if (_numInputBits != other._numInputBits)
@@ -722,20 +693,20 @@ public:
         if (_numRamBits != other._numRamBits)
             return false;
 
-         if (_thrash.size() != other._thrash.size())
+        if (_thrash.size() != other._thrash.size())
             return false;
 
-         if (_innerToOutter.size() != other._innerToOutter.size())
+        if (_innerToOutter.size() != other._innerToOutter.size())
             return false;
 
-         if (_outterToInner.size() != other._outterToInner.size())
+        if (_outterToInner.size() != other._outterToInner.size())
             return false;
 
         for (int i=0;i<_numInputBits;++i)
              if (_shuffling[i] != other._shuffling[i])
                  return false;
 
-        // TODO: Compare each ram?
+        // TODO: Compare each ram address?
 
          return true;
      }

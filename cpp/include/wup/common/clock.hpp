@@ -86,40 +86,44 @@ public:
 
     // Display a message and the time passed since the last lap / start
 
-    Clock &
+    double
     lap_seconds(const std::string msg, double factor=1.0)
     {
         stop();
         const auto ellapsed = this->ellapsed_seconds() / factor;
         printn(YELLOW, "|CLOCK| ", PURPLE, msg, ": ", YELLOW, ellapsed, " s\n", NORMAL);
-        return start();
+        start();
+        return ellapsed;
     }
 
-    Clock &
+    double
     lap_milli(const std::string msg, double factor=1.0)
     {
         stop();
         const auto ellapsed = this->ellapsed_milli() / factor;
         printn(YELLOW, "|CLOCK| ", PURPLE, msg, ": ", YELLOW, ellapsed, " ms\n", NORMAL);
-        return start();
+        start();
+        return ellapsed;
     }
 
-    Clock &
+    double
     lap_micro(const std::string msg, double factor=1.0)
     {
         stop();
         const auto ellapsed = this->ellapsed_micro() / factor;
         printn(YELLOW, "|CLOCK| ", PURPLE, msg, ": ", YELLOW, ellapsed, " us\n", NORMAL);
-        return start();
+        start();
+        return ellapsed;
     }
 
-    Clock &
+    double
     lap_nano(const std::string msg, double factor=1.0)
     {
         stop();
         const auto ellapsed = this->ellapsed_micro() / factor;
         printn(YELLOW, "|CLOCK| ", PURPLE, msg, ": ", YELLOW, ellapsed, " ns\n", NORMAL);
-        return start();
+        start();
+        return ellapsed;
     }
 
 

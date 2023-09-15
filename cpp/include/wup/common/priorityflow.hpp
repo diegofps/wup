@@ -110,12 +110,11 @@ operator<<(std::ostream & o,
 
 
 inline bool
-job_comparer(CommonJob const & l,
+jobComparator(CommonJob const & l,
              CommonJob const & r)
 {
     if (l.nid != r.nid)
         return l.nid < r.nid;
-
     else
         return l.first > r.first;
 }
@@ -125,20 +124,17 @@ template <typename JOB_TYPE>
 class Node
 {
 public:
-
     int nid;
-
     std::function<void(JOB_TYPE &)> body;
 
 public:
-
     Node() : nid(-1) { }
-
+    
     Node(int const nid) : nid(nid) { }
 
     Node(Node const & other)
     {
-        warn("Copy constructor of Node is generaly a bad idea");
+        warn("Copy constructor of a Node is generaly not desired");
         body = other.body;
         nid = other.nid;
     }
@@ -147,10 +143,10 @@ public:
 
 template <typename J>
 void
-priority_flow_thread(WeightedPipe<J> * pipe,
-                     std::vector<Node<J>*> * nodes,
-                     Semaphore * sem,
-                     uint32_t const tid)
+priorityFlowThread(WeightedPipe<J> * pipe,
+                   std::vector<Node<J>*> * nodes,
+                   Semaphore * sem,
+                   uint32_t const tid)
 {
     Clock c;
     J job = pipe->get();
@@ -199,7 +195,7 @@ private:
 
         for (uint32_t t=0;t!=_threads;++t)
         {
-            auto f = priority_flow_thread<JOB_TYPE>;
+            auto f = priorityFlowThread<JOB_TYPE>;
             pool[t] = std::thread(f, &pipe, &nodes, &sem, t);
         }
     }
@@ -208,7 +204,7 @@ public:
 
     PriorityFlow() :
         sem(1),
-        pipe(job_comparer),
+        pipe(jobComparator),
         _threads(std::thread::hardware_concurrency())
     {
         init();
@@ -216,7 +212,7 @@ public:
 
     PriorityFlow(uint32_t const threads) :
         sem(1),
-        pipe(job_comparer),
+        pipe(jobComparator),
         _threads(threads)
     {
         init();

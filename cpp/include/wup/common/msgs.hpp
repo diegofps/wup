@@ -17,8 +17,6 @@
 namespace wup
 {
 
-extern std::string logPrefix;
-
 const char * const NORMAL    = "\033[0m";
 
 const char * const BRIGHTER  = "\033[1m";
@@ -61,6 +59,38 @@ template <typename A, typename B>
 std::ostream & operator<<(std::ostream &o, const std::pair<A,B> &pair)
 {
 	return o << pair.first << "," << pair.second;
+}
+
+template <typename P1>
+std::stringstream & _path_join(std::stringstream &ss, const P1 &p1)
+{
+    ss << p1;
+    return ss;
+}
+
+template <typename P1, typename... Args>
+std::stringstream & _path_join(std::stringstream &ss, const P1 &p1, const Args&... args)
+{
+    std::stringstream ss2;
+    ss2 << p1;
+    std::string p1_2 = ss2.str();
+
+    if (p1_2.compare("") == 0)
+        return ss;
+
+    ss << p1_2;
+
+    if (p1_2[p1_2.size()-1] != '/')
+        ss << '/';
+        
+    return _path_join(ss, args...);
+}
+
+template <typename... Args>
+std::string path_join(const Args&... args)
+{
+    std::stringstream ss;
+    return _path_join(ss, args...).str();
 }
 
 template <typename P1>
@@ -142,75 +172,68 @@ std::string joins(const Args&... args)
     return join(" ", args...);
 }
 
-template <typename... Args>
-void
-setLogger(const Args&... args)
-{
-    logPrefix = cat(args...);
-}
-
 inline void
-_print()
+print()
 {
     std::cout << std::endl;
 }
 
 template <typename P1>
-void _print(const P1 &p1)
+void print(const P1 &p1)
 {
     std::cout << p1 << std::endl;
 }
 
 template <typename P1, typename... Args>
-void _print(const P1 &p1, const Args&... args)
+void print(const P1 &p1, const Args&... args)
 {
     std::cout << p1 << " ";
-    _print(args...);
+    print(args...);
 }
 
 template <typename P1>
-void _printn(const P1 &p1)
+void printn(const P1 &p1)
 {
     std::cout << p1;
 }
 
 template <typename P1, typename... Args>
-void _printn(const P1 &p1, const Args&... args)
+void printn(const P1 &p1, const Args&... args)
 {
     std::cout << p1;
-    _printn(args...);
+    printn(args...);
 }
 
 template <typename... Args>
-void _debug(const Args&... args)
+void debug(const Args&... args)
 {
     auto tmp = join(" ", args...);
     auto msg = cat(GREEN, BRIGHTER, "Debug: ", NORMAL, GREEN, tmp, NORMAL, "\n");
-    _printn(msg);
+    printn(msg);
 }
 
 template <typename... Args>
-void _info(const Args&... args)
+void info(const Args&... args)
 {
     auto tmp = join(" ", args...);
     auto msg = cat(BLUE, BRIGHTER, "Info: ", NORMAL, BLUE, tmp, NORMAL, "\n");
-    _printn(msg);
+    printn(msg);
 }
 
 template <typename... Args>
-void _warn(const Args&... args)
+void warn(const Args&... args)
 {
     auto tmp = join(" ", args...);
     auto msg = cat(YELLOW, BRIGHTER, "Warning: ", NORMAL, YELLOW, tmp, NORMAL, "\n");
-    _printn(msg);
+    printn(msg);
 }
 
 template <typename... Args>
-void _error(const Args&... args)
+void error(const Args&... args)
 {
     auto tmp = join(" ", args...);
     auto msg = cat(RED, BRIGHTER, "Error: ", NORMAL, RED, tmp, NORMAL, "\n");
-    _printn(msg);
+    printn(msg);
 
     throw WUPException(tmp);
 }
@@ -220,24 +243,8 @@ void bright(const Args&... args)
 {
     auto tmp = join(" ", args...);
     auto msg = cat(BRIGHTER, tmp, NORMAL, "\n");
-    _printn(msg);
+    printn(msg);
 }
-
-#define WRAP_LOGPREFIX(name, subname) \
-template <typename... Args> \
-void \
-name(const Args&... args) \
-{ \
-    std::cout << logPrefix; \
-    subname(args...); \
-}
-
-WRAP_LOGPREFIX(print, _print)
-WRAP_LOGPREFIX(printn, _printn)
-WRAP_LOGPREFIX(debug, _debug)
-WRAP_LOGPREFIX(info, _info)
-WRAP_LOGPREFIX(warn, _warn)
-WRAP_LOGPREFIX(error, _error)
 
 template <typename P1, typename P2>
 void _printEventArgs(const P1 &p1, const P2 &p2)

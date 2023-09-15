@@ -121,11 +121,11 @@ public:
 };
 
 
-template <typename BASE, typename PRECISION>
+template <typename GENERATOR, typename PRECISION>
 class base_random {
 private:
 
-    BASE base;
+    GENERATOR base;
 
 public:
 

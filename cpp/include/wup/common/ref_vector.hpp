@@ -46,7 +46,12 @@ public:
 
     template <typename Func>
     std::unordered_map<std::result_of<Func>, T*> toUnorderedMap(Func &func)
-    { return const_cast<const ref_vector<T>>(this).toUnorderedMap(func); }
+    { 
+//        return const_cast<const ref_vector<T>>(this).toUnorderedMap(func); 
+        ref_vector<T> const & tmp = *this;
+        return tmp.toUnorderedMap(func);
+        
+    }
 };
 
 template <typename T>

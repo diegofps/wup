@@ -70,10 +70,11 @@ dirRemove(std::string const & folderpath)
 
 inline std::vector<std::string> &
 dirListFiles(char const * path,
-             std::vector<std::string> & list)
+             std::vector<std::string> & list,
+             bool const includePath=true)
 {
-    DIR *dir;
-    struct dirent *ent;
+    DIR * dir;
+    struct dirent * ent;
 
     if ((dir = opendir (path)) == NULL)
         throw WUPException(cat("Directory '", path, "' does not exists"));
@@ -84,7 +85,10 @@ dirListFiles(char const * path,
         if (tmp == "." || tmp == "..")
             continue;
 
-        list.push_back(cat(path, tmp));
+        if (includePath)
+            list.push_back(cat(path, tmp));
+        else
+            list.push_back(tmp);
     }
 
     closedir(dir);
