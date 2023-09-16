@@ -639,6 +639,9 @@ public:
     int
     getExcitation(const int target) const
     {
+        if (target == -1)
+            return -1;
+
         auto it = _outterToInner.find(target);
         if (it == _outterToInner.end())
             return 0;
@@ -860,6 +863,9 @@ private:
     int
     getOutterTarget(const int inner) const
     {
+        if (inner == -1)
+            return -1;
+        
         const auto it = _innerToOutter.find(inner);
         
         if (it == _innerToOutter.end())

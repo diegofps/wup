@@ -49,7 +49,7 @@ public:
     virtual
     void onExport(IntWriter & writer)
     {
-        writer.putUInt32(_bundle.numCols());
+        writer.putUInt32(_bundle.cols());
         writer.put(_counter);
         writer.putBool(_eachStep);
         writer.putString(_label);
@@ -119,8 +119,8 @@ public:
             return;
 
 #ifdef __ANDROID_API__
-        const int numRows = _bundle.numRows();
-        const int numCols = _bundle.numCols();
+        const int numRows = _bundle.rows();
+        const int numCols = _bundle.cols();
         std::stringstream ss;
 
         LOGD("%s : %d", _label.c_str(), _currentSample);

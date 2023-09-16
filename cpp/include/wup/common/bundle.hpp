@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <sstream>
 #include <fstream>
 
 #include <wup/common/msgs.hpp>
@@ -13,11 +14,14 @@
 #include <wup/common/str.hpp>
 #include <wup/common/generic.hpp>
 #include <wup/common/io.hpp>
+#include <wup/common/repr.hpp>
+
 
 namespace wup {
 
 template <typename T>
-class Bundle {
+class Bundle : public wup::Repr 
+{
 private:
 
     uint _columns;
@@ -29,7 +33,11 @@ private:
 public:
 
     Bundle() :
-        Bundle(1, 1)
+        _columns(0),
+        _capacity(0),
+        _size(0),
+        _data(nullptr),
+        _ownerOfData(false)
     {
 
     }
@@ -40,13 +48,10 @@ public:
 
     }
 
-    Bundle(const uint rows, const uint columns, const T & initialValue) :
-        Bundle(rows, columns)
-    {
-        this->operator=(initialValue);
-    }
+    Bundle(
+        const uint rows, 
+        const uint columns) :
 
-    Bundle(const uint rows, const uint columns) :
         _columns(columns),
         _capacity(columns * rows),
         _size(_capacity),
@@ -56,27 +61,75 @@ public:
 
     }
 
-    Bundle(T * const data, const uint columns, const uint size) :
+    Bundle(
+        const uint rows, 
+        const uint columns, 
+        const T & initialValue) :
+
+        Bundle(rows, columns)
+    {
+        this->operator=(initialValue);
+    }
+
+    Bundle(
+        T * const data, 
+        const uint columns, 
+        const uint size) :
+
         _columns(columns),
         _capacity(size),
         _size(size),
         _data(data),
         _ownerOfData(false)
     {
-
+        if (data == nullptr && size != 0)
+            throw WUPException("A bundle can't be attached to a nullptr and have a size != 0");
     }
 
-    Bundle(const std::string filename, const char delimiter='\t', int ignoreRows=0) :
+    Bundle(Bundle<T> const & rhs) :
+        _columns(rhs._columns),
+        _capacity(rhs._capacity),
+        _size(rhs._size),
+        _data(rhs._data),
+        _ownerOfData(rhs._ownerOfData)
+    {
+        if (rhs._ownerOfData)
+        {
+            _data = new T[_capacity];
+            std::copy(rhs.begin(), rhs.end(), _data);
+        }
+    }
+
+    Bundle(Bundle<T> && rhs) noexcept
+    {
+        _columns = rhs._columns;
+        _capacity = rhs._capacity;
+        _size = rhs._size;
+        _data = rhs._data;
+        _ownerOfData = rhs._ownerOfData;
+
+        rhs._columns = 0;
+        rhs._capacity = 0;
+        rhs._size = 0;
+        rhs._data = nullptr;
+        rhs._ownerOfData = false;
+    }
+
+    Bundle(
+        const std::string filename, 
+        const char delimiter='\t', 
+        int ignoreRows=0) :
+
         _columns(0),
-        _capacity(8),
+        _capacity(0),
         _size(0),
-        _data(new T[_capacity]),
-        _ownerOfData(true)
+        _data(nullptr),
+        _ownerOfData(false)
     {
         // Abre o arquivo para leitura
         std::ifstream file_in(filename);
         if (!file_in.good())
-        throw WUPException(cat("Could not open file: ", filename));
+            throw WUPException(cat("Could not open file: ", filename));
 
         // Carrega linha a linha
         int rows = 0;
@@ -101,143 +154,219 @@ public:
 
             // Guarda os dados
             for (uint i=0;i<cells.size();++i)
-                push( parseDouble(cells[i]) );
+                push(parseDouble(cells[i]));
         }
 
         file_in.close();
     }
 
-    ~Bundle()
+    void exportTo(std::string const filename) const
     {
-        if (_ownerOfData)
-            delete [] _data;
+        std::ofstream fout;
+        fout.open(filename.c_str(), std::ios::out);
+        fout << this->repr();
     }
 
     Bundle(IntReader & reader) :
-        _columns(reader.getUInt32()),
-        _capacity(reader.getUInt32()),
-        _size(reader.getUInt32()),
-        _data(new T[_capacity]),
-        _ownerOfData(true)
+        _columns(0),
+        _capacity(0),
+        _size(0),
+        _data(nullptr),
+        _ownerOfData(false)
     {
-        if (reader.getBool())
-            reader.getData(_data, _size * sizeof(T));
+        importFrom(reader);
+    }
+
+    void
+    importFrom(IntReader & reader)
+    {
+        uint const mode = reader.getUInt32();
+
+        if (mode == 0)
+        {
+            // Nothing to do
+        }
+        else if (mode == 1 || mode == 2)
+        {
+            _columns = reader.getUInt32();
+            _capacity = reader.getUInt32();
+            _size = reader.getUInt32();
+            _data = new T[_capacity];
+            _ownerOfData = true;
+
+            if (reader.getBool())
+                reader.getData(_data, _size * sizeof(T));
+        }
+        else
+        {
+            std::string msg = cat("Invalid bundle mode: ", mode);
+            throw WUPException(msg);
+        }
 
         reader.getMilestone();
     }
 
     void
-    exportTo(IntWriter & writer, bool exportData=true)
+    exportTo(
+        IntWriter & writer, 
+        bool exportData=true)
     {
-        if (!_ownerOfData)
-            throw WUPException("Bundle can't be automatically exported when it does not own the data.");
+        if (_data == nullptr)
+        {
+            writer.putUInt32(0);
+        }
+        else if (_ownerOfData)
+        {
+            writer.putUInt32(1);
+            writer.putUInt32(_columns);
+            writer.putUInt32(_capacity);
+            writer.putUInt32(_size);
+            writer.putBool(exportData);
 
-        writer.putUInt32(_columns);
-        writer.putUInt32(_capacity);
-        writer.putUInt32(_size);
+            if (exportData)
+                writer.putData(_data, _size * sizeof(T));
+        }
+        else
+        {
+            writer.putUInt32(2);
+            writer.putUInt32(_columns);
+            writer.putUInt32(_capacity);
+            writer.putUInt32(_size);
+            writer.putBool(exportData);
 
-        writer.putBool(exportData);
-
-        if (exportData)
-            writer.putData(_data, _size * sizeof(T));
+            if (exportData)
+                writer.putData(_data, _size * sizeof(T));
+        }
 
         writer.putMilestone();
     }
 
-    Bundle<T> & operator=(const Bundle<T> & other)
+    virtual ~Bundle()
     {
-        if (_ownerOfData)
+        if (_data == nullptr)
+        {
+            // Nothing to do
+        }
+        else if (_ownerOfData)
+        {
             delete [] _data;
-
-        _columns = other._columns;
-        _capacity = other._capacity;
-        _size = other._size;
-        _data = other._data;
-        _ownerOfData = false;
-
-        return *this;
+        }
     }
 
-    const Bundle<T> & operator=(const T & value)
+    Bundle<T> & operator=(Bundle<T> && rhs) noexcept
     {
-        T * cur = _data;
-        const T * const end = _data + _size;
-
-        while (cur != end)
+        if (_data == nullptr)
         {
-            *cur = value;
-            ++cur;
+            // Nothing to do
+        }
+        else if (_ownerOfData)
+        {
+            delete [] _data;
         }
 
+        _columns = rhs._columns;
+        _capacity = rhs._capacity;
+        _size = rhs._size;
+        _data = rhs._data;
+        _ownerOfData = rhs._ownerOfData;
+        
+        rhs._columns = 0;
+        rhs._capacity = 0;
+        rhs._size = 0;
+        rhs._data = nullptr;
+        rhs._ownerOfData = false;
+
         return *this;
     }
 
-    template <typename T2>
-    void
-    importAll(Bundle<T2> const & other)
+    bool operator==(Bundle<T> const & other) const
     {
-        if (_size != other._size || _columns != other._columns || !_ownerOfData)
+        if (_data == nullptr)
         {
-            if (_ownerOfData)
+            return other._data == nullptr;
+        }
+        else
+        {
+            if (other._data == nullptr)
+                return false;
+            
+            if (_columns != other._columns)
+                return false;
+            
+            if (_size != other._size)
+                return false;
+            
+            for (int i=0;i!=_size;++i)
+                if (_data[i] != other._data[i])
+                    return false;
+            
+            return true;
+        }
+    }
+
+    Bundle<T> & operator=(Bundle<T> const & other)
+    {
+        if (_data == nullptr)
+        {
+            _columns = other._columns;
+            _size = other._size;
+            _capacity = other._size;
+            _ownerOfData = true;
+            _data = new T[_capacity];
+
+            std::copy(other.begin(), other.end(), _data);
+        }
+        else if (_ownerOfData)
+        {
+            if (_capacity < other._size)
+            {
+                _columns = other._columns;
+                _size = other._size;
+                _capacity = other._size;
+
                 delete [] _data;
+                _data = new T[_capacity];
+                std::copy(other.begin(), other.end(), _data);
+            }
+            else
+            {
+                _columns = other._columns;
+                _size = other._size;
+
+                std::copy(other.begin(), other.end(), _data);
+            }
+        }
+        else
+        {
+            if (_size != other._size)
+                throw WUPException("Bundle sizes differ");
 
             _columns = other._columns;
-            _capacity = other._capacity;
-            _size = other._size;
-            _ownerOfData = true;
-
-            _data = new T[_capacity];
+            std::copy(other.begin(), other.end(), _data);
         }
 
-        std::copy(other._data, other._data + other._size, _data);
+        return *this;
     }
 
-    template <typename T2, typename I2>
-    void
-    importRow(const std::vector<T2> & other, const I2 dstI)
+    Bundle<T> const & operator=(const T & value)
     {
-        const T2 * srcv = other.data();
-        T * dstv = & (*this)(dstI,0);
+        if (_data == nullptr)
+        {
+            throw WUPException("Can't assign a value to bundle that is not initialized");
+        }
+        else
+        {
+            T * cur = _data;
+            const T * const end = _data + _size;
 
-        //copy(srcv, srcv + numCols(), dstv);
-        for (size_t i=0;i!=numCols();++i)
-            dstv[i] = srcv[i];
-    }
+            while (cur != end)
+            {
+                *cur = value;
+                ++cur;
+            }
+        }
 
-    template <typename T2, typename I1, typename I2>
-    void
-    importRow(const Bundle<T2> & other, const I1 srcI, const I2 dstI)
-    {
-        const T2 * srcv = & other(srcI,0);
-        T * dstv = & (*this)(dstI,0);
-
-        //copy(srcv, srcv + numCols(), dstv);
-        for (size_t i=0;i!=numCols();++i)
-            dstv[i] = srcv[i];
-    }
-
-    template <typename T2, typename I1>
-    void
-    exportRow(const I1 srcI, std::vector<T2> & other) const
-    {
-        const T * const srcv = & (*this)(srcI,0);
-        T2 * const dstv = other.data();
-
-        //copy(srcv, srcv + numCols(), dstv);
-        for (size_t i=0;i!=numCols();++i)
-            dstv[i] = srcv[i];
-    }
-
-    template <typename T2, typename I1, typename I2>
-    void
-    exportRow(const I1 srcI, Bundle<T2> & other, const I2 dstI) const
-    {
-        T * srcv = & (*this)(srcI,0);
-        const T2 * dstv = & other(dstI,0);
-
-        //copy(srcv, srcv + numCols(), dstv);
-        for (size_t i=0;i!=numCols();++i)
-            dstv[i] = srcv[i];
+        return *this;
     }
 
     size_t
@@ -250,26 +379,14 @@ public:
     T &
     operator()(const I1 & i, const I2 & j)
     {
-#ifndef WUP_UNSAFE
-        const I1 index = i * _columns + j;
-        if (j > _columns || index > _size) error("Out of bounds");
-        return _data[index];
-#else
         return _data[i * _columns + j];
-#endif
     }
 
     template <typename I1, typename I2>
     const T &
     operator()(const I1 & i, const I2 & j) const
     {
-#ifndef WUP_UNSAFE
-        const I1 index = i * _columns + j;
-        if (j > _columns || index > _size) error("Out of bounds");
-        return _data[index];
-#else
         return _data[i * _columns + j];
-#endif
     }
 
     T & operator()(const uint j)
@@ -285,22 +402,12 @@ public:
     T &
     at(const uint32_t index)
     {
-#ifndef WUP_UNSAFE
-        if (index > _size)
-            throw WUPException("Out of bounds");
-#endif
-
         return _data[index];
     }
 
     const T &
     at(const uint32_t index) const
     {
-#ifndef WUP_UNSAFE
-        if (index > _size)
-            throw WUPException("Out of bounds");
-#endif
-
         return _data[index];
     }
 
@@ -311,27 +418,44 @@ public:
 
     void reshape(const uint rows, const uint cols)
     {
-        const uint newSize = rows * cols;
+        if (_data == nullptr)
+        {
+            _columns = cols;
+            _size = rows * cols;
+            _capacity = _size;
+            _ownerOfData = true;
+            _data = new T[_capacity];
+        }
+        else if (_ownerOfData)
+        {
+            const uint newSize = rows * cols;
 
-        _columns = cols;
-        _size = newSize;
+            _columns = cols;
+            _size = newSize;
 
-        if (newSize <= _capacity)
-            return;
+            if (newSize <= _capacity)
+                return;
 
-        _capacity = newSize;
-        auto newData = new T [newSize];
-        delete [] _data;
+            delete [] _data;
+            
+            _capacity = newSize;
+            _data = new T [_capacity];
+        }
+        else
+        {
+            if (rows * cols != _size)
+                throw WUPException("This Bundle can't be reshaped to a different size. It does not own the data");
 
-        _data = newData;
+            _columns = cols;
+        }
     }
 
-    uint numCols() const
+    uint cols() const
     {
         return _columns;
     }
 
-    uint numRows() const
+    uint rows() const
     {
         return ceil(_size / double(_columns));
     }
@@ -344,7 +468,6 @@ public:
     void push_many(const T * const array, const uint length)
     {
         require(length);
-
         for (uint i=0;i<length;++i)
             _data[_size++] = array[i];
     }
@@ -352,7 +475,6 @@ public:
     void push(const T & t, const uint times)
     {
         require(times);
-
         for (uint i=0;i!=times;++i)
             _data[_size++] = t;
     }
@@ -360,16 +482,15 @@ public:
     void push(const T & t)
     {
         require(1);
-
         _data[_size++] = t;
     }
 
-    T * begin() const
+    T const * begin() const
     {
         return _data;
     }
 
-    T * end() const
+    T const * end() const
     {
         return _data + _size;
     }
@@ -384,13 +505,9 @@ public:
         return _data + _size;
     }
 
-    void exportTo(std::string const filename) const
-    {
-        std::ofstream fout;
-        fout.open(filename.c_str(), std::ios::out);
-        fout << *this;
-    }
-
+    /*
+        Pointer to the first element
+    */
     T * data()
     {
         return _data;
@@ -409,159 +526,55 @@ public:
         return _size;
     }
 
+    // String representation of the data in this bundle
+    virtual std::string repr() const
+    {
+        std::stringstream ss;
+
+        for (uint i=0;i<rows();++i)
+        {
+            ss << this->operator()(i, uint(0));
+            for (uint j=1;j!=cols();++j)
+                ss << "," << this->operator()(i, j);
+            ss << "\n";
+        }
+
+        return ss.str();
+    }
+
 private:
 
     void
     require(int const quantity)
     {
-        if (_size + quantity <= _capacity)
-            return;
+        if (_data == nullptr)
+        {
+            _size = quantity;
+            _capacity = _size;
+            _ownerOfData = true;
+            _data = new T[_capacity];
+        }
+        else if (_ownerOfData)
+        {
+            if (_size + quantity <= _capacity)
+                return;
 
-        if (!_ownerOfData)
+            int newCap = math::max(_capacity + quantity, _capacity * 2);
+            T * newData = new T[newCap];
+
+            std::copy(_data, _data + _size, newData);
+            delete [] _data;
+
+            _capacity = newCap;
+            _data = newData;
+        }
+        else
+        {
             throw WUPException("This Bundle can't be resized. It does not own the data");
-
-        int newCap = math::max(_capacity + quantity, _capacity * 2);
-        T * newData = new T[newCap];
-
-        std::copy(_data, _data + _size, newData);
-
-        delete [] _data;
-        _capacity = newCap;
-        _data = newData;
+        }
     }
 
 };
-
-template <typename T>
-class BundleView
-{
-public:
-
-    T * data;
-    uint rows;
-    uint cols;
-    uint stride;
-
-    BundleView(Bundle<T> & _bundle,
-               uint const _rows,
-               uint const _cols) :
-        data(&_bundle(0, 0)),
-        cols(_cols),
-        rows(_rows),
-        stride(_bundle.numCols())
-    {
-
-    }
-
-    BundleView(Bundle<T> & bundle,
-               uint const i1,
-               uint const j1,
-               uint const i2,
-               uint const j2) :
-        data(&bundle(i1, j1)),
-        cols(j2-j1),
-        rows(i2-i1),
-        stride(bundle.numCols())
-    {
-#ifndef WUP_UNSAFE
-        if (i1 < 0 || j1 < 0 || i2 > bundle.numRows() || j2 > bundle.numCols() || i2 <= i1 || j2 <= j1)
-            throw WUPException("Out of bounds");
-#endif
-    }
-
-    BundleView(T const * const _data,
-               uint const _rows,
-               uint const _cols,
-               uint const _stride) :
-        data(_data),
-        rows(_rows),
-        cols(_cols),
-        stride(_stride)
-    {
-
-    }
-
-    T &
-    operator()(uint const i, uint const j)
-    {
-#ifndef WUP_UNSAFE
-        if (j >= cols || i >= rows || i < 0 || j < 0)
-            throw WUPException("Out of bounds");
-#endif
-        const int index = i * stride + j;
-        return data[index];
-    }
-
-    T const &
-    operator()(uint const i, uint const j) const
-    {
-#ifndef WUP_UNSAFE
-        if (j >= cols || i >= rows || i < 0 || j < 0)
-            throw WUPException("Out of bounds");
-#endif
-
-        const uint index = i * stride + j;
-        return data[index];
-    }
-
-    T const &
-    operator[](uint const index) const
-    {
-#ifndef WUP_UNSAFE
-        if (index >= cols * rows || index < 0)
-            throw WUPException("Out of bounds");
-#endif
-        uint const i = index / cols;
-        uint const j = index % cols;
-        return (*this)(i, j);
-    }
-
-    T &
-    operator[](const uint index)
-    {
-#ifndef WUP_UNSAFE
-        if (index >= cols * rows || index < 0)
-            throw WUPException("Out of bounds");
-#endif
-        uint const i = index / cols;
-        uint const j = index % cols;
-        return (*this)(i, j);
-    }
-
-};
-
-template <typename T>
-std::ostream & operator<<(std::ostream & o,
-                          wup::Bundle<T> const & bundle)
-{
-    for (uint i=0; i<bundle.numRows(); ++i)
-    {
-        o << bundle(i, uint(0));
-
-        for (uint j=1; j<bundle.numCols(); ++j)
-            o << "," << bundle(i, j);
-
-        o << "\n";
-    }
-
-    return o;
-}
-
-template <typename T>
-std::ostream & operator<<(std::ostream & o,
-                          wup::BundleView<T> const & view)
-{
-    for (uint i=0; i<view.rows; ++i)
-    {
-        o << view(i, 0);
-
-        for (uint j=1; j<view.cols; ++j)
-            o << "," << view(i, j);
-
-        o << "\n";
-    }
-    return o;
-}
 
 template <typename T>
 T

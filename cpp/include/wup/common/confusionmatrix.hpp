@@ -41,7 +41,7 @@ public:
     uint
     classes() const
     {
-        return _matrix.numCols() - 1;
+        return _matrix.cols() - 1;
     }
 
     void
@@ -55,7 +55,7 @@ public:
     predictionsFor(const uint row) const
     {
         uint64_t sum = 0;
-        for (uint j=0;j<_matrix.numCols()-1;++j)
+        for (uint j=0;j<_matrix.cols()-1;++j)
             sum += _matrix(row, j);
         return sum;
     }
@@ -64,7 +64,7 @@ public:
     targetsFor(const uint col) const
     {
         int sum = 0;
-        for (uint i=0;i<_matrix.numRows()-1;++i)
+        for (uint i=0;i<_matrix.rows()-1;++i)
             sum += _matrix(i, col);
         return sum;
     }
@@ -73,7 +73,7 @@ public:
     total() const
     {
         uint64_t sum = 0;
-        for (uint i=0;i<_matrix.numRows()-1;++i)
+        for (uint i=0;i<_matrix.rows()-1;++i)
             sum += predictionsFor(i);
         return sum;
     }
@@ -89,7 +89,7 @@ public:
     accuracy()
     {
         checkUpdate();
-        const uint len = _matrix.numCols()-1;
+        const uint len = _matrix.cols()-1;
         return _matrix(len, len);
     }
 
@@ -135,7 +135,7 @@ public:
     ConfusionMatrix &
     update()
     {
-        const uint len = _matrix.numCols()-1;
+        const uint len = _matrix.cols()-1;
 
         for (uint k=0;k!=len;++k)
         {

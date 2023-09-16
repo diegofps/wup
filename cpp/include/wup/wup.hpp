@@ -33,6 +33,7 @@
 #include <wup/common/repr.hpp>
 #include <wup/common/config.hpp>
 #include <wup/common/str.hpp>
+#include <wup/common/generate.hpp>
 
 #ifndef WUP_NO_ZIP
 #include <wup/common/zip.hpp>

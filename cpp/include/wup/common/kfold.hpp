@@ -335,12 +335,12 @@ public:
     {
         auto & attributes = ds.attr();
 
-        if (attributes.numCols() < 3)
+        if (attributes.cols() < 3)
             throw WUPException("This dataset does not contains an inner kfold");
 
         // Detecta o número de folds
         std::map<double, int> folds;
-        for (uint i=0;i<attributes.numRows();++i)
+        for (uint i=0;i<attributes.rows();++i)
         {
             const double key = attributes( i+1, uint(3) );
             if (folds.find(key) == folds.end())
@@ -350,7 +350,7 @@ public:
         _numFolds = folds.size();
         createFolds(_numFolds);
 
-        for (uint i=0;i<attributes.numRows();++i)
+        for (uint i=0;i<attributes.rows();++i)
         {
             const uint f = folds[attributes( i+1, uint(3) )];
             for (uint j=0; j<_numFolds; ++j)

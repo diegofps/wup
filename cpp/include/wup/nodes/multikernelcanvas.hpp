@@ -19,7 +19,7 @@ namespace node {
 
 class MultiKernelCanvas : public Node {
 
-    typedef wup::KernelCanvas<EuclidianKernels> KC;
+    typedef wup::KernelCanvas<EuclideanKernelSpace> KC;
 
 private:
 
@@ -27,9 +27,12 @@ private:
 
 public:
 
-    MultiKernelCanvas(Node * const parent, IntReader & reader) :
-            Node(parent, reader),
-            _kcs()
+    MultiKernelCanvas(
+        Node * const parent, 
+        IntReader & reader) :
+
+        Node(parent, reader),
+        _kcs()
     {
         uint numCanvas = reader.getUInt32();
 
@@ -37,8 +40,13 @@ public:
             _kcs.push_back(new KC(reader));
     }
 
-    MultiKernelCanvas(Node * const parent, const uint numKernels, const uint kernelDims,
-                      const double activation, const uint bits) :
+    MultiKernelCanvas(
+        Node * const parent, 
+        const uint numKernels, 
+        const uint kernelDims, 
+        const double activation, 
+        const uint bits) :
+
         Node(parent),
         _kcs()
     {
@@ -47,9 +55,21 @@ public:
 
         while(i != size)
         {
-            const uint dims = math::min(kernelDims, size-i);
-            _kcs.push_back(new KC(kernelDims, numKernels, activation, bits));
-            i += dims;
+            uint const numDims = math::min(kernelDims, size-i);
+
+            wup::Bundle<double> dimRanges(2,numDims);
+
+            for (int j=0;j!=dimRanges.cols();++j)
+            {
+                dimRanges(0,j) = 0.0;
+                dimRanges(1,j) = 1.0;
+            }
+
+            wup::Bundle<double> kernels;
+            wup::generate::randomKernels(numKernels, dimRanges, kernels);
+
+            _kcs.push_back(new KC(activation, bits, kernels));
+            i += numDims;
         }
     }
 

@@ -63,9 +63,9 @@ public:
     virtual void onFinish()
     {
         std::ofstream file_out( _filename.c_str() );
-        for (uint i=0; i<_bundle.numRows(); ++i) {
+        for (uint i=0; i<_bundle.rows(); ++i) {
             file_out << _bundle(i, uint(0));
-            for (uint j=1; j<_bundle.numCols(); ++j)
+            for (uint j=1; j<_bundle.cols(); ++j)
                 file_out << "," << _bundle(i,j);
             file_out << std::endl;
         }

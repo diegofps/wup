@@ -28,7 +28,7 @@ public:
     }
     
     Feature(Bundle<double> &data, const uint row) :
-        _size(data.numCols()),
+        _size(data.cols()),
         _mem(&data(row, uint(0)))
     {
 
@@ -122,7 +122,7 @@ public:
 
     Sample(const int id, const int target, const int subtarget, const int group, 
             Bundle<double> &data) :
-        Sample(id, target, subtarget, group, data, 0, data.numRows()) 
+        Sample(id, target, subtarget, group, data, 0, data.rows()) 
     {
 
     }
@@ -215,8 +215,8 @@ public:
         _data(prefix + "_data"),
         _attr(prefix + "_attr")
     {
-        const uint attr_rows = _attr.numRows();
-        const int attr_cols  = _attr.numCols();
+        const uint attr_rows = _attr.rows();
+        const int attr_cols  = _attr.cols();
         
         _classes = -1;
         int start = 0;
@@ -277,7 +277,7 @@ public:
 
     int numFeatures() const
     {
-        return _data.numCols();
+        return _data.cols();
     }
 
     int classes() const

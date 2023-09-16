@@ -18,26 +18,30 @@ namespace wup {
 namespace node {
 
 class KernelCanvas : public Node {
+private:
+
+    wup::KernelCanvas<EuclideanKernelSpace> _kc;
+    // wup::KernelCanvas<HashedKernelSpace> _kc;
+    //legacy::KernelCanvas _kc;
+
 public:
 
-    KernelCanvas(Node * const parent, IntReader & reader) :
+    KernelCanvas(Node * const parent, 
+                 IntReader & reader) :
 
             Node(parent, reader),
-            
             _kc(reader)
     {
 
     }
 
     KernelCanvas(Node * const parent, 
-                 const uint numKernels,
                  const double activation, 
                  const uint termBits,
-                 double ** kernels=NULL) :
+                 wup::Bundle<double> & kernels) :
 
         Node(parent),
-
-        _kc(parent->output().size(), numKernels, activation, termBits, kernels)
+        _kc(activation, termBits, kernels)
     {
 
     }
@@ -86,12 +90,6 @@ public:
     {
         return _kc == other._kc;
     }
-
-private:
-
-    // wup::KernelCanvas<EuclidianKernels> _kc;
-    wup::KernelCanvas<HashedKernelSpace> _kc;
-    //legacy::KernelCanvas _kc;
 
 };
 
