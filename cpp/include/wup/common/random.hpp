@@ -77,6 +77,12 @@ public:
         return u * s;
     }
 
+    void
+    setSeed(uint seed)
+    {
+        this->seed = seed;
+    }
+
 };
 
 
@@ -118,6 +124,12 @@ public:
         return normal1(generator);
     }
 
+    void
+    setSeed(uint64_t seed)
+    {
+        generator.seed(seed);
+    }
+
 };
 
 
@@ -129,6 +141,12 @@ private:
 
 public:
 
+
+    GENERATOR &
+    getGenerator()
+    {
+        return base;
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////
     // Coin generators
@@ -307,13 +325,53 @@ public:
         randomPattern(data.data(), data.size());
     }
 
-    int *
-    randomPattern(int * array,
+    int64_t *
+    randomPattern(int64_t * array,
                   size_t const length,
                   int const n=2)
     {
-        for (int i=0;i!=length;++i)
+        for (size_t i=0;i!=length;++i)
             array[i] = uniformInt(n);
+        return array;
+    }
+
+    int32_t *
+    randomPattern(int32_t * array,
+                  size_t const length,
+                  int const n=2)
+    {
+        for (size_t i=0;i!=length;++i)
+            array[i] = uniformInt(n);
+        return array;
+    }
+
+    int16_t *
+    randomPattern(int16_t * array,
+                  size_t const length,
+                  int const n=2)
+    {
+        for (size_t i=0;i!=length;++i)
+            array[i] = uniformInt(n);
+        return array;
+    }
+
+    int8_t *
+    randomPattern(int8_t * array,
+                  size_t const length,
+                  int const n=2)
+    {
+        for (size_t i=0;i!=length;++i)
+            array[i] = uniformInt(n);
+        return array;
+    }
+
+    double *
+    randomPattern(double * array,
+                  size_t const length,
+                  double const n=1)
+    {
+        for (int i=0;i!=length;++i)
+            array[i] = uniformDouble(n);
         return array;
     }
 

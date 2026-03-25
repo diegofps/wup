@@ -14,6 +14,7 @@
 #include <wup/common/exceptions.hpp>
 #include <wup/common/io.hpp>
 #include <wup/common/generic.hpp>
+#include <wup/common/bundle.hpp>
 
 namespace wup 
 {

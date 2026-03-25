@@ -296,7 +296,7 @@ public:
             if (_size != other._size)
                 return false;
             
-            for (int i=0;i!=_size;++i)
+            for (uint i=0;i!=_size;++i)
                 if (_data[i] != other._data[i])
                     return false;
             
@@ -540,6 +540,34 @@ public:
         }
 
         return ss.str();
+    }
+
+    template <typename T2, typename I2>
+    void
+    importRow(const std::vector<T2> & other, const I2 dstI)
+    {
+        std::copy(other.begin(), other.end(), &(*this)(dstI,0));
+    }
+
+    template <typename T2, typename I1, typename I2>
+    void
+    importRow(const Bundle<T2> & other, const I1 srcI, const I2 dstI)
+    {
+        std::copy(&other(srcI,0), &other(srcI+1,0), &(*this)(dstI,0));
+    }
+
+    template <typename T2, typename I1>
+    void
+    exportRow(const I1 srcI, std::vector<T2> & other) const
+    {
+        std::copy(&(*this)(srcI,0), &(*this)(srcI+1,0), other.begin());
+    }
+
+    template <typename T2, typename I1, typename I2>
+    void
+    exportRow(const I1 srcI, Bundle<T2> & other, const I2 dstI) const
+    {
+        std::copy(&(*this)(srcI,0), &(*this)(srcI+1,0), &other(dstI,0));
     }
 
 private:

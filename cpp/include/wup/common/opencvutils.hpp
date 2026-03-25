@@ -1116,10 +1116,10 @@ bundleToMat(wup::Bundle<uint> & src,
             cv::Mat & dst,
             uint const srcMax)
 {
-    if (uint(dst.rows) != src.numRows())
+    if (uint(dst.rows) != src.rows())
         wup::error("Number of rows differ");
 
-    if (uint(dst.cols) != src.numCols())
+    if (uint(dst.cols) != src.cols())
         wup::error("Number of cols differ");
 
     int size = int(dst.total());

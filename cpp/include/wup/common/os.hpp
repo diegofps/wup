@@ -57,9 +57,25 @@ fileDelete(const char * filepath)
 }
 
 inline void
+fileCopy(std::string const & in,
+         std::string const & out)
+{
+    system(cat("cp '", in, "' '", out,"'").c_str());
+}
+
+inline void
 dirCreatePath(std::string const & folderpath)
 {
     system(cat("mkdir -p ", folderpath).c_str());
+}
+
+inline std::string
+joinFilename(std::string const & folderpath, std::string const & filename)
+{
+    if (folderpath[folderpath.size()-1] == '/')
+        return cat(folderpath, filename);
+    else
+        return cat(folderpath, "/", filename);
 }
 
 inline void

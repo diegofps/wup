@@ -5,6 +5,7 @@
 #include <wup/common/math.hpp>
 #include <cstdlib>
 #include <cstring>
+#include <cstdint>
 #include <vector>
 #include <cmath>
 
@@ -71,7 +72,9 @@ print(char const * msg,
 template <typename T>
 void
 binarizeAvg(T * const ptr,
-            const uint len)
+            uint const len,
+            T const highValue=255,
+            T const lowValue = 0)
 {
     uint32_t sum = 0;
     for (uint k=0;k<len;++k)
@@ -80,7 +83,7 @@ binarizeAvg(T * const ptr,
     sum /= len;
 
     for (uint k=0;k<len;++k)
-        ptr[k] = ptr[k] >= sum ? 0 : UINT8_MAX;
+        ptr[k] = ptr[k] >= sum ? lowValue : highValue;
 }
 
 inline void

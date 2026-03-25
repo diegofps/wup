@@ -125,17 +125,18 @@ meanNStd(int const & n,
          T const s1,
          T const s2,
          T & mean,
-         T & _std)
+         T & std)
 {
     if (n == 0)
     {
         mean = 0;
-        _std = 0;
+        std = 0;
     }
     else
     {
-        mean = s1 / n;
-        stddev(n, s1, s2, _std);
+        T tmp = s1 / n;
+        stddev(n, s1, s2, std);
+        mean = tmp;
     }
 }
 

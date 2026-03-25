@@ -13,9 +13,10 @@ namespace wup
 class Clock {
 public:
 
-    Clock () :
+    Clock (bool verbose=true) :
         _delta_sec(0),
-        _delta_nsec(0)
+        _delta_nsec(0),
+        _verbose(verbose)
     {
         start();
     }
@@ -46,6 +47,12 @@ public:
     {
         return stop().start();
     }
+
+    // Clock &
+    // lap(std::string const msg)
+    // {
+    //     return stop().start();
+    // }
 
     double
     lap_seconds(double factor=1.0)
@@ -91,7 +98,7 @@ public:
     {
         stop();
         const auto ellapsed = this->ellapsed_seconds() / factor;
-        printn(YELLOW, "|CLOCK| ", PURPLE, msg, ": ", YELLOW, ellapsed, " s\n", NORMAL);
+        if (_verbose) printn(YELLOW, "|CLOCK| ", PURPLE, msg, ": ", YELLOW, ellapsed, " s\n", NORMAL);
         start();
         return ellapsed;
     }
@@ -101,7 +108,7 @@ public:
     {
         stop();
         const auto ellapsed = this->ellapsed_milli() / factor;
-        printn(YELLOW, "|CLOCK| ", PURPLE, msg, ": ", YELLOW, ellapsed, " ms\n", NORMAL);
+        if (_verbose) printn(YELLOW, "|CLOCK| ", PURPLE, msg, ": ", YELLOW, ellapsed, " ms\n", NORMAL);
         start();
         return ellapsed;
     }
@@ -111,7 +118,7 @@ public:
     {
         stop();
         const auto ellapsed = this->ellapsed_micro() / factor;
-        printn(YELLOW, "|CLOCK| ", PURPLE, msg, ": ", YELLOW, ellapsed, " us\n", NORMAL);
+        if (_verbose) printn(YELLOW, "|CLOCK| ", PURPLE, msg, ": ", YELLOW, ellapsed, " us\n", NORMAL);
         start();
         return ellapsed;
     }
@@ -121,7 +128,7 @@ public:
     {
         stop();
         const auto ellapsed = this->ellapsed_micro() / factor;
-        printn(YELLOW, "|CLOCK| ", PURPLE, msg, ": ", YELLOW, ellapsed, " ns\n", NORMAL);
+        if (_verbose) printn(YELLOW, "|CLOCK| ", PURPLE, msg, ": ", YELLOW, ellapsed, " ns\n", NORMAL);
         start();
         return ellapsed;
     }
@@ -154,6 +161,16 @@ public:
         return _delta_sec * static_cast<long double>(1000000000.0) + _delta_nsec;
     }
 
+    bool verbose() const
+    {
+        return _verbose;
+    }
+
+    void verbose(bool const value)
+    {
+        _verbose = value;
+    }
+
 private:
 
     const int clock_id = CLOCK_MONOTONIC;
@@ -163,6 +180,8 @@ private:
     long double _delta_sec;
 
     long double _delta_nsec;
+
+    bool _verbose;
 
 };
 

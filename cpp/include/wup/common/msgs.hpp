@@ -55,6 +55,20 @@ const char * const BG_PURPLE = "\033[45m";
 const char * const BG_CYAN   = "\033[46m";
 const char * const BG_WHITE  = "\033[46m";
 
+template <typename DATA, std::size_t SIZE>
+std::ostream & operator<<(std::ostream & o, std::array<DATA, SIZE> const & arr)
+{
+    if (SIZE == 0)
+        return o;
+
+    for (int32_t k=0;k!=SIZE-1;++k)
+        o << arr[k] << " ";
+    
+    o << arr[SIZE-1];
+
+    return o;
+}
+
 template <typename A, typename B>
 std::ostream & operator<<(std::ostream &o, const std::pair<A,B> &pair)
 {

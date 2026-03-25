@@ -1,12 +1,15 @@
 #ifndef INCLUDE_WUP_COMMON_GENERATE_HPP
 #define INCLUDE_WUP_COMMON_GENERATE_HPP
- 
+
+#include "bundle.hpp"
+
+
 namespace wup { namespace generate {
 
 inline void
 randomKernels(size_t const numKernels, 
-                    wup::Bundle<double> const & dimRanges, 
-                    wup::Bundle<double> & kernels)
+              wup::Bundle<double> const & dimRanges,
+              wup::Bundle<double> & kernels)
 {
     kernels.reshape(numKernels, dimRanges.cols());
     for (size_t i=0;i!=numKernels;++i)
@@ -16,9 +19,9 @@ randomKernels(size_t const numKernels,
 
 inline void
 bestCandidateKernels(size_t const numKernels, 
-                           size_t const numCandidates, 
-                           wup::Bundle<double> const & dimRanges, 
-                           wup::Bundle<double> & kernels)
+                     size_t const numCandidates,
+                     wup::Bundle<double> const & dimRanges,
+                     wup::Bundle<double> & kernels)
 {
     kernels.reshape(numKernels, dimRanges.cols());
 
@@ -33,7 +36,7 @@ bestCandidateKernels(size_t const numKernels,
     wup::Bundle<double> candidates;
 
     // Create the remaining kernels
-    for (int i=1;i!=numKernels;++i)
+    for (size_t i=1;i!=numKernels;++i)
     {
         // Create candidates
         randomKernels(numCandidates, dimRanges, candidates);
@@ -42,12 +45,12 @@ bestCandidateKernels(size_t const numKernels,
         double fartestCandidateDistance = -1.0;
         int fartestCandidateId = 0;
 
-        for (int candidateId=0;candidateId!=numCandidates;++candidateId)
+        for (size_t candidateId=0;candidateId!=numCandidates;++candidateId)
         {
             double closestKernelDistance = -1.0;
 
             // Calculate the distance to the nearest kernel
-            for (int ii=0;ii!=i;++ii)
+            for (size_t ii=0;ii!=i;++ii)
             {
                 double distance = wup::math::distance(&kernels(ii,0), &candidates(candidateId,0), dimRanges.cols());
                 if (closestKernelDistance < 0 || distance < closestKernelDistance)

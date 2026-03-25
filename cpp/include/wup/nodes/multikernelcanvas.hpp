@@ -8,6 +8,7 @@
  *      Author: diegofps
  */
 
+#include "wup/common/generate.hpp"
 #include <wup/nodes/node.hpp>
 #include <wup/models/kernelcanvas.hpp>
 #include <wup/common/math.hpp>
@@ -59,7 +60,7 @@ public:
 
             wup::Bundle<double> dimRanges(2,numDims);
 
-            for (int j=0;j!=dimRanges.cols();++j)
+            for (uint j=0;j!=dimRanges.cols();++j)
             {
                 dimRanges(0,j) = 0.0;
                 dimRanges(1,j) = 1.0;
